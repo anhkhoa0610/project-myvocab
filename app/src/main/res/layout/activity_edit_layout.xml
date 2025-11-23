@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/white"
-    tools:context="com.example.project.crud_layout">
+    tools:context="com.example.project.ui.add_edit_word.EditActivity">
 
     <!-- Thanh trên cùng -->
     <LinearLayout

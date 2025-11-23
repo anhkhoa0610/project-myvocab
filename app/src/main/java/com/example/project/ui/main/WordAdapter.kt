@@ -1,4 +1,4 @@
-package com.example.project
+package com.example.project.ui.main
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +7,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.project.R
+import com.example.project.data.model.Word
 
 class WordAdapter(private val words: List<Word>) :
     RecyclerView.Adapter<WordAdapter.WordViewHolder>() {

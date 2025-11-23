@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Week1">
         <activity
-            android:name="com.example.project.edit_layout"
+            android:name="com.example.project.ui.add_edit_word.EditActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,7 +21,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.project.addnew_layout"
+            android:name="com.example.project.ui.add_edit_word.AddNewActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,16 +30,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.project.crud_layout"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name="com.example.project.MainActivity"
+            android:name="com.example.project.ui.main.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

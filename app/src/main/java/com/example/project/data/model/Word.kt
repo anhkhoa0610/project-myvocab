@@ -1,4 +1,4 @@
-package com.example.project
+package com.example.project.data.model
 
 data class Word(
     val word: String,
