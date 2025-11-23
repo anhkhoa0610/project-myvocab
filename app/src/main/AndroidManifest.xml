@@ -12,10 +12,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyVocab">
         <activity android:name="com.example.project.ui.add_edit_word.EditActivity"
-            android:exported="true" />
+            android:exported="false" />
 
         <activity android:name="com.example.project.ui.add_edit_word.AddNewActivity"
-            android:exported="true" />
+            android:exported="false" />
 
         <activity android:name="com.example.project.ui.main.MainActivity"
             android:exported="true">

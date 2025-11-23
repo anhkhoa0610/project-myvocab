@@ -1,38 +1,65 @@
 package com.example.project.ui.main
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.ImageButton
 import android.widget.TextView
-import androidx.recyclerview.widget.RecyclerView
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import com.example.project.R
 import com.example.project.data.model.Word
+import com.example.project.ui.add_edit_word.EditActivity
 
-class WordAdapter(private val words: List<Word>) :
-    RecyclerView.Adapter<WordAdapter.WordViewHolder>() {
+class WordAdapter(
+    private val activity: MainActivity,
+    private val words: MutableList<Word>
+) : ArrayAdapter<Word>(activity, 0, words) {
 
-    inner class WordViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val tvWord: TextView = itemView.findViewById(R.id.tvWord)
-        val tvMeaning: TextView = itemView.findViewById(R.id.tvMeaning)
-        val tvPronoun: TextView = itemView.findViewById(R.id.tvPronoun)
-        val btnEdit: ImageButton = itemView.findViewById(R.id.btnEdit)
-        val btnDelete: ImageButton = itemView.findViewById(R.id.btnDelete)
-        val btnFavorite: ImageButton = itemView.findViewById(R.id.btnFavorite)
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WordViewHolder {
-        val view = LayoutInflater.from(parent.context)
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+        val view = convertView ?: LayoutInflater.from(context)
             .inflate(R.layout.item_word, parent, false)
-        return WordViewHolder(view)
-    }
 
-    override fun onBindViewHolder(holder: WordViewHolder, position: Int) {
         val word = words[position]
-        holder.tvWord.text = word.word
-        holder.tvMeaning.text = word.meaning
-        holder.tvPronoun.text = word.pronoun
-    }
 
-    override fun getItemCount(): Int = words.size
+        // Ánh xạ các views
+        val tvFirstLetter = view.findViewById<TextView>(R.id.tvFirstLetter)
+        val tvWord = view.findViewById<TextView>(R.id.tvWord)
+        val tvMeaning = view.findViewById<TextView>(R.id.tvMeaning)
+        val tvPronun = view.findViewById<TextView>(R.id.tvPronun)
+        val btnEdit = view.findViewById<ImageButton>(R.id.btnEdit)
+        val btnDelete = view.findViewById<ImageButton>(R.id.btnDelete)
+
+        // Hiển thị dữ liệu
+        tvFirstLetter.text = word.word.firstOrNull()?.uppercase() ?: "?"
+        tvWord.text = word.word
+        tvMeaning.text = word.meaning
+        tvPronun.text = word.pronunciation
+
+        // Xử lý click nút Edit
+        btnEdit.setOnClickListener {
+            val intent = Intent(activity, EditActivity::class.java)
+            intent.putExtra("word", word)
+            intent.putExtra("position", position)
+            activity.editWordLauncher.launch(intent)
+        }
+
+        // Xử lý click nút Delete
+        btnDelete.setOnClickListener {
+            AlertDialog.Builder(activity)
+                .setTitle("Xóa từ")
+                .setMessage("Bạn có chắc muốn xóa từ \"${word.word}\"?")
+                .setPositiveButton("Xóa") { _, _ ->
+                    words.removeAt(position)
+                    notifyDataSetChanged()
+                    Toast.makeText(activity, "Đã xóa từ!", Toast.LENGTH_SHORT).show()
+                }
+                .setNegativeButton("Hủy", null)
+                .show()
+        }
+
+        return view
+    }
 }
