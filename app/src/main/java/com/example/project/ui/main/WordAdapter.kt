@@ -32,6 +32,17 @@ class WordAdapter(
         val btnEdit = view.findViewById<ImageButton>(R.id.btnEdit)
         val btnDelete = view.findViewById<ImageButton>(R.id.btnDelete)
 
+        view.setOnClickListener {
+            // 1. Tạo Intent trỏ đến màn hình bạn muốn (Ví dụ: FlashCardActivity)
+            val intent = Intent(activity, FlashCardActivity::class.java)
+
+            intent.putParcelableArrayListExtra("list_word", ArrayList(words))
+            intent.putExtra("position", position) // Truyền thêm vị trí để biết đang chọn từ nào
+
+            // 3. Khởi chạy màn hình mới
+            activity.startActivity(intent)
+        }
+
         // Hiển thị dữ liệu
         tvFirstLetter.text = word.word.firstOrNull()?.uppercase() ?: "?"
         tvWord.text = word.word

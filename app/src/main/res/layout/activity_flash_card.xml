@@ -1,197 +1,157 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".flash_card">
+    tools:context=".ui.main.FlashCardActivity">
 
     <LinearLayout
+        android:id="@+id/main"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="16dp">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="#FFFFFF">
 
-        <ImageView
-            android:id="@+id/btnMenu"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Add word"
-            android:src="@drawable/ic_menu"
-            app:tint="@color/black" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <ImageView
+                android:id="@+id/btnMenu"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:padding="10dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_menu"
+                app:tint="@color/black" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Luyện tập"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <View android:layout_width="48dp" android:layout_height="48dp"/>
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/cardContainer"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_margin="30dp">
+
+            <LinearLayout
+                android:id="@+id/cardFront"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="#8BF2F4">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tap to flip"
+                    android:textSize="12sp"
+                    android:alpha="0.5"
+                    android:layout_marginBottom="20dp"/>
+
+                <TextView
+                    android:id="@+id/tvEnWord"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hello"
+                    android:textSize="32sp"
+                    android:textStyle="bold"
+                    android:textColor="#000000"/>
+
+                <TextView
+                    android:id="@+id/tvPronun"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="/həˈləʊ/"
+                    android:textSize="18sp"
+                    android:textColor="#555555"
+                    android:layout_marginTop="8dp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cardBack"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="#FFD76F"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Meaning"
+                    android:textSize="12sp"
+                    android:alpha="0.5"
+                    android:layout_marginBottom="20dp"/>
+
+                <TextView
+                    android:id="@+id/tvViMeaning"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Xin chào"
+                    android:textSize="26sp"
+                    android:textColor="#000000"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+        </FrameLayout>
 
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/tvCount"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:text="1/10"
             android:gravity="center"
-            android:text="My Vocab"
-            android:textSize="22sp"
-            android:textStyle="bold" />
+            android:textSize="16sp"
+            android:layout_marginBottom="10dp"/>
 
-        <ImageView
-            android:id="@+id/btnAdd"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Add word"
-            android:src="@drawable/ic_add"
-            app:tint="@color/black" />
-    </LinearLayout>
-
-    <!-- Ô tìm kiếm -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/search_background"
-        android:orientation="horizontal"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="8dp">
-
-        <EditText
-            android:id="@+id/etSearch"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:hint="Search"
-            android:padding="8dp"
-            android:singleLine="true" />
-
-        <ImageView
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/ic_search"
-            app:tint="@color/gray" />
-    </LinearLayout>
-    <!-- end search -->
-
-    <!-- Thanh filter -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="8dp">
-
-       <TextView
-           android:layout_width="wrap_content"
-           android:layout_height="match_parent"
-           android:textSize="50dp"
-           android:textColor="#FF9800"
-           android:text="Flash Card" />
-    </LinearLayout>
-    <!-- end filter -->
-
-    <!-- main   -->
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/cardContainer"
-        android:layout_width="match_parent"
-        android:layout_height="500dp"
-        android:layout_margin="30dp">
-
-        <!-- Mặt trước -->
         <LinearLayout
-            android:id="@+id/cardFront"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:padding="16dp"
-            android:background="#8BF2F4">
+            android:gravity="center">
 
-            <!-- Title / Hint -->
-            <TextView
-                android:id="@+id/titleFront"
+            <Button
+                android:id="@+id/btnPrev"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tap to flip!"
-                android:gravity="center"
-                android:textSize="18sp"
-                android:textColor="#333"
-                android:textStyle="bold" />
+                android:text="Previous"
+                android:backgroundTint="#607D8B"/>
 
-            <!-- Content (load từ DB) -->
-            <TextView
-                android:id="@+id/contentFront"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="Nội dung flashcard"
-                android:textSize="24sp"
-                android:textColor="#000" />
-        </LinearLayout>
+            <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1"/>
 
-        <!-- Mặt sau -->
-        <LinearLayout
-            android:id="@+id/cardBack"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:padding="16dp"
-            android:background="#FFD76F"
-            android:visibility="gone">
-
-            <!-- Title / Hint -->
-            <TextView
-                android:id="@+id/titleBack"
+            <Button
+                android:id="@+id/btnNext"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tap to flip"
-                android:textSize="18sp"
-                android:textColor="#333"
-                android:textStyle="bold" />
-
-            <!-- Content (load từ DB) -->
-            <TextView
-                android:id="@+id/contentBack"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="Nội dung flashcard"
-                android:textSize="24sp"
-                android:textColor="#000" />
+                android:text="Next"
+                android:backgroundTint="#FF9800"/>
         </LinearLayout>
 
-    </FrameLayout>
-
-    <!--end main    -->
-
-    <!-- next and previous button   -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="horizontal"
-        android:padding="16dp">
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Previous"
-            />
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Next"
-            android:layout_marginStart="220dp"
-            />
     </LinearLayout>
-    <!-- end next and previous button   -->
 
-    <!-- nav menu   -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        app:itemIconTint="@color/black"
-        app:itemTextColor="@color/black"
-        app:labelVisibilityMode="labeled"
-        app:menu="@menu/bottom_nav_menu" />
-</LinearLayout>
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="#FFFFFF"
+        app:menu="@menu/nav_menu" />
+</androidx.drawerlayout.widget.DrawerLayout>

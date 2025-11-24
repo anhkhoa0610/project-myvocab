@@ -7,5 +7,6 @@ data class Word(
     val word: String,
     val meaning: String,
     val pronunciation: String,
-    val part_of_speech: String
+    val part_of_speech: String,
+    var isSelected: Boolean = false,
 ): Parcelable
