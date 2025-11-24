@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".flash_card">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/btnMenu"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Add word"
+            android:src="@drawable/ic_menu"
+            app:tint="@color/black" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="My Vocab"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/btnAdd"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Add word"
+            android:src="@drawable/ic_add"
+            app:tint="@color/black" />
+    </LinearLayout>
+
+    <!-- Ô tìm kiếm -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/search_background"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp">
+
+        <EditText
+            android:id="@+id/etSearch"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:hint="Search"
+            android:padding="8dp"
+            android:singleLine="true" />
+
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_search"
+            app:tint="@color/gray" />
+    </LinearLayout>
+    <!-- end search -->
+
+    <!-- Thanh filter -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp">
+
+       <TextView
+           android:layout_width="wrap_content"
+           android:layout_height="match_parent"
+           android:textSize="50dp"
+           android:textColor="#FF9800"
+           android:text="Flash Card" />
+    </LinearLayout>
+    <!-- end filter -->
+
+    <!-- main   -->
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/cardContainer"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        android:layout_margin="30dp">
+
+        <!-- Mặt trước -->
+        <LinearLayout
+            android:id="@+id/cardFront"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:background="#8BF2F4">
+
+            <!-- Title / Hint -->
+            <TextView
+                android:id="@+id/titleFront"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tap to flip!"
+                android:gravity="center"
+                android:textSize="18sp"
+                android:textColor="#333"
+                android:textStyle="bold" />
+
+            <!-- Content (load từ DB) -->
+            <TextView
+                android:id="@+id/contentFront"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Nội dung flashcard"
+                android:textSize="24sp"
+                android:textColor="#000" />
+        </LinearLayout>
+
+        <!-- Mặt sau -->
+        <LinearLayout
+            android:id="@+id/cardBack"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:background="#FFD76F"
+            android:visibility="gone">
+
+            <!-- Title / Hint -->
+            <TextView
+                android:id="@+id/titleBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tap to flip"
+                android:textSize="18sp"
+                android:textColor="#333"
+                android:textStyle="bold" />
+
+            <!-- Content (load từ DB) -->
+            <TextView
+                android:id="@+id/contentBack"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Nội dung flashcard"
+                android:textSize="24sp"
+                android:textColor="#000" />
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <!--end main    -->
+
+    <!-- next and previous button   -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:padding="16dp">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Previous"
+            />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Next"
+            android:layout_marginStart="220dp"
+            />
+    </LinearLayout>
+    <!-- end next and previous button   -->
+
+    <!-- nav menu   -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        app:itemIconTint="@color/black"
+        app:itemTextColor="@color/black"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/bottom_nav_menu" />
+</LinearLayout>
