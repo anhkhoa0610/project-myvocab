@@ -1,12 +1,12 @@
 package com.example.project.ui.add_edit_word
 
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.project.R
+import com.example.project.data.local.WordDAO // Import DAO
 import com.example.project.data.model.Word
 
 class AddNewActivity : AppCompatActivity() {
@@ -17,9 +17,15 @@ class AddNewActivity : AppCompatActivity() {
     private lateinit var etPronunciation: EditText
     private lateinit var etPartOfSpeech: EditText
 
+    // Khai báo DAO
+    private lateinit var wordDAO: WordDAO
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_addnew_layout)
+
+        // Khởi tạo DAO
+        wordDAO = WordDAO(this)
 
         setControl()
         setEvent()
@@ -36,47 +42,40 @@ class AddNewActivity : AppCompatActivity() {
 
     private fun setEvent() {
         btnSave.setOnClickListener {
-            val word = etWord.text.toString().trim()
+            val wordText = etWord.text.toString().trim()
             val meaning = etMeaning.text.toString().trim()
             val pronunciation = etPronunciation.text.toString().trim()
             val partOfSpeech = etPartOfSpeech.text.toString().trim()
 
-            if (word.isEmpty()) {
-                etWord.setError("Thiếu dữ liệu từ!")
+            if (wordText.isEmpty() || meaning.isEmpty()) {
+                Toast.makeText(this, "Vui lòng nhập đủ từ và nghĩa!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            if (meaning.isEmpty()) {
-                etMeaning.setError("Thiếu dữ liệu nghĩa của từ!")
-                return@setOnClickListener
-            }
-
-            if (pronunciation.isEmpty()) {
-                etPronunciation.setError("Thiếu phát âm từ!")
-                return@setOnClickListener
-            }
-
-            if (partOfSpeech.isEmpty()) {
-                etPartOfSpeech.setError("Thiếu loại từ!")
-                return@setOnClickListener
-            }
-
+            // 1. Tạo đối tượng Word (ID mặc định là 0, SQLite tự sinh)
             val newWord = Word(
-                word,
-                meaning,
-                pronunciation,
-                partOfSpeech
+                id = 0,
+                word = wordText,
+                meaning = meaning,
+                pronunciation = pronunciation,
+                part_of_speech = partOfSpeech
             )
 
-            val resultIntent = Intent()
-            resultIntent.putExtra("new_word", newWord)
-            setResult(RESULT_OK, resultIntent)
-            Toast.makeText(this, "Đã thêm từ mới!", Toast.LENGTH_SHORT).show()
-            finish()
+            // 2. Gọi DAO để lưu vào Database
+            val result = wordDAO.addWord(newWord)
+
+            if (result > -1) {
+                Toast.makeText(this, "Đã thêm từ mới vào DB!", Toast.LENGTH_SHORT).show()
+                // Báo cho MainActivity biết là OK để nó load lại DB
+                setResult(RESULT_OK)
+                finish()
+            } else {
+                Toast.makeText(this, "Lỗi khi thêm từ!", Toast.LENGTH_SHORT).show()
+            }
         }
 
         btnCancel.setOnClickListener {
-            finish() // Đóng Activity
+            finish()
         }
     }
 }

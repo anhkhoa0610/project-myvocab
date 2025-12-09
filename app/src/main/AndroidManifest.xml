@@ -30,7 +30,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.main.FlashCardActivity"
+            android:name=".ui.flashcards.FlashCardActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -38,7 +38,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.main.StudySetupActivity" />
+        <activity android:name=".ui.flashcards.StudySetupActivity" />
     </application>
 
 </manifest>

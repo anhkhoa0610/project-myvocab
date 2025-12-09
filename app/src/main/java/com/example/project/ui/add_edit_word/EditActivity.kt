@@ -1,12 +1,12 @@
 package com.example.project.ui.add_edit_word
 
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.project.R
+import com.example.project.data.local.WordDAO // Import DAO
 import com.example.project.data.model.Word
 
 class EditActivity : AppCompatActivity() {
@@ -17,11 +17,14 @@ class EditActivity : AppCompatActivity() {
     private lateinit var etPronunciation: EditText
     private lateinit var etPartOfSpeech: EditText
 
-    private var position: Int = -1
+    private var currentId: Int = 0 // Biến để lưu ID của từ đang sửa
+    private lateinit var wordDAO: WordDAO
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_layout)
+
+        wordDAO = WordDAO(this)
 
         setControl()
         loadData()
@@ -38,10 +41,11 @@ class EditActivity : AppCompatActivity() {
     }
 
     private fun loadData() {
+        // Lấy object Word được truyền sang từ MainActivity
         val word = intent.getParcelableExtra<Word>("word")
-        position = intent.getIntExtra("position", -1)
 
         word?.let {
+            currentId = it.id // LƯU Ý QUAN TRỌNG: Phải lấy ID cũ
             etWord.setText(it.word)
             etMeaning.setText(it.meaning)
             etPronunciation.setText(it.pronunciation)
@@ -51,30 +55,35 @@ class EditActivity : AppCompatActivity() {
 
     private fun setEvent() {
         btnSave.setOnClickListener {
-            val word = etWord.text.toString().trim()
+            val wordText = etWord.text.toString().trim()
             val meaning = etMeaning.text.toString().trim()
             val pronunciation = etPronunciation.text.toString().trim()
             val partOfSpeech = etPartOfSpeech.text.toString().trim()
 
-            if (word.isEmpty()) {
-                etWord.setError("Thiếu dữ liệu từ!")
+            if (wordText.isEmpty() || meaning.isEmpty()) {
+                Toast.makeText(this, "Thiếu dữ liệu!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            if (meaning.isEmpty()) {
-                etMeaning.setError("Thiếu dữ liệu nghĩa của từ!")
-                return@setOnClickListener
+            // 1. Tạo object với ID cũ để Database biết dòng nào mà sửa
+            val updatedWord = Word(
+                id = currentId, // Bắt buộc phải có ID này
+                word = wordText,
+                meaning = meaning,
+                pronunciation = pronunciation,
+                part_of_speech = partOfSpeech
+            )
+
+            // 2. Gọi DAO Update
+            val result = wordDAO.updateWord(updatedWord)
+
+            if (result > 0) {
+                Toast.makeText(this, "Cập nhật thành công!", Toast.LENGTH_SHORT).show()
+                setResult(RESULT_OK) // Báo Main reload lại
+                finish()
+            } else {
+                Toast.makeText(this, "Lỗi cập nhật!", Toast.LENGTH_SHORT).show()
             }
-
-            val updatedWord = Word(word, meaning, pronunciation, partOfSpeech)
-
-            val resultIntent = Intent()
-            resultIntent.putExtra("updated_word", updatedWord)
-            resultIntent.putExtra("position", position)
-            setResult(RESULT_OK, resultIntent)
-
-            Toast.makeText(this, "Đã cập nhật từ!", Toast.LENGTH_SHORT).show()
-            finish()
         }
 
         btnCancel.setOnClickListener {

@@ -4,6 +4,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Word(
+    val id: Int = 0,
     val word: String,
     val meaning: String,
     val pronunciation: String,

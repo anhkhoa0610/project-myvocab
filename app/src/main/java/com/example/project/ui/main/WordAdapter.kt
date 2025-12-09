@@ -10,11 +10,15 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.example.project.R
+import com.example.project.data.local.WordDAO // Import DAO để xóa DB
 import com.example.project.data.model.Word
 import com.example.project.ui.add_edit_word.EditActivity
+import com.example.project.ui.flashcards.FlashCardActivity
+
+// import com.example.project.ui.study.FlashCardActivity // Bỏ comment dòng này nếu bạn để Flashcard trong gói study
 
 class WordAdapter(
-    private val activity: MainActivity,
+    private val activity: MainActivity, // Giữ nguyên MainActivity để gọi launcher
     private val words: MutableList<Word>
 ) : ArrayAdapter<Word>(activity, 0, words) {
 
@@ -32,40 +36,56 @@ class WordAdapter(
         val btnEdit = view.findViewById<ImageButton>(R.id.btnEdit)
         val btnDelete = view.findViewById<ImageButton>(R.id.btnDelete)
 
-        view.setOnClickListener {
-            // 1. Tạo Intent trỏ đến màn hình bạn muốn (Ví dụ: FlashCardActivity)
-            val intent = Intent(activity, FlashCardActivity::class.java)
-
-            intent.putParcelableArrayListExtra("list_word", ArrayList(words))
-            intent.putExtra("position", position) // Truyền thêm vị trí để biết đang chọn từ nào
-
-            // 3. Khởi chạy màn hình mới
-            activity.startActivity(intent)
-        }
-
         // Hiển thị dữ liệu
+        // Lấy chữ cái đầu, viết hoa. Nếu null thì hiện dấu ?
         tvFirstLetter.text = word.word.firstOrNull()?.uppercase() ?: "?"
         tvWord.text = word.word
         tvMeaning.text = word.meaning
         tvPronun.text = word.pronunciation
 
-        // Xử lý click nút Edit
-        btnEdit.setOnClickListener {
-            val intent = Intent(activity, EditActivity::class.java)
-            intent.putExtra("word", word)
+        // 1. Xử lý click vào item (Chuyển sang màn hình Flashcard)
+        view.setOnClickListener {
+            // Lưu ý: Kiểm tra kỹ xem FlashCardActivity đang nằm ở package nào
+            val intent = Intent(activity, FlashCardActivity::class.java)
+            intent.putParcelableArrayListExtra("list_word", ArrayList(words))
             intent.putExtra("position", position)
-            activity.editWordLauncher.launch(intent)
+            activity.startActivity(intent)
         }
 
-        // Xử lý click nút Delete
+        // 2. Xử lý click nút Edit (Sửa)
+        btnEdit.setOnClickListener {
+            val intent = Intent(context, EditActivity::class.java)
+            intent.putExtra("word", word)
+            intent.putExtra("position", position)
+
+            // --- SỬA DÒNG NÀY ---
+            // Kiểm tra và ép kiểu context về MainActivity để gọi editWordLauncher
+            if (activity is MainActivity) {
+                activity.editWordLauncher.launch(intent)
+            }
+        }
+
+        // 3. Xử lý click nút Delete (Xóa) - QUAN TRỌNG: Cập nhật xóa DB
         btnDelete.setOnClickListener {
             AlertDialog.Builder(activity)
                 .setTitle("Xóa từ")
                 .setMessage("Bạn có chắc muốn xóa từ \"${word.word}\"?")
                 .setPositiveButton("Xóa") { _, _ ->
-                    words.removeAt(position)
-                    notifyDataSetChanged()
-                    Toast.makeText(activity, "Đã xóa từ!", Toast.LENGTH_SHORT).show()
+
+                    // --- BẮT ĐẦU CODE MỚI ---
+                    val wordDAO = WordDAO(activity)
+                    val result = wordDAO.deleteWord(word.id) // Xóa trong Database
+
+                    if (result > 0) {
+                        // Nếu xóa DB thành công thì mới xóa trên List hiển thị
+                        words.removeAt(position)
+                        notifyDataSetChanged() // Cập nhật lại giao diện
+                        Toast.makeText(activity, "Đã xóa thành công!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(activity, "Lỗi: Không thể xóa trong Database!", Toast.LENGTH_SHORT).show()
+                    }
+                    // --- KẾT THÚC CODE MỚI ---
+
                 }
                 .setNegativeButton("Hủy", null)
                 .show()
