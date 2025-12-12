@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="?attr/selectableItemBackground">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <!-- Word -->
+            <TextView
+                android:id="@+id/tvWord"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hello"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/black" />
+
+            <!-- Pronunciation + Level + Part of Speech -->
+            <TextView
+                android:id="@+id/tvPronunciation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="/həˈloʊ/ • Interjection • A1"
+                android:textSize="12sp"
+                android:textColor="#757575"
+                android:layout_marginTop="4dp" />
+
+            <!-- Meaning -->
+            <TextView
+                android:id="@+id/tvMeaning"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Xin chào"
+                android:textSize="16sp"
+                android:textColor="#424242"
+                android:layout_marginTop="8dp" />
+
+            <!-- Example -->
+            <TextView
+                android:id="@+id/tvExample"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Example: Hello, how are you?"
+                android:textSize="14sp"
+                android:textColor="#757575"
+                android:textStyle="italic"
+                android:layout_marginTop="4dp" />
+
+        </LinearLayout>
+
+        <!-- Favorite Icon -->
+        <ImageView
+            android:id="@+id/ivFavorite"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@android:drawable/star_big_off"
+            android:layout_gravity="center_vertical"
+            android:padding="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless" />
+
+    </LinearLayout>
+
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#EEEEEE"
+        android:layout_marginTop="12dp" />
+
+</LinearLayout>
