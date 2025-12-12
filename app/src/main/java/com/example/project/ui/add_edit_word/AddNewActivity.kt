@@ -4,12 +4,12 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.example.project.R
-import com.example.project.data.local.WordDAO // Import DAO
+import com.example.project.data.local.WordDAO
 import com.example.project.data.model.Word
+import com.example.project.ui.base.BaseActivity
 
-class AddNewActivity : AppCompatActivity() {
+class AddNewActivity : BaseActivity() {
     private lateinit var btnSave: Button
     private lateinit var btnCancel: Button
     private lateinit var etWord: EditText
@@ -23,6 +23,9 @@ class AddNewActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_addnew_layout)
+
+        // Set title cho header
+        setHeaderTitle("Add New Word")
 
         // Khởi tạo DAO
         wordDAO = WordDAO(this)
@@ -66,7 +69,7 @@ class AddNewActivity : AppCompatActivity() {
 
             if (result > -1) {
                 Toast.makeText(this, "Đã thêm từ mới vào DB!", Toast.LENGTH_SHORT).show()
-                // Báo cho MainActivity biết là OK để nó load lại DB
+                // Báo cho MyVocabActivity biết là OK để nó load lại DB
                 setResult(RESULT_OK)
                 finish()
             } else {

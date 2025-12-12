@@ -14,7 +14,7 @@ import com.example.project.ui.add_edit_word.AddNewActivity
 import com.example.project.ui.add_edit_word.EditActivity
 import com.example.project.ui.base.BaseActivity
 
-class MainActivity : BaseActivity() {
+class MyVocabActivity : BaseActivity() {
 
     private var wordList = ArrayList<Word>()
     private lateinit var adapter: WordAdapter
@@ -41,7 +41,7 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_my_vocab)
 
         setHeaderTitle("My Vocab")
         setupAddButton()

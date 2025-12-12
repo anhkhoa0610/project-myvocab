@@ -4,12 +4,12 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.example.project.R
-import com.example.project.data.local.WordDAO // Import DAO
+import com.example.project.data.local.WordDAO
 import com.example.project.data.model.Word
+import com.example.project.ui.base.BaseActivity
 
-class EditActivity : AppCompatActivity() {
+class EditActivity : BaseActivity() {
     private lateinit var btnSave: Button
     private lateinit var btnCancel: Button
     private lateinit var etWord: EditText
@@ -23,6 +23,9 @@ class EditActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_layout)
+
+        // Set title cho header
+        setHeaderTitle("Edit Word")
 
         wordDAO = WordDAO(this)
 
@@ -41,7 +44,7 @@ class EditActivity : AppCompatActivity() {
     }
 
     private fun loadData() {
-        // Lấy object Word được truyền sang từ MainActivity
+        // Lấy object Word được truyền sang từ MyVocabActivity
         val word = intent.getParcelableExtra<Word>("word")
 
         word?.let {

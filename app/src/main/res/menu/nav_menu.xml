@@ -1,19 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/nav_home"
-        android:icon="@android:drawable/ic_menu_compass"
-        android:title="Home" />
-    <item
-        android:id="@+id/nav_flashcard"
-        android:icon="@drawable/ic_flashcard"
-        android:title="Flashcard" />
-    <item
-        android:id="@+id/nav_setting"
-        android:icon="@android:drawable/ic_menu_preferences"
-        android:title="Setting" />
-    <item
-        android:id="@+id/nav_exit"
-        android:icon="@android:drawable/ic_lock_power_off"
-        android:title="Exit" />
+    <!-- Main Navigation Group -->
+    <group android:id="@+id/group_main">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@android:drawable/ic_menu_compass"
+            android:title="Home" />
+        <item
+            android:id="@+id/nav_my_vocab"
+            android:icon="@drawable/ic_vocab"
+            android:title="My Vocabularies" />
+        <item
+            android:id="@+id/nav_flashcard"
+            android:icon="@drawable/ic_flashcard"
+            android:title="Flashcard" />
+    </group>
+
+    <!-- Settings & Actions Group -->
+    <group android:id="@+id/group_settings">
+        <item
+            android:id="@+id/nav_setting"
+            android:icon="@android:drawable/ic_menu_preferences"
+            android:title="Setting" />
+        <item
+            android:id="@+id/nav_exit"
+            android:icon="@android:drawable/ic_lock_power_off"
+            android:title="Exit" />
+    </group>
 </menu>

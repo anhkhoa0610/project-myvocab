@@ -12,16 +12,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyVocab">
         <activity
-            android:name=".ui.main.SelectStudyActivity"
-            android:exported="false" />
-        <activity
             android:name=".ui.add_edit_word.EditActivity"
             android:exported="false" />
         <activity
             android:name=".ui.add_edit_word.AddNewActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.main.MainActivity"
+            android:name=".ui.main.MyVocabActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
