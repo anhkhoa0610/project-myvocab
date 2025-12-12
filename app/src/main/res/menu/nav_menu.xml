@@ -5,6 +5,10 @@
         android:icon="@android:drawable/ic_menu_compass"
         android:title="Home" />
     <item
+        android:id="@+id/nav_my_vocab"
+        android:icon="@drawable/ic_vocab"
+        android:title="My Vocabularies" />
+    <item
         android:id="@+id/nav_flashcard"
         android:icon="@drawable/ic_flashcard"
         android:title="Flashcard" />

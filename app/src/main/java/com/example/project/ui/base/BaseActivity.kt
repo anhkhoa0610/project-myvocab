@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.example.project.R
-import com.example.project.ui.main.MainActivity
+import com.example.project.ui.main.MyVocabActivity
 import com.example.project.ui.flashcards.StudySetupActivity
 import com.google.android.material.navigation.NavigationView
 
@@ -53,10 +53,21 @@ abstract class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationIt
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
 
-            // Trang Home
+            // Home (TODO: Implement Home Activity)
             R.id.nav_home -> {
-                if (this !is MainActivity) {
-                    val intent = Intent(this, MainActivity::class.java)
+                // TODO: Chuyển đến HomeActivity khi đã tạo
+                // if (this !is HomeActivity) {
+                //     val intent = Intent(this, HomeActivity::class.java)
+                //     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                //     startActivity(intent)
+                //     finish()
+                // }
+            }
+
+            // My Vocabularies
+            R.id.nav_my_vocab -> {
+                if (this !is MyVocabActivity) {
+                    val intent = Intent(this, MyVocabActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
                     startActivity(intent)
                     finish()

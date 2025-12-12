@@ -13,7 +13,7 @@ import androidx.appcompat.app.AlertDialog
 import com.example.project.R
 import com.example.project.data.model.Word
 import com.example.project.ui.base.BaseActivity
-import com.example.project.ui.main.MainActivity
+import com.example.project.ui.main.MyVocabActivity
 
 class FlashCardActivity : BaseActivity() {
 
@@ -94,7 +94,7 @@ class FlashCardActivity : BaseActivity() {
             .setTitle("Hoàn thành 🎉")
             .setMessage("Bạn đã học hết tất cả từ trong bài này!")
             .setPositiveButton("Về trang chủ") { _, _ ->
-                val intent = Intent(this, MainActivity::class.java)
+                val intent = Intent(this, MyVocabActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
                 startActivity(intent)
                 finish()

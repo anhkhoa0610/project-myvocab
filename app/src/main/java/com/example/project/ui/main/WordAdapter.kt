@@ -18,7 +18,7 @@ import com.example.project.ui.flashcards.FlashCardActivity
 // import com.example.project.ui.study.FlashCardActivity // Bỏ comment dòng này nếu bạn để Flashcard trong gói study
 
 class WordAdapter(
-    private val activity: MainActivity, // Giữ nguyên MainActivity để gọi launcher
+    private val activity: MyVocabActivity, // Activity để gọi launcher
     private val words: MutableList<Word>
 ) : ArrayAdapter<Word>(activity, 0, words) {
 
@@ -59,8 +59,8 @@ class WordAdapter(
             intent.putExtra("position", position)
 
             // --- SỬA DÒNG NÀY ---
-            // Kiểm tra và ép kiểu context về MainActivity để gọi editWordLauncher
-            if (activity is MainActivity) {
+            // Kiểm tra và ép kiểu context về MyVocabActivity để gọi editWordLauncher
+            if (activity is MyVocabActivity) {
                 activity.editWordLauncher.launch(intent)
             }
         }

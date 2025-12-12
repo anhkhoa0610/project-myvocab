@@ -6,4 +6,10 @@
     </style>
 
     <style name="Theme.MyVocab" parent="Base.Theme.MyVocab" />
+
+    <!-- Navigation Menu Text Appearance -->
+    <style name="NavMenuTextAppearance" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">22sp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
 </resources>
