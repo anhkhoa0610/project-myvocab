@@ -12,9 +12,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyVocab">
         <activity
-            android:name=".ui.main.SelectStudyActivity"
-            android:exported="false" />
-        <activity
             android:name=".ui.add_edit_word.EditActivity"
             android:exported="false" />
         <activity

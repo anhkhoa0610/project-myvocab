@@ -73,6 +73,13 @@
         android:background="#FFFFFF"
         app:itemTextAppearance="@style/NavMenuTextAppearance"
         app:itemVerticalPadding="12dp"
+        app:itemBackground="@drawable/nav_item_background"
+        app:itemRippleColor="#E0E0E0"
+        app:itemShapeFillColor="@android:color/transparent"
+        app:itemShapeInsetStart="8dp"
+        app:itemShapeInsetEnd="8dp"
+        app:dividerInsetStart="16dp"
+        app:dividerInsetEnd="16dp"
         app:menu="@menu/nav_menu" />
 
 </androidx.drawerlayout.widget.DrawerLayout>
