@@ -48,20 +48,46 @@ abstract class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationIt
         }
 
         navView.setNavigationItemSelectedListener(this)
+        
+        // Bottom Navigation
+        val bottomNav = findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottom_nav_base)
+        bottomNav?.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_home -> {
+                    if (this !is com.example.project.ui.auth.DashboardActivity) {
+                        val intent = Intent(this, com.example.project.ui.auth.DashboardActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                        startActivity(intent)
+                        finish()
+                    }
+                    true
+                }
+                R.id.nav_favorite -> {
+                    // TODO: Setting
+                    true
+                }
+                R.id.nav_profile -> {
+                    // Exit
+                    finishAffinity()
+                    true
+                }
+                else -> false
+            }
+        }
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
 
-            // Home (TODO: Implement Home Activity)
+
+            // Home → Dashboard
             R.id.nav_home -> {
-                // TODO: Chuyển đến HomeActivity khi đã tạo
-                // if (this !is HomeActivity) {
-                //     val intent = Intent(this, HomeActivity::class.java)
-                //     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-                //     startActivity(intent)
-                //     finish()
-                // }
+                if (this !is com.example.project.ui.auth.DashboardActivity) {
+                    val intent = Intent(this, com.example.project.ui.auth.DashboardActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(intent)
+                    finish()
+                }
             }
 
             // My Vocabularies
@@ -88,6 +114,14 @@ abstract class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationIt
                     val intent = Intent(this, com.example.project.ui.dictionary.DictionaryActivity::class.java)
                     startActivity(intent)
                 }
+            }
+
+            // Logout
+            R.id.nav_logout -> {
+                val intent = Intent(this, com.example.project.ui.auth.LoginActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                finish()
             }
 
             // Thoát app
