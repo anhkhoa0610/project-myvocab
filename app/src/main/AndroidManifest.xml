@@ -17,15 +17,27 @@
         <activity
             android:name=".ui.add_edit_word.AddNewActivity"
             android:exported="false" />
+        
+        <!-- Auth Activities -->
         <activity
-            android:name=".ui.main.MyVocabActivity"
+            android:name=".ui.auth.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.auth.RegisterActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.DashboardActivity"
+            android:exported="false" />
+        
+        <!-- Main Activities -->
+        <activity
+            android:name=".ui.main.MyVocabActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.flashcards.FlashCardActivity"
             android:exported="true">
