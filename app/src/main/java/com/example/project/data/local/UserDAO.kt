@@ -6,12 +6,12 @@ import com.example.project.data.model.User
 import java.text.SimpleDateFormat
 import java.util.*
 
-class UserDAO(context: Context) {
+class UserDAO(private val context: Context) {
     private val dbHelper = DatabaseHelper(context)
 
     // Register user mới
     fun register(email: String, password: String, name: String, role: String = "user"): Long {
-        // Check email đã tồn tại chưa (KHÔNG close db ở đây)
+        // Check email đã tồn tại chưa
         if (isEmailExists(email)) {
             return -1  // Email đã tồn tại
         }
@@ -28,7 +28,6 @@ class UserDAO(context: Context) {
         }
         
         val result = db.insert(DatabaseHelper.TABLE_USERS, null, values)
-        // KHÔNG close db ở đây, để DatabaseHelper quản lý
         return result
     }
 
@@ -52,7 +51,6 @@ class UserDAO(context: Context) {
             )
         }
         cursor.close()
-        // KHÔNG close db
         return user
     }
 
@@ -66,7 +64,6 @@ class UserDAO(context: Context) {
         cursor.moveToFirst()
         val count = cursor.getInt(0)
         cursor.close()
-        // KHÔNG close db
         return count > 0
     }
 
@@ -90,20 +87,27 @@ class UserDAO(context: Context) {
             )
         }
         cursor.close()
-        // KHÔNG close db
         return user
     }
 
     // Seed default accounts
     fun seedDefaultAccounts() {
+        val userStatsDAO = UserStatsDAO(context)
+        
         // User account
         if (!isEmailExists("user@test.com")) {
-            register("user@test.com", "123456", "Test User", "user")
+            val userId = register("user@test.com", "123456", "Test User", "user")
+            if (userId > 0) {
+                userStatsDAO.createStats(userId.toInt())
+            }
         }
         
         // Admin account
         if (!isEmailExists("admin@test.com")) {
-            register("admin@test.com", "123456", "Admin User", "admin")
+            val userId = register("admin@test.com", "123456", "Admin User", "admin")
+            if (userId > 0) {
+                userStatsDAO.createStats(userId.toInt())
+            }
         }
     }
 }
