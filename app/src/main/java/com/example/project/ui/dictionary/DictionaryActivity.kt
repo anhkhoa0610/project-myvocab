@@ -56,11 +56,7 @@ class DictionaryActivity : BaseActivity() {
         dictionaryDAO = DictionaryWordDAO(this)
         categoryDAO = CategoryDAO(this)
         
-        // Seed data nếu chưa có
-        categoryDAO.seedDefaultCategories()
-        dictionaryDAO.seedSampleWords()
-        
-        // Load all words
+        // Load all words (data đã được seed ở LoginActivity)
         loadWords()
     }
 

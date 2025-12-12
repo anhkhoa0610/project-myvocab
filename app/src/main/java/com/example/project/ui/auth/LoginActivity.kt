@@ -37,8 +37,25 @@ class LoginActivity : AppCompatActivity() {
     private fun initData() {
         userDAO = UserDAO(this)
         
-        // Seed default accounts
+        // Seed all data (chạy 1 lần khi app khởi động)
+        seedAllData()
+    }
+    
+    private fun seedAllData() {
+        // 1. Seed levels (required first)
+        val levelDAO = com.example.project.data.local.LevelDAO(this)
+        levelDAO.seedLevels()
+        
+        // 2. Seed categories
+        val categoryDAO = com.example.project.data.local.CategoryDAO(this)
+        categoryDAO.seedDefaultCategories()
+        
+        // 3. Seed users
         userDAO.seedDefaultAccounts()
+        
+        // 4. Seed dictionary words (requires levels & categories)
+        val dictionaryDAO = com.example.project.data.local.DictionaryWordDAO(this)
+        dictionaryDAO.seedSampleWords()
     }
 
     private fun setupListeners() {
@@ -96,6 +113,9 @@ class LoginActivity : AppCompatActivity() {
                 "Welcome: ${user.name}!"
             }
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+            
+            // Save user session
+            com.example.project.utils.UserSession.saveUser(this, user.id, user.email, user.name, user.role)
             
             // Navigate to Dashboard
             val intent = Intent(this, DashboardActivity::class.java)

@@ -63,9 +63,10 @@ class DictionaryAdapter(
                     if (isNotEmpty()) append(" • ")
                     append(word.part_of_speech)
                 }
-                if (word.level.isNotEmpty()) {
+                val levelName = word.getLevelName()
+                if (levelName.isNotEmpty()) {
                     if (isNotEmpty()) append(" • ")
-                    append(word.level)
+                    append(levelName)
                 }
             }
             tvPronunciation.text = details

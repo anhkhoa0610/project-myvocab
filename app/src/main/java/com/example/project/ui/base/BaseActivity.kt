@@ -118,6 +118,7 @@ abstract class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationIt
 
             // Logout
             R.id.nav_logout -> {
+                com.example.project.utils.UserSession.clearSession(this)
                 val intent = Intent(this, com.example.project.ui.auth.LoginActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)

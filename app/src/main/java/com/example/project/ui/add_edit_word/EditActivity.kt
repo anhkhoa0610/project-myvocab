@@ -17,7 +17,8 @@ class EditActivity : BaseActivity() {
     private lateinit var etPronunciation: EditText
     private lateinit var etPartOfSpeech: EditText
 
-    private var currentId: Int = 0 // Biến để lưu ID của từ đang sửa
+    private var currentId: Int = 0
+    private var currentUserId: Int = 0 // Biến để lưu ID của từ đang sửa
     private lateinit var wordDAO: WordDAO
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,7 +49,8 @@ class EditActivity : BaseActivity() {
         val word = intent.getParcelableExtra<Word>("word")
 
         word?.let {
-            currentId = it.id // LƯU Ý QUAN TRỌNG: Phải lấy ID cũ
+            currentId = it.id
+            currentUserId = it.user_id
             etWord.setText(it.word)
             etMeaning.setText(it.meaning)
             etPronunciation.setText(it.pronunciation)
@@ -70,7 +72,8 @@ class EditActivity : BaseActivity() {
 
             // 1. Tạo object với ID cũ để Database biết dòng nào mà sửa
             val updatedWord = Word(
-                id = currentId, // Bắt buộc phải có ID này
+                id = currentId,
+                user_id = currentUserId,
                 word = wordText,
                 meaning = meaning,
                 pronunciation = pronunciation,
