@@ -36,6 +36,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.flashcards.StudySetupActivity" />
+        <activity
+            android:name=".ui.dictionary.DictionaryActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

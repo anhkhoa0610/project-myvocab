@@ -82,6 +82,14 @@ abstract class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationIt
                 }
             }
 
+            // Dictionary
+            R.id.nav_dictionary -> {
+                if (this !is com.example.project.ui.dictionary.DictionaryActivity) {
+                    val intent = Intent(this, com.example.project.ui.dictionary.DictionaryActivity::class.java)
+                    startActivity(intent)
+                }
+            }
+
             // Thoát app
             R.id.nav_exit -> {
                 finishAffinity()
