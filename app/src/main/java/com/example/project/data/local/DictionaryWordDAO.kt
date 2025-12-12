@@ -232,4 +232,57 @@ class DictionaryWordDAO(context: Context) {
             addWord(DictionaryWord(0, "Internet", "Mạng internet", "/ˈɪntərnet/", "Noun", "A2", 5, "I can't connect to the internet.", false))
         }
     }
+    // --- THỐNG KÊ CƠ BẢN ---
+
+    /** Thống kê 1: Số từ đã thêm (Total Words Added) */
+    fun getTotalWordsAdded(): Int {
+        val db = dbHelper.readableDatabase
+        val cursor = db.rawQuery("SELECT COUNT(*) FROM ${DatabaseHelper.TABLE_DICTIONARY}", null)
+        var count = 0
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0)
+        }
+        cursor.close()
+        // Dữ liệu giả định: Trả về một giá trị giả lập nếu bạn muốn
+        // return 150
+        return count
+    }
+
+    /** Thống kê 2: Số từ đã học (Total Words Mastered)
+     * Giả định level >= 5 là đã học/thành thạo.
+     */
+    fun getTotalWordsMastered(masteryLevel: Int = 5): Int {
+        val db = dbHelper.readableDatabase
+        val selection = "SELECT COUNT(*) FROM ${DatabaseHelper.TABLE_DICTIONARY} WHERE ${DatabaseHelper.COLUMN_DICT_LEVEL} >= ?"
+        val selectionArgs = arrayOf(masteryLevel.toString())
+        val cursor = db.rawQuery(selection, selectionArgs)
+        var count = 0
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0)
+        }
+        cursor.close()
+        // Dữ liệu giả định: Trả về một giá trị giả lập nếu bạn muốn
+        // return 65
+        return count
+    }
+
+    fun getWordCountByLevel(): Map<String, Int> {
+        val levelCounts = mutableMapOf<String, Int>()
+        val db = dbHelper.readableDatabase
+
+        // Truy vấn GROUP BY cột level
+        val query = "SELECT ${DatabaseHelper.COLUMN_DICT_LEVEL}, COUNT(*) FROM ${DatabaseHelper.TABLE_DICTIONARY} GROUP BY ${DatabaseHelper.COLUMN_DICT_LEVEL}"
+        val cursor = db.rawQuery(query, null)
+
+        if (cursor.moveToFirst()) {
+            do {
+                val level = cursor.getString(0) // Cột level
+                val count = cursor.getInt(1)    // Cột COUNT(*)
+                levelCounts[level] = count
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        // db.close() // Nếu bạn không đóng DB ở cuối hàm DAO, thì không cần dòng này
+        return levelCounts
+    }
 }

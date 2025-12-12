@@ -39,6 +39,10 @@
         <activity
             android:name=".ui.dictionary.DictionaryActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.static_activity.StatisticsActivity"
+            android:exported="false"
+            android:label="Thống Kê"/>
     </application>
 
 </manifest>

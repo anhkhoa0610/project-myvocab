@@ -51,4 +51,6 @@ dependencies {
 //    implementation("androidx.room:room-runtime:$room_version")
 //    kapt("androidx.room:room-compiler:$room_version")
 //    implementation("androidx.room:room-ktx:$room_version")
+    // barchart
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }

@@ -89,6 +89,12 @@ abstract class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationIt
                     startActivity(intent)
                 }
             }
+            R.id.nav_static -> {
+                if (this !is com.example.project.ui.static_activity.StatisticsActivity) {
+                    val intent = Intent(this, com.example.project.ui.static_activity.StatisticsActivity::class.java)
+                    startActivity(intent)
+                }
+            }
 
             // Thoát app
             R.id.nav_exit -> {

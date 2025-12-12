@@ -18,6 +18,11 @@
             android:id="@+id/nav_dictionary"
             android:icon="@android:drawable/ic_menu_search"
             android:title="Dictionary" />
+        <item
+            android:id="@+id/nav_static"
+            android:icon="@android:drawable/ic_menu_search"
+            android:title="Thống Kê" />
+
     </group>
 
     <!-- Settings & Actions Group -->
