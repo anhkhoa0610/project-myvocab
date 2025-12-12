@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.project.R
 import com.example.project.data.local.UserDAO
+import com.example.project.data.local.UserStatsDAO
 import com.google.android.material.textfield.TextInputEditText
 
 class RegisterActivity : AppCompatActivity() {
@@ -125,13 +126,18 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun register(name: String, email: String, password: String) {
-        val result = userDAO.register(email, password, name, "user")
+        // 1. Register user
+        val userId = userDAO.register(email, password, name, "user")
         
-        if (result > 0) {
-            // Register thành công
+        if (userId > 0) {
+            // 2. Create user_stats for new user
+            val userStatsDAO = UserStatsDAO(this)
+            userStatsDAO.createStats(userId.toInt())
+            
+            // 3. Success message
             Toast.makeText(this, "Registration successful! Please login.", Toast.LENGTH_SHORT).show()
             
-            // Quay về LoginActivity
+            // 4. Quay về LoginActivity
             finish()
         } else {
             // Register thất bại
