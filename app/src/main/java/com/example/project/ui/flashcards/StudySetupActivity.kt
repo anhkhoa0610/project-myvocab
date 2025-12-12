@@ -38,7 +38,8 @@ class StudySetupActivity : BaseActivity() {
     }
 
     private fun loadDataFromDB() {
-        allWords = wordDAO.getAllWords()
+        val userId = com.example.project.utils.UserSession.getUserId(this)
+        allWords = wordDAO.getWordsByUserId(userId)
 
         if (allWords.isEmpty()) {
             Toast.makeText(this, "Chưa có từ để học!", Toast.LENGTH_SHORT).show()

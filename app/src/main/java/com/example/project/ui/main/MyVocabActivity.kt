@@ -53,42 +53,11 @@ class MyVocabActivity : BaseActivity() {
     }
 
     private fun loadDataFromDB() {
-        wordList = wordDAO.getAllWords()
-
-        if (wordList.isEmpty()) {
-            createSampleData()
-            wordList = wordDAO.getAllWords()
-        }
+        val userId = com.example.project.utils.UserSession.getUserId(this)
+        wordList = wordDAO.getWordsByUserId(userId)
 
         adapter = WordAdapter(this, wordList)
         listView.adapter = adapter
-    }
-
-    private fun createSampleData() {
-        wordDAO.addWord(
-            Word(
-                word = "Hello",
-                meaning = "Xin chào",
-                pronunciation = "/həˈləʊ/",
-                part_of_speech = "Verb"
-            )
-        )
-        wordDAO.addWord(
-            Word(
-                word = "Cat",
-                meaning = "Con mèo",
-                pronunciation = "/kæt/",
-                part_of_speech = "Noun"
-            )
-        )
-        wordDAO.addWord(
-            Word(
-                word = "Dog",
-                meaning = "Con chó",
-                pronunciation = "/dɒɡ/",
-                part_of_speech = "Noun"
-            )
-        )
     }
 
     private fun setupAddButton() {

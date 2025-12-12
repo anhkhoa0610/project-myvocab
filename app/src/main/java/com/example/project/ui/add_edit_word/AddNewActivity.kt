@@ -56,8 +56,10 @@ class AddNewActivity : BaseActivity() {
             }
 
             // 1. Tạo đối tượng Word (ID mặc định là 0, SQLite tự sinh)
+            val userId = com.example.project.utils.UserSession.getUserId(this)
             val newWord = Word(
                 id = 0,
+                user_id = userId,
                 word = wordText,
                 meaning = meaning,
                 pronunciation = pronunciation,
