@@ -86,4 +86,37 @@ class CategoryDAO(context: Context) {
             addCategory(Category(0, "Food", "Từ vựng ẩm thực", "ic_food", "#FF5722"))
         }
     }
+
+    // Cập nhật category
+    fun updateCategory(category: Category): Int {
+        val db = dbHelper.writableDatabase
+        val values = ContentValues().apply {
+            put(DatabaseHelper.COLUMN_CAT_NAME, category.name)
+            put(DatabaseHelper.COLUMN_CAT_DESCRIPTION, category.description)
+            put(DatabaseHelper.COLUMN_CAT_ICON, category.icon)
+            put(DatabaseHelper.COLUMN_CAT_COLOR, category.color)
+        }
+
+        // Trả về số dòng bị ảnh hưởng (thường là 1 nếu thành công)
+        val result = db.update(
+            DatabaseHelper.TABLE_CATEGORIES,
+            values,
+            "${DatabaseHelper.COLUMN_CAT_ID} = ?",
+            arrayOf(category.id.toString())
+        )
+        db.close()
+        return result
+    }
+
+    // Xóa category theo ID
+    fun deleteCategory(id: Int): Int {
+        val db = dbHelper.writableDatabase
+        val result = db.delete(
+            DatabaseHelper.TABLE_CATEGORIES,
+            "${DatabaseHelper.COLUMN_CAT_ID} = ?",
+            arrayOf(id.toString())
+        )
+        db.close()
+        return result
+    }
 }

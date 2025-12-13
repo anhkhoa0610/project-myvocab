@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/white"
-    tools:context=".ui.admin.AddEditCategoryActivity">
+    tools:context=".ui.admin.AddCategoryActivity">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -20,12 +20,12 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/tvScreenTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="New Category"
+                android:text="Create New Category"
                 android:textSize="22sp"
                 android:textStyle="bold"
+                android:textColor="@color/black"
                 android:layout_marginBottom="24dp" />
 
             <TextView
@@ -39,9 +39,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
-                android:background="@drawable/edit_text_background"
                 android:padding="12dp"
-                android:hint="e.g. Travel" />
+                android:hint="e.g. Technology"
+                android:backgroundTint="@color/black"
+                android:inputType="textCapWords"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -54,116 +55,42 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
-                android:background="@drawable/edit_text_background"
+                android:backgroundTint="@color/black"
                 android:padding="12dp"
-                android:hint="Short description" />
+                android:hint="Short description..." />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Pick a Color"
+                android:text="Color Code (Hex)"
                 android:textStyle="bold"
                 android:layout_marginBottom="8dp"/>
-
-            <HorizontalScrollView
+            <EditText
+                android:id="@+id/etCategoryColor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:scrollbars="none"
-                android:layout_marginBottom="20dp">
-
-                <RadioGroup
-                    android:id="@+id/rgColors"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <RadioButton
-                        android:id="@+id/rbColorRed"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:background="@drawable/selector_color_red"
-                        android:button="@null"
-                        android:layout_marginEnd="12dp"
-                        android:checked="true"/>
-
-                    <RadioButton
-                        android:id="@+id/rbColorBlue"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:background="@drawable/selector_color_blue"
-                        android:button="@null"
-                        android:layout_marginEnd="12dp"/>
-
-                    <RadioButton
-                        android:id="@+id/rbColorGreen"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:background="@drawable/selector_color_green"
-                        android:button="@null"
-                        android:layout_marginEnd="12dp"/>
-
-                    <RadioButton
-                        android:id="@+id/rbColorYellow"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:background="@drawable/selector_color_yellow"
-                        android:button="@null"
-                        android:layout_marginEnd="12dp"/>
-
-                </RadioGroup>
-            </HorizontalScrollView>
+                android:layout_marginBottom="20dp"
+                android:backgroundTint="@color/black"
+                android:padding="12dp"
+                android:hint="#000000"
+                android:maxLength="7"
+                android:inputType="textNoSuggestions"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Pick an Icon"
+                android:text="Icon Name (Drawable)"
                 android:textStyle="bold"
                 android:layout_marginBottom="8dp"/>
-
-            <HorizontalScrollView
+            <EditText
+                android:id="@+id/etCategoryIcon"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:scrollbars="none"
-                android:layout_marginBottom="30dp">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:id="@+id/iconOption1"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:src="@drawable/ic_folder"
-                        android:background="@drawable/bg_icon_selection"
-                        android:padding="10dp"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:layout_marginEnd="16dp"/>
-
-                    <ImageView
-                        android:id="@+id/iconOption2"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:src="@drawable/ic_book"
-                        android:background="@drawable/bg_icon_selection"
-                        android:padding="10dp"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:layout_marginEnd="16dp"/>
-
-                    <ImageView
-                        android:id="@+id/iconOption3"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:src="@drawable/ic_star"
-                        android:background="@drawable/bg_icon_selection"
-                        android:padding="10dp"
-                        android:clickable="true"
-                        android:focusable="true" />
-                </LinearLayout>
-            </HorizontalScrollView>
+                android:layout_marginBottom="30dp"
+                android:backgroundTint="@color/black"
+                android:padding="12dp"
+                android:hint="e.g. ic_folder"
+                android:inputType="textNoSuggestions"/>
 
         </LinearLayout>
     </ScrollView>
@@ -174,7 +101,8 @@
         android:padding="16dp"
         android:gravity="center"
         android:orientation="horizontal"
-        android:background="#FAFAFA">
+        android:background="#FAFAFA"
+        android:elevation="4dp">
 
         <Button
             android:id="@+id/btnCancel"
@@ -188,11 +116,12 @@
             app:cornerRadius="8dp"/>
 
         <Button
-            android:id="@+id/btnSave"
+            android:id="@+id/btnAdd"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
-            android:text="Save Category"
+            android:text="Create"
+            android:textStyle="bold"
             android:textColor="@color/white"
             android:backgroundTint="@color/black"
             app:cornerRadius="8dp"/>

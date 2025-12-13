@@ -43,8 +43,8 @@ class AdminDashboardActivity : BaseActivity() {
         }
 
         cardManageCategories.setOnClickListener {
-            // TODO: Navigate to Manage Categories Activity
-            Toast.makeText(this, "Quản lý danh mục - Coming soon", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, ManageCategoryActivity::class.java)
+            startActivity(intent)
         }
 
         cardManageLevels.setOnClickListener {
