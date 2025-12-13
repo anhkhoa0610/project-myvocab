@@ -133,4 +133,64 @@ class WordDAO(context: Context) {
         db.close()
         return result
     }
+
+    fun getWordById(id: Int): Word? {
+        val db = dbHelper.readableDatabase
+        var word: Word? = null
+
+        val projection = arrayOf(
+            DatabaseHelper.COLUMN_WORD_ID,
+            DatabaseHelper.COLUMN_WORD_USER_ID,
+            DatabaseHelper.COLUMN_WORD_WORD,
+            DatabaseHelper.COLUMN_WORD_MEANING,
+            DatabaseHelper.COLUMN_WORD_PRONUNCIATION,
+            DatabaseHelper.COLUMN_WORD_PART_OF_SPEECH
+        )
+
+        val selection = "${DatabaseHelper.COLUMN_WORD_ID} = ?"
+        val selectionArgs = arrayOf(id.toString())
+
+        val cursor: Cursor? = db.query(
+            DatabaseHelper.TABLE_WORDS,
+            projection,
+            selection,
+            selectionArgs,
+            null,
+            null,
+            null
+        )
+
+        cursor?.use {
+            if (it.moveToFirst()) {
+                val idColumnIndex = it.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_ID)
+                val userIdColumnIndex = it.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_USER_ID)
+                val wordColumnIndex = it.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_WORD)
+                val meaningColumnIndex = it.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_MEANING)
+                val pronunciationColumnIndex = it.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_PRONUNCIATION)
+                val partOfSpeechColumnIndex = it.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_PART_OF_SPEECH)
+
+                val wordId = it.getInt(idColumnIndex)
+                val userId = it.getInt(userIdColumnIndex)
+                val wordText = it.getString(wordColumnIndex)
+                val meaning = it.getString(meaningColumnIndex)
+                val pronunciation = it.getStringOrNull(pronunciationColumnIndex) // Vẫn giữ để xử lý null an toàn
+                val partOfSpeech = it.getStringOrNull(partOfSpeechColumnIndex)   // Vẫn giữ để xử lý null an toàn
+
+                word = Word(
+                    id = wordId,
+                    user_id = userId,
+                    word = wordText,
+                    meaning = meaning,
+                    pronunciation = pronunciation,
+                    part_of_speech = partOfSpeech
+                )
+            }
+        }
+        db.close()
+        return word
+    }
+
+    private fun Cursor.getStringOrNull(columnIndex: Int): String? {
+        return if (isNull(columnIndex)) null else getString(columnIndex)
+    }
 }

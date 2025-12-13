@@ -13,7 +13,7 @@ import com.example.project.R
 import com.example.project.data.local.WordDAO // Import DAO để xóa DB
 import com.example.project.data.model.Word
 import com.example.project.ui.add_edit_word.EditActivity
-import com.example.project.ui.flashcards.FlashCardActivity
+import com.example.project.ui.itemDetail.ItemDetailMyVocabActivity
 
 // import com.example.project.ui.study.FlashCardActivity // Bỏ comment dòng này nếu bạn để Flashcard trong gói study
 
@@ -43,12 +43,11 @@ class WordAdapter(
         tvMeaning.text = word.meaning
         tvPronun.text = word.pronunciation
 
-        // 1. Xử lý click vào item (Chuyển sang màn hình Flashcard)
+        // 1. Xử lý click vào item (Chuyển sang màn hình Detail)
         view.setOnClickListener {
-            // Lưu ý: Kiểm tra kỹ xem FlashCardActivity đang nằm ở package nào
-            val intent = Intent(activity, FlashCardActivity::class.java)
-            intent.putParcelableArrayListExtra("list_word", ArrayList(words))
-            intent.putExtra("position", position)
+            val intent = Intent(activity, ItemDetailMyVocabActivity::class.java)
+            // Truyền ID của từ sang Activity chi tiết
+            intent.putExtra(ItemDetailMyVocabActivity.EXTRA_WORD_ID, word.id)
             activity.startActivity(intent)
         }
 

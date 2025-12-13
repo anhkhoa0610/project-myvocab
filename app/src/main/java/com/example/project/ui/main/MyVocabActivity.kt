@@ -20,7 +20,6 @@ class MyVocabActivity : BaseActivity() {
     private lateinit var adapter: WordAdapter
     private lateinit var listView: ListView
     private lateinit var wordDAO: WordDAO
-
     private val addWordLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -49,6 +48,11 @@ class MyVocabActivity : BaseActivity() {
         listView = findViewById(R.id.lvWords)
         wordDAO = WordDAO(this)
 
+        loadDataFromDB()
+    }
+
+    override fun onResume() {
+        super.onResume()
         loadDataFromDB()
     }
 

@@ -33,6 +33,12 @@ class DashboardActivity : BaseActivity() {
         setupListeners()
     }
 
+    override fun onResume() {
+        super.onResume()
+        // Refresh welcome message when returning to dashboard
+        setupWelcomeMessage()
+    }
+
     private fun initViews() {
         tvWelcome = findViewById(R.id.tvWelcome)
         tvRole = findViewById(R.id.tvRole)
@@ -44,8 +50,9 @@ class DashboardActivity : BaseActivity() {
     }
 
     private fun setupWelcomeMessage() {
-        val userName = intent.getStringExtra("USER_NAME") ?: "User"
-        val userRole = intent.getStringExtra("USER_ROLE") ?: "user"
+        // Get user info from UserSession instead of Intent
+        val userName = com.example.project.utils.UserSession.getUserName(this) ?: "User"
+        val userRole = com.example.project.utils.UserSession.getUserRole(this) ?: "user"
         
         tvWelcome.text = "Welcome, $userName!"
         tvRole.text = if (userRole == "admin") "👑 Admin" else "👤 User"
