@@ -116,6 +116,10 @@ class LoginActivity : AppCompatActivity() {
             
             // Save user session
             com.example.project.utils.UserSession.saveUser(this, user.id, user.email, user.name, user.role)
+
+            // Gọi WordDAO để kiểm tra và tạo dữ liệu mẫu cho user này (nếu cần)
+            val wordDAO = com.example.project.data.local.WordDAO(this)
+            wordDAO.seedDefaultWordsForUser(user.id)
             
             // Navigate to Dashboard
             val intent = Intent(this, DashboardActivity::class.java)
