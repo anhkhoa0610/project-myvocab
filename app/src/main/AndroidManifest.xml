@@ -57,9 +57,30 @@
         <activity android:name=".ui.itemDetail.ItemDetailMyVocabActivity"
             android:exported="false" />
 
+        <!-- Item Detail Activity -->
         <activity android:name=".ui.itemDetail.ItemDetailDictionary"
             android:exported="false" />
 
+        <!-- Admin Activities -->
+        <activity
+            android:name=".ui.admin.AdminDashboardActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.admin.DictionaryManagementActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.admin.AddDictionaryWordActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.admin.EditDictionaryWordActivity"/>
+
+        <activity
+            android:name=".ui.setting.SettingsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.auth.ChangePasswordActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

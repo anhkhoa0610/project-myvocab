@@ -161,6 +161,41 @@ class DictionaryWordDAO(context: Context) {
         return wordList
     }
 
+    // Cập nhật từ
+    fun updateWord(word: DictionaryWord): Int {
+        val db = dbHelper.writableDatabase
+        val values = ContentValues().apply {
+            put(DatabaseHelper.COLUMN_DICT_WORD, word.word)
+            put(DatabaseHelper.COLUMN_DICT_MEANING, word.meaning)
+            put(DatabaseHelper.COLUMN_DICT_PRONUNCIATION, word.pronunciation)
+            put(DatabaseHelper.COLUMN_DICT_PART_OF_SPEECH, word.part_of_speech)
+            put(DatabaseHelper.COLUMN_DICT_LEVEL_ID, word.level_id)
+            put(DatabaseHelper.COLUMN_DICT_CATEGORY_ID, word.category_id)
+            put(DatabaseHelper.COLUMN_DICT_EXAMPLE, word.example_sentence)
+            put(DatabaseHelper.COLUMN_DICT_IS_FAVORITE, if (word.is_favorite) 1 else 0)
+        }
+        val result = db.update(
+            DatabaseHelper.TABLE_DICTIONARY,
+            values,
+            "${DatabaseHelper.COLUMN_DICT_ID} = ?",
+            arrayOf(word.id.toString())
+        )
+        db.close()
+        return result
+    }
+
+    // Xóa từ
+    fun deleteWord(wordId: Int): Int {
+        val db = dbHelper.writableDatabase
+        val result = db.delete(
+            DatabaseHelper.TABLE_DICTIONARY,
+            "${DatabaseHelper.COLUMN_DICT_ID} = ?",
+            arrayOf(wordId.toString())
+        )
+        db.close()
+        return result
+    }
+
     // Seed sample dictionary words
     fun seedSampleWords() {
         val db = dbHelper.readableDatabase
