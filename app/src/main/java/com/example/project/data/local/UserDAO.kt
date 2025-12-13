@@ -20,10 +20,13 @@ class UserDAO(private val context: Context) {
 
         val db = dbHelper.writableDatabase
         val currentTime = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
+        
+        // Hash password before storing
+        val hashedPassword = PasswordHasher.hashPassword(password)
 
         val values = ContentValues().apply {
             put(DatabaseHelper.COLUMN_USER_EMAIL, email)
-            put(DatabaseHelper.COLUMN_USER_PASSWORD, password)
+            put(DatabaseHelper.COLUMN_USER_PASSWORD, hashedPassword)  // Lưu password đã hash
             put(DatabaseHelper.COLUMN_USER_NAME, name)
             put(DatabaseHelper.COLUMN_USER_ROLE, role)
             put(DatabaseHelper.COLUMN_USER_CREATED_AT, currentTime)
@@ -124,7 +127,7 @@ class UserDAO(private val context: Context) {
     fun seedDefaultAccounts() {
         val userStatsDAO = UserStatsDAO(context)
 
-        // User account
+        // User account (password will be hashed automatically by register())
         if (!isEmailExists("user@test.com")) {
             val userId = register("user@test.com", "123456", "Test User", "user")
             if (userId > 0) {
@@ -132,7 +135,7 @@ class UserDAO(private val context: Context) {
             }
         }
 
-        // Admin account
+        // Admin account (password will be hashed automatically by register())
         if (!isEmailExists("admin@test.com")) {
             val userId = register("admin@test.com", "123456", "Admin User", "admin")
             if (userId > 0) {
