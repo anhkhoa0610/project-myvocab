@@ -65,7 +65,14 @@
             android:name=".ui.admin.AddDictionaryWordActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.admin.EditDictionaryWordActivity"
+            android:name=".ui.admin.EditDictionaryWordActivity"/>
+
+        <activity
+            android:name=".ui.setting.SettingsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.auth.ChangePasswordActivity"
             android:exported="false" />
     </application>
 
