@@ -53,6 +53,13 @@
         <activity
             android:name=".ui.dictionary.DictionaryActivity"
             android:exported="false" />
+
+        <activity android:name=".ui.itemDetail.ItemDetailMyVocabActivity"
+            android:exported="false" />
+
+        <activity android:name=".ui.itemDetail.ItemDetailDictionary"
+            android:exported="false" />
+
     </application>
 
 </manifest>
