@@ -6,7 +6,7 @@
         android:title="Home" />
 
     <item
-        android:id="@+id/nav_favorite"
+        android:id="@+id/nav_setting"
         android:icon="@drawable/ic_setting"
         android:title="Setting" />
 

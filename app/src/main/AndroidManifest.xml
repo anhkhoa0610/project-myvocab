@@ -53,6 +53,14 @@
         <activity
             android:name=".ui.dictionary.DictionaryActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".ui.setting.SettingsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.auth.ChangePasswordActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

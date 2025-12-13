@@ -2,7 +2,9 @@ package com.example.project.data.local
 
 import android.content.ContentValues
 import android.content.Context
+import com.example.project.data.PasswordHasher
 import com.example.project.data.model.User
+import com.example.project.utils.UserSession
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -15,10 +17,10 @@ class UserDAO(private val context: Context) {
         if (isEmailExists(email)) {
             return -1  // Email đã tồn tại
         }
-        
+
         val db = dbHelper.writableDatabase
         val currentTime = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
-        
+
         val values = ContentValues().apply {
             put(DatabaseHelper.COLUMN_USER_EMAIL, email)
             put(DatabaseHelper.COLUMN_USER_PASSWORD, password)
@@ -26,31 +28,59 @@ class UserDAO(private val context: Context) {
             put(DatabaseHelper.COLUMN_USER_ROLE, role)
             put(DatabaseHelper.COLUMN_USER_CREATED_AT, currentTime)
         }
-        
+
         val result = db.insert(DatabaseHelper.TABLE_USERS, null, values)
         return result
     }
 
     // Login - Check email & password
+    // File: com.example.project.data.local.UserDAO.kt (HÀM LOGIN ĐÃ SỬA)
+
+    // File: com.example.project.data.local.UserDAO.kt (HÀM LOGIN ĐÃ SỬA HOÀN TOÀN)
+
     fun login(email: String, password: String): User? {
         val db = dbHelper.readableDatabase
+
+        // --- BỔ SUNG: TRIM EMAIL VÀ PASSWORD NHẬP VÀO ---
+        val trimmedEmail = email.trim()
+        val trimmedPassword = password.trim()
+
+        // 1. CHỈ TRUY VẤN THEO EMAIL ĐÃ ĐƯỢC TRIM
         val cursor = db.rawQuery(
-            "SELECT * FROM ${DatabaseHelper.TABLE_USERS} WHERE ${DatabaseHelper.COLUMN_USER_EMAIL} = ? AND ${DatabaseHelper.COLUMN_USER_PASSWORD} = ?",
-            arrayOf(email, password)
+            "SELECT * FROM ${DatabaseHelper.TABLE_USERS} WHERE ${DatabaseHelper.COLUMN_USER_EMAIL} = ?",
+            arrayOf(trimmedEmail) // Sử dụng trimmedEmail
         )
 
         var user: User? = null
         if (cursor.moveToFirst()) {
-            user = User(
-                id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_ID)),
-                email = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_EMAIL)),
-                password = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_PASSWORD)),
-                name = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_NAME)) ?: "",
-                role = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_ROLE)) ?: "user",
-                created_at = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_CREATED_AT)) ?: ""
-            )
+
+            val storedHash = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_PASSWORD))
+
+            // 2. XÁC MINH: DÙNG trimmedPassword VỚI HASH ĐÃ LƯU
+            // Nếu mật khẩu đã được lưu mà không có khoảng trắng, thì việc trim này đảm bảo tính nhất quán.
+            if (PasswordHasher.verifyPassword(trimmedPassword, storedHash)) { // <-- SỬ DỤNG trimmedPassword
+                user = User(
+                    id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_ID)),
+                    email = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_EMAIL)),
+                    password = storedHash,
+                    name = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_NAME)) ?: "",
+                    role = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_ROLE)) ?: "user",
+                    created_at = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_CREATED_AT)) ?: ""
+                )
+
+                // LƯU SESSION
+                UserSession.saveUser(
+                    context,
+                    user.id,
+                    user.email,
+                    user.name,
+                    user.role
+                )
+            }
+            // Nếu xác minh thất bại, user vẫn là null
         }
         cursor.close()
+        db.close()
         return user
     }
 
@@ -93,7 +123,7 @@ class UserDAO(private val context: Context) {
     // Seed default accounts
     fun seedDefaultAccounts() {
         val userStatsDAO = UserStatsDAO(context)
-        
+
         // User account
         if (!isEmailExists("user@test.com")) {
             val userId = register("user@test.com", "123456", "Test User", "user")
@@ -101,7 +131,7 @@ class UserDAO(private val context: Context) {
                 userStatsDAO.createStats(userId.toInt())
             }
         }
-        
+
         // Admin account
         if (!isEmailExists("admin@test.com")) {
             val userId = register("admin@test.com", "123456", "Admin User", "admin")
@@ -109,5 +139,60 @@ class UserDAO(private val context: Context) {
                 userStatsDAO.createStats(userId.toInt())
             }
         }
+    }
+    fun getCurrentUserId(): Int {
+        // Trả về ID người dùng đang đăng nhập. Nếu chưa đăng nhập, trả về 0 (hoặc giá trị mặc định)
+        return UserSession.getUserId(context)
+    }
+
+    // --- CÁC PHƯƠNG THỨC HỖ TRỢ ĐỔI MẬT KHẨU (Giữ nguyên) ---
+
+    fun getHashedPasswordByUserId(userId: Int): String? {
+        val db = dbHelper.readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT ${DatabaseHelper.COLUMN_USER_PASSWORD} FROM ${DatabaseHelper.TABLE_USERS} WHERE ${DatabaseHelper.COLUMN_USER_ID} = ?",
+            arrayOf(userId.toString())
+        )
+
+        var storedValue: String? = null
+        if (cursor.moveToFirst()) {
+            storedValue = cursor.getString(0)
+        }
+        cursor.close()
+        db.close()
+
+        if (storedValue == null) {
+            return null
+        }
+
+        val isHashed = storedValue.startsWith("$2a") || storedValue.startsWith("$2b")
+
+        if (!isHashed) {
+            val newHashedPassword = PasswordHasher.hashPassword(storedValue)
+            val success = updatePassword(userId, newHashedPassword)
+
+            if (success) {
+                return newHashedPassword
+            } else {
+                return null
+            }
+        }
+        return storedValue
+    }
+
+    fun updatePassword(userId: Int, newHashedPassword: String): Boolean {
+        // ... (Logic cập nhật hash vào DB) ...
+        val db = dbHelper.writableDatabase
+        val values = ContentValues().apply {
+            put(DatabaseHelper.COLUMN_USER_PASSWORD, newHashedPassword)
+        }
+        val rowsAffected = db.update(
+            DatabaseHelper.TABLE_USERS,
+            values,
+            "${DatabaseHelper.COLUMN_USER_ID} = ?",
+            arrayOf(userId.toString())
+        )
+        db.close()
+        return rowsAffected > 0
     }
 }
