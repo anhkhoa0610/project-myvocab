@@ -1,11 +1,13 @@
 package com.example.project.data.local
 
 import android.content.ContentValues
-import android.database.sqlite.SQLiteDatabase
+import android.content.Context
 import com.example.project.data.model.Quiz
 import com.example.project.data.model.QuizQuestion
 
-class QuizDAO(private val dbHelper: DatabaseHelper) {
+class QuizDAO(context: Context) {
+
+    private val dbHelper = DatabaseHelper(context)
 
     fun getQuizzesByLevel(levelId: Int): List<Quiz> {
         val db = dbHelper.readableDatabase
@@ -34,8 +36,7 @@ class QuizDAO(private val dbHelper: DatabaseHelper) {
     fun getQuestionsForQuiz(quizId: Int): List<QuizQuestion> {
         val db = dbHelper.readableDatabase
         val questions = mutableListOf<QuizQuestion>()
-        // This is a simplified example. You'll need to handle options differently.
-        // A raw query with joins might be better to fetch options from the dictionary or words table.
+
         val cursor = db.query(
             DatabaseHelper.TABLE_QUIZ_QUESTIONS,
             null,
@@ -50,13 +51,37 @@ class QuizDAO(private val dbHelper: DatabaseHelper) {
             val id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_QQ_ID))
             val question = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_QQ_QUESTION))
             val answer = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_QQ_ANSWER))
-            // You need to implement logic to get 3 other options.
-            val options = listOf(answer, "Option 2", "Option 3", "Option 4").shuffled()
+
+            val wrongAnswers = getWrongAnswers(answer, 3)
+            val options = (wrongAnswers + answer).shuffled()
+
             questions.add(QuizQuestion(id, quizId, question, answer, options))
         }
         cursor.close()
         db.close()
         return questions
+    }
+
+    private fun getWrongAnswers(correctAnswer: String, count: Int): List<String> {
+        val db = dbHelper.readableDatabase
+        val wrongAnswers = mutableListOf<String>()
+        val cursor = db.query(
+            DatabaseHelper.TABLE_DICTIONARY,
+            arrayOf(DatabaseHelper.COLUMN_DICT_MEANING),
+            "${DatabaseHelper.COLUMN_DICT_MEANING} != ?",
+            arrayOf(correctAnswer),
+            null,
+            null,
+            "RANDOM()",
+            count.toString()
+        )
+
+        while (cursor.moveToNext()) {
+            wrongAnswers.add(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_DICT_MEANING)))
+        }
+        cursor.close()
+        // không đóng db ở đây vì getQuestionsForQuiz đang dùng
+        return wrongAnswers
     }
 
     fun saveQuizResult(quizId: Int, userId: Int, score: Int): Long {

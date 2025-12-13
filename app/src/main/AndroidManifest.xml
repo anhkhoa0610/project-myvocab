@@ -48,7 +48,15 @@
         <activity
             android:name=".ui.flashcards.FlashCardActivity"
             android:exported="false" />
-        
+
+        <!-- Quizz Activities -->
+
+        <activity
+            android:name=".ui.quiz.QuizActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.quiz.LevelSelectionActivity"
+            android:exported="false" />
         <!-- Dictionary Activity -->
         <activity
             android:name=".ui.dictionary.DictionaryActivity"
