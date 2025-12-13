@@ -123,10 +123,6 @@ class LoginActivity : AppCompatActivity() {
             
             // Navigate to Dashboard
             val intent = Intent(this, DashboardActivity::class.java)
-            intent.putExtra("USER_ID", user.id)
-            intent.putExtra("USER_EMAIL", user.email)
-            intent.putExtra("USER_NAME", user.name)
-            intent.putExtra("USER_ROLE", user.role)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
             finish()

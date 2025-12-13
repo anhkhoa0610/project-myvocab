@@ -1,5 +1,6 @@
 package com.example.project.ui.dictionary
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -13,6 +14,8 @@ import com.example.project.data.local.CategoryDAO
 import com.example.project.data.local.DictionaryWordDAO
 import com.example.project.data.model.DictionaryWord
 import com.example.project.ui.base.BaseActivity
+import com.example.project.ui.itemDetail.ItemDetailDictionary
+import com.example.project.ui.itemDetail.ItemDetailMyVocabActivity
 
 class DictionaryActivity : BaseActivity() {
 
@@ -154,6 +157,17 @@ class DictionaryActivity : BaseActivity() {
                 toggleFavorite(word)
             }
             lvDictionaryWords.adapter = adapter
+
+            // Xử lý khi bấm vào một dòng (item) để mở chi tiết
+            lvDictionaryWords.setOnItemClickListener { _, _, position, _ ->
+                val selectedWord = allWords[position]
+
+                val intent = Intent(this, ItemDetailDictionary::class.java)
+
+                intent.putExtra(ItemDetailDictionary.EXTRA_DICTIONARY_WORD, selectedWord)
+
+                startActivity(intent)
+            }
         }
     }
 

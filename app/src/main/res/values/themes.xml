@@ -1,15 +1,30 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+
     <style name="Base.Theme.MyVocab" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@color/primary_color_app</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <item name="android:colorBackground">@color/background_screen</item>
+        <item name="colorSurface">@color/background_surface</item>
+
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+
     </style>
 
     <style name="Theme.MyVocab" parent="Base.Theme.MyVocab" />
 
-    <!-- Navigation Menu Text Appearance -->
     <style name="NavMenuTextAppearance" parent="TextAppearance.AppCompat">
         <item name="android:textSize">22sp</item>
         <item name="android:textStyle">normal</item>
     </style>
+
+    <style name="Divider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">?attr/colorSecondary</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+    </style>
+
 </resources>

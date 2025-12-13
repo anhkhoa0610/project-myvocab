@@ -10,6 +10,7 @@ import com.example.project.ui.base.BaseActivity
 import com.example.project.ui.dictionary.DictionaryActivity
 import com.example.project.ui.flashcards.StudySetupActivity
 import com.example.project.ui.main.MyVocabActivity
+import com.example.project.ui.quiz.LevelSelectionActivity
 
 class DashboardActivity : BaseActivity() {
 
@@ -19,6 +20,7 @@ class DashboardActivity : BaseActivity() {
     private lateinit var cardDictionary: CardView
     private lateinit var cardFlashcard: CardView
     private lateinit var cardStatistic: CardView
+    private lateinit var cardStudyByLevel: CardView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +33,12 @@ class DashboardActivity : BaseActivity() {
         setupListeners()
     }
 
+    override fun onResume() {
+        super.onResume()
+        // Refresh welcome message when returning to dashboard
+        setupWelcomeMessage()
+    }
+
     private fun initViews() {
         tvWelcome = findViewById(R.id.tvWelcome)
         tvRole = findViewById(R.id.tvRole)
@@ -38,11 +46,13 @@ class DashboardActivity : BaseActivity() {
         cardDictionary = findViewById(R.id.cardDictionary)
         cardFlashcard = findViewById(R.id.cardFlashcard)
         cardStatistic = findViewById(R.id.cardStatistic)
+        cardStudyByLevel = findViewById(R.id.cardStudyByLevel)
     }
 
     private fun setupWelcomeMessage() {
-        val userName = intent.getStringExtra("USER_NAME") ?: "User"
-        val userRole = intent.getStringExtra("USER_ROLE") ?: "user"
+        // Get user info from UserSession instead of Intent
+        val userName = com.example.project.utils.UserSession.getUserName(this) ?: "User"
+        val userRole = com.example.project.utils.UserSession.getUserRole(this) ?: "user"
         
         tvWelcome.text = "Welcome, $userName!"
         tvRole.text = if (userRole == "admin") "👑 Admin" else "👤 User"
@@ -70,6 +80,12 @@ class DashboardActivity : BaseActivity() {
         // Statistic (Coming soon)
         cardStatistic.setOnClickListener {
             Toast.makeText(this, "Statistic feature coming soon!", Toast.LENGTH_SHORT).show()
+        }
+
+        // Study by Level
+        cardStudyByLevel.setOnClickListener {
+            val intent = Intent(this, LevelSelectionActivity::class.java)
+            startActivity(intent)
         }
     }
 }

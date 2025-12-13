@@ -11,8 +11,8 @@ import com.example.project.R
 import com.example.project.data.local.WordDAO
 import com.example.project.data.model.Word
 import com.example.project.ui.add_edit_word.AddNewActivity
-import com.example.project.ui.add_edit_word.EditActivity
 import com.example.project.ui.base.BaseActivity
+import com.example.project.utils.UserSession // Import UserSession
 
 class MyVocabActivity : BaseActivity() {
 
@@ -20,7 +20,6 @@ class MyVocabActivity : BaseActivity() {
     private lateinit var adapter: WordAdapter
     private lateinit var listView: ListView
     private lateinit var wordDAO: WordDAO
-
     private val addWordLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -52,8 +51,14 @@ class MyVocabActivity : BaseActivity() {
         loadDataFromDB()
     }
 
+    override fun onResume() {
+        super.onResume()
+        loadDataFromDB()
+    }
+
     private fun loadDataFromDB() {
-        val userId = com.example.project.utils.UserSession.getUserId(this)
+        // Sử dụng UserSession đã import
+        val userId = UserSession.getUserId(this)
         wordList = wordDAO.getWordsByUserId(userId)
 
         adapter = WordAdapter(this, wordList)
