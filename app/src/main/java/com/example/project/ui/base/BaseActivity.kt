@@ -49,6 +49,11 @@ abstract class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationIt
 
         navView.setNavigationItemSelectedListener(this)
         
+        // Check if user is admin and show/hide admin menu
+        val userRole = com.example.project.utils.UserSession.getUserRole(this)
+        val adminMenuItem = navView.menu.findItem(R.id.nav_admin_dashboard)
+        adminMenuItem?.isVisible = userRole == "admin"
+        
         // Bottom Navigation
         val bottomNav = findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottom_nav_base)
         bottomNav?.setOnItemSelectedListener { item ->
@@ -66,7 +71,7 @@ abstract class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationIt
                     // TODO: Setting
                     true
                 }
-                R.id.nav_profile -> {
+                R.id.nav_exit -> {
                     // Exit
                     finishAffinity()
                     true
@@ -112,6 +117,14 @@ abstract class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationIt
             R.id.nav_dictionary -> {
                 if (this !is com.example.project.ui.dictionary.DictionaryActivity) {
                     val intent = Intent(this, com.example.project.ui.dictionary.DictionaryActivity::class.java)
+                    startActivity(intent)
+                }
+            }
+
+            // Admin Dashboard
+            R.id.nav_admin_dashboard -> {
+                if (this !is com.example.project.ui.admin.AdminDashboardActivity) {
+                    val intent = Intent(this, com.example.project.ui.admin.AdminDashboardActivity::class.java)
                     startActivity(intent)
                 }
             }

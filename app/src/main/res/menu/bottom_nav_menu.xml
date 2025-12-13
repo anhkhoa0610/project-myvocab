@@ -11,7 +11,7 @@
         android:title="Setting" />
 
     <item
-        android:id="@+id/nav_profile"
+        android:id="@+id/nav_exit"
         android:icon="@drawable/ic_exit"
         android:title="Exit" />
 </menu>

@@ -18,6 +18,11 @@
             android:id="@+id/nav_dictionary"
             android:icon="@android:drawable/ic_menu_search"
             android:title="Dictionary" />
+        <item
+            android:id="@+id/nav_admin_dashboard"
+            android:icon="@android:drawable/ic_menu_manage"
+            android:title="Admin Dashboard"
+            android:visible="false" />
     </group>
 
     <!-- Settings & Actions Group -->
