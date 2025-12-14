@@ -1,5 +1,6 @@
 package com.example.project.data.local
 
+import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
@@ -9,7 +10,7 @@ class DatabaseHelper(context: Context) :
 
     companion object {
         private const val DATABASE_NAME = "vocab_app.db"
-        private const val DATABASE_VERSION = 9 // Đã tăng phiên bản
+        private const val DATABASE_VERSION = 11 // Incremented version to ensure onUpgrade is called
 
         // ... (Tất cả các hằng số tên bảng và cột không đổi)
         // Table 1: Users
@@ -99,6 +100,15 @@ class DatabaseHelper(context: Context) :
         const val COLUMN_US_USER_ID = "user_id"
         const val COLUMN_US_TOTAL_WORDS = "total_words"
         const val COLUMN_US_LEARNED_WORDS = "learned_words"
+        
+        // Table 12: User Word Status
+        const val TABLE_USER_WORD_STATUS = "user_word_status"
+        const val COLUMN_USER_WORD_ID = "id"
+        const val COLUMN_USER_WORD_USER_ID = "user_id"
+        const val COLUMN_USER_WORD_WORD_ID = "word_id"
+        const val COLUMN_USER_WORD_STATUS = "status"
+        const val COLUMN_USER_WORD_LAST_REVIEWED = "last_reviewed"
+        const val COLUMN_USER_WORD_REVIEW_COUNT = "review_count"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -258,6 +268,44 @@ class DatabaseHelper(context: Context) :
         """
         )
 
+        // 12. User Word Status
+        db.execSQL(
+            """
+            CREATE TABLE $TABLE_USER_WORD_STATUS (
+                $COLUMN_USER_WORD_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                $COLUMN_USER_WORD_USER_ID INTEGER NOT NULL,
+                $COLUMN_USER_WORD_WORD_ID INTEGER NOT NULL,
+                $COLUMN_USER_WORD_STATUS TEXT NOT NULL,
+                $COLUMN_USER_WORD_LAST_REVIEWED TEXT,
+                $COLUMN_USER_WORD_REVIEW_COUNT INTEGER DEFAULT 0,
+                FOREIGN KEY($COLUMN_USER_WORD_USER_ID) REFERENCES $TABLE_USERS($COLUMN_USER_ID),
+                FOREIGN KEY($COLUMN_USER_WORD_WORD_ID) REFERENCES $TABLE_DICTIONARY($COLUMN_DICT_ID)
+            )
+            """
+        )
+
+        seedData(db)
+    }
+
+    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        // Drop all tables
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_USER_WORD_STATUS")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_USER_STATS")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_STUDY_SESSIONS")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_QUIZ_RESULTS")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_QUIZ_QUESTIONS")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_QUIZZES")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_WORD_PROGRESS")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_DICTIONARY")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_WORDS")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_CATEGORIES")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_LEVELS")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_USERS")
+
+        onCreate(db)
+    }
+
+    private fun seedData(db: SQLiteDatabase) {
         // --- SEED DATA ---
         // Levels
         db.execSQL("INSERT INTO $TABLE_LEVELS ($COLUMN_LEVEL_NAME, $COLUMN_LEVEL_COLOR) VALUES ('A1', '#4CAF50')")
@@ -302,22 +350,116 @@ class DatabaseHelper(context: Context) :
         db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (4, 'The quality of being open and honest in expression', 'Candor', 3)")
         db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (4, 'Excessively talkative, especially on trivial matters', 'Garrulous', 3)")
         db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (4, 'A remedy for all ills or difficulties', 'Panacea', 3)")
-    }
 
-    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        // Drop all tables
-        db.execSQL("DROP TABLE IF EXISTS $TABLE_USER_STATS")
-        db.execSQL("DROP TABLE IF EXISTS $TABLE_STUDY_SESSIONS")
-        db.execSQL("DROP TABLE IF EXISTS $TABLE_QUIZ_RESULTS")
-        db.execSQL("DROP TABLE IF EXISTS $TABLE_QUIZ_QUESTIONS")
-        db.execSQL("DROP TABLE IF EXISTS $TABLE_QUIZZES")
-        db.execSQL("DROP TABLE IF EXISTS $TABLE_WORD_PROGRESS")
-        db.execSQL("DROP TABLE IF EXISTS $TABLE_DICTIONARY")
-        db.execSQL("DROP TABLE IF EXISTS $TABLE_WORDS")
-        db.execSQL("DROP TABLE IF EXISTS $TABLE_CATEGORIES")
-        db.execSQL("DROP TABLE IF EXISTS $TABLE_LEVELS")
-        db.execSQL("DROP TABLE IF EXISTS $TABLE_USERS")
+        // Seed Dictionary Words
+        val values = ContentValues()
+        values.put(COLUMN_DICT_WORD, "Hello")
+        values.put(COLUMN_DICT_MEANING, "Xin chào")
+        values.put(COLUMN_DICT_PRONUNCIATION, "/həˈloʊ/")
+        values.put(COLUMN_DICT_PART_OF_SPEECH, "Interjection")
+        values.put(COLUMN_DICT_LEVEL_ID, 1)
+        values.put(COLUMN_DICT_CATEGORY_ID, 1)
+        values.put(COLUMN_DICT_EXAMPLE, "Hello, how are you?")
+        db.insert(TABLE_DICTIONARY, null, values)
 
-        onCreate(db)
+        values.clear()
+        values.put(COLUMN_DICT_WORD, "Goodbye")
+        values.put(COLUMN_DICT_MEANING, "Tạm biệt")
+        values.put(COLUMN_DICT_PRONUNCIATION, "/ɡʊdˈbaɪ/")
+        values.put(COLUMN_DICT_PART_OF_SPEECH, "Interjection")
+        values.put(COLUMN_DICT_LEVEL_ID, 1)
+        values.put(COLUMN_DICT_CATEGORY_ID, 1)
+        values.put(COLUMN_DICT_EXAMPLE, "Goodbye, see you later!")
+        db.insert(TABLE_DICTIONARY, null, values)
+
+        values.clear()
+        values.put(COLUMN_DICT_WORD, "Thank you")
+        values.put(COLUMN_DICT_MEANING, "Cảm ơn")
+        values.put(COLUMN_DICT_PRONUNCIATION, "/θæŋk juː/")
+        values.put(COLUMN_DICT_PART_OF_SPEECH, "Phrase")
+        values.put(COLUMN_DICT_LEVEL_ID, 1)
+        values.put(COLUMN_DICT_CATEGORY_ID, 1)
+        values.put(COLUMN_DICT_EXAMPLE, "Thank you for your help.")
+        db.insert(TABLE_DICTIONARY, null, values)
+
+        values.clear()
+        values.put(COLUMN_DICT_WORD, "Please")
+        values.put(COLUMN_DICT_MEANING, "Làm ơn")
+        values.put(COLUMN_DICT_PRONUNCIATION, "/pliːz/")
+        values.put(COLUMN_DICT_PART_OF_SPEECH, "Adverb")
+        values.put(COLUMN_DICT_LEVEL_ID, 1)
+        values.put(COLUMN_DICT_CATEGORY_ID, 1)
+        values.put(COLUMN_DICT_EXAMPLE, "Please help me.")
+        db.insert(TABLE_DICTIONARY, null, values)
+
+        values.clear()
+        values.put(COLUMN_DICT_WORD, "Sorry")
+        values.put(COLUMN_DICT_MEANING, "Xin lỗi")
+        values.put(COLUMN_DICT_PRONUNCIATION, "/ˈsɒri/")
+        values.put(COLUMN_DICT_PART_OF_SPEECH, "Adjective")
+        values.put(COLUMN_DICT_LEVEL_ID, 1)
+        values.put(COLUMN_DICT_CATEGORY_ID, 1)
+        values.put(COLUMN_DICT_EXAMPLE, "I'm sorry for being late.")
+        db.insert(TABLE_DICTIONARY, null, values)
+
+        values.clear()
+        values.put(COLUMN_DICT_WORD, "Meeting")
+        values.put(COLUMN_DICT_MEANING, "Cuộc họp")
+        values.put(COLUMN_DICT_PRONUNCIATION, "/ˈmiːtɪŋ/")
+        values.put(COLUMN_DICT_PART_OF_SPEECH, "Noun")
+        values.put(COLUMN_DICT_LEVEL_ID, 3)
+        values.put(COLUMN_DICT_CATEGORY_ID, 2)
+        values.put(COLUMN_DICT_EXAMPLE, "We have a meeting at 3 PM.")
+        db.insert(TABLE_DICTIONARY, null, values)
+
+        values.clear()
+        values.put(COLUMN_DICT_WORD, "Deadline")
+        values.put(COLUMN_DICT_MEANING, "Hạn chót")
+        values.put(COLUMN_DICT_PRONUNCIATION, "/ˈdedlaɪn/")
+        values.put(COLUMN_DICT_PART_OF_SPEECH, "Noun")
+        values.put(COLUMN_DICT_LEVEL_ID, 3)
+        values.put(COLUMN_DICT_CATEGORY_ID, 2)
+        values.put(COLUMN_DICT_EXAMPLE, "The deadline is tomorrow.")
+        db.insert(TABLE_DICTIONARY, null, values)
+
+        values.clear()
+        values.put(COLUMN_DICT_WORD, "Presentation")
+        values.put(COLUMN_DICT_MEANING, "Bài thuyết trình")
+        values.put(COLUMN_DICT_PRONUNCIATION, "/ˌprezənˈteɪʃn/")
+        values.put(COLUMN_DICT_PART_OF_SPEECH, "Noun")
+        values.put(COLUMN_DICT_LEVEL_ID, 3)
+        values.put(COLUMN_DICT_CATEGORY_ID, 2)
+        values.put(COLUMN_DICT_EXAMPLE, "I have to give a presentation.")
+        db.insert(TABLE_DICTIONARY, null, values)
+
+        values.clear()
+        values.put(COLUMN_DICT_WORD, "Computer")
+        values.put(COLUMN_DICT_MEANING, "Máy tính")
+        values.put(COLUMN_DICT_PRONUNCIATION, "/kəmˈpjuːtər/")
+        values.put(COLUMN_DICT_PART_OF_SPEECH, "Noun")
+        values.put(COLUMN_DICT_LEVEL_ID, 2)
+        values.put(COLUMN_DICT_CATEGORY_ID, 5)
+        values.put(COLUMN_DICT_EXAMPLE, "I use my computer every day.")
+        db.insert(TABLE_DICTIONARY, null, values)
+
+        values.clear()
+        values.put(COLUMN_DICT_WORD, "Software")
+        values.put(COLUMN_DICT_MEANING, "Phần mềm")
+        values.put(COLUMN_DICT_PRONUNCIATION, "/ˈsɒftweər/")
+        values.put(COLUMN_DICT_PART_OF_SPEECH, "Noun")
+        values.put(COLUMN_DICT_LEVEL_ID, 3)
+        values.put(COLUMN_DICT_CATEGORY_ID, 5)
+        values.put(COLUMN_DICT_EXAMPLE, "This software is very useful.")
+        db.insert(TABLE_DICTIONARY, null, values)
+
+        values.clear()
+        values.put(COLUMN_DICT_WORD, "Internet")
+        values.put(COLUMN_DICT_MEANING, "Mạng internet")
+        values.put(COLUMN_DICT_PRONUNCIATION, "/ˈɪntərnet/")
+        values.put(COLUMN_DICT_PART_OF_SPEECH, "Noun")
+        values.put(COLUMN_DICT_LEVEL_ID, 2)
+        values.put(COLUMN_DICT_CATEGORY_ID, 5)
+        values.put(COLUMN_DICT_EXAMPLE, "I can't connect to the internet.")
+        db.insert(TABLE_DICTIONARY, null, values)
     }
 }

@@ -2,10 +2,17 @@ package com.example.project.data.local
 
 import android.content.ContentValues
 import android.content.Context
+import android.database.sqlite.SQLiteDatabase
 import com.example.project.data.model.DictionaryWord
 
 class DictionaryWordDAO(context: Context) {
     private val dbHelper = DatabaseHelper(context)
+    private val db: SQLiteDatabase = dbHelper.writableDatabase
+
+    // Function to close the database
+    fun close() {
+        dbHelper.close()
+    }
 
     // Helper function để map cursor to DictionaryWord
     private fun mapCursorToWord(cursor: android.database.Cursor): DictionaryWord {
@@ -24,7 +31,6 @@ class DictionaryWordDAO(context: Context) {
 
     // Thêm từ mới
     fun addWord(word: DictionaryWord): Long {
-        val db = dbHelper.writableDatabase
         val values = ContentValues().apply {
             put(DatabaseHelper.COLUMN_DICT_WORD, word.word)
             put(DatabaseHelper.COLUMN_DICT_MEANING, word.meaning)
@@ -35,15 +41,12 @@ class DictionaryWordDAO(context: Context) {
             put(DatabaseHelper.COLUMN_DICT_EXAMPLE, word.example_sentence)
             put(DatabaseHelper.COLUMN_DICT_IS_FAVORITE, if (word.is_favorite) 1 else 0)
         }
-        val result = db.insert(DatabaseHelper.TABLE_DICTIONARY, null, values)
-        db.close()
-        return result
+        return db.insert(DatabaseHelper.TABLE_DICTIONARY, null, values)
     }
 
     // Lấy tất cả từ
     fun getAllWords(): ArrayList<DictionaryWord> {
         val wordList = ArrayList<DictionaryWord>()
-        val db = dbHelper.readableDatabase
         val cursor = db.rawQuery("SELECT * FROM ${DatabaseHelper.TABLE_DICTIONARY}", null)
 
         if (cursor.moveToFirst()) {
@@ -52,14 +55,12 @@ class DictionaryWordDAO(context: Context) {
             } while (cursor.moveToNext())
         }
         cursor.close()
-        db.close()
         return wordList
     }
 
     // Lấy từ theo level_id
     fun getWordsByLevelId(levelId: Int): ArrayList<DictionaryWord> {
         val wordList = ArrayList<DictionaryWord>()
-        val db = dbHelper.readableDatabase
         val cursor = db.rawQuery(
             "SELECT * FROM ${DatabaseHelper.TABLE_DICTIONARY} WHERE ${DatabaseHelper.COLUMN_DICT_LEVEL_ID} = ?",
             arrayOf(levelId.toString())
@@ -71,14 +72,12 @@ class DictionaryWordDAO(context: Context) {
             } while (cursor.moveToNext())
         }
         cursor.close()
-        db.close()
         return wordList
     }
 
     // Lấy từ theo category
     fun getWordsByCategory(categoryId: Int): ArrayList<DictionaryWord> {
         val wordList = ArrayList<DictionaryWord>()
-        val db = dbHelper.readableDatabase
         val cursor = db.rawQuery(
             "SELECT * FROM ${DatabaseHelper.TABLE_DICTIONARY} WHERE ${DatabaseHelper.COLUMN_DICT_CATEGORY_ID} = ?",
             arrayOf(categoryId.toString())
@@ -90,14 +89,12 @@ class DictionaryWordDAO(context: Context) {
             } while (cursor.moveToNext())
         }
         cursor.close()
-        db.close()
         return wordList
     }
 
     // Lấy từ yêu thích
     fun getFavoriteWords(): ArrayList<DictionaryWord> {
         val wordList = ArrayList<DictionaryWord>()
-        val db = dbHelper.readableDatabase
         val cursor = db.rawQuery(
             "SELECT * FROM ${DatabaseHelper.TABLE_DICTIONARY} WHERE ${DatabaseHelper.COLUMN_DICT_IS_FAVORITE} = 1",
             null
@@ -109,14 +106,11 @@ class DictionaryWordDAO(context: Context) {
             } while (cursor.moveToNext())
         }
         cursor.close()
-        db.close()
         return wordList
     }
 
     // Toggle favorite
     fun toggleFavorite(wordId: Int): Boolean {
-        val db = dbHelper.writableDatabase
-        
         val cursor = db.rawQuery(
             "SELECT ${DatabaseHelper.COLUMN_DICT_IS_FAVORITE} FROM ${DatabaseHelper.TABLE_DICTIONARY} WHERE ${DatabaseHelper.COLUMN_DICT_ID} = ?",
             arrayOf(wordId.toString())
@@ -138,14 +132,12 @@ class DictionaryWordDAO(context: Context) {
             "${DatabaseHelper.COLUMN_DICT_ID} = ?",
             arrayOf(wordId.toString())
         )
-        db.close()
         return result > 0
     }
 
     // Tìm kiếm từ
     fun searchWords(query: String): ArrayList<DictionaryWord> {
         val wordList = ArrayList<DictionaryWord>()
-        val db = dbHelper.readableDatabase
         val cursor = db.rawQuery(
             "SELECT * FROM ${DatabaseHelper.TABLE_DICTIONARY} WHERE ${DatabaseHelper.COLUMN_DICT_WORD} LIKE ? OR ${DatabaseHelper.COLUMN_DICT_MEANING} LIKE ?",
             arrayOf("%$query%", "%$query%")
@@ -157,13 +149,11 @@ class DictionaryWordDAO(context: Context) {
             } while (cursor.moveToNext())
         }
         cursor.close()
-        db.close()
         return wordList
     }
 
     // Cập nhật từ
     fun updateWord(word: DictionaryWord): Int {
-        val db = dbHelper.writableDatabase
         val values = ContentValues().apply {
             put(DatabaseHelper.COLUMN_DICT_WORD, word.word)
             put(DatabaseHelper.COLUMN_DICT_MEANING, word.meaning)
@@ -174,36 +164,29 @@ class DictionaryWordDAO(context: Context) {
             put(DatabaseHelper.COLUMN_DICT_EXAMPLE, word.example_sentence)
             put(DatabaseHelper.COLUMN_DICT_IS_FAVORITE, if (word.is_favorite) 1 else 0)
         }
-        val result = db.update(
+        return db.update(
             DatabaseHelper.TABLE_DICTIONARY,
             values,
             "${DatabaseHelper.COLUMN_DICT_ID} = ?",
             arrayOf(word.id.toString())
         )
-        db.close()
-        return result
     }
 
     // Xóa từ
     fun deleteWord(wordId: Int): Int {
-        val db = dbHelper.writableDatabase
-        val result = db.delete(
+        return db.delete(
             DatabaseHelper.TABLE_DICTIONARY,
             "${DatabaseHelper.COLUMN_DICT_ID} = ?",
             arrayOf(wordId.toString())
         )
-        db.close()
-        return result
     }
 
     // Seed sample dictionary words
     fun seedSampleWords() {
-        val db = dbHelper.readableDatabase
         val cursor = db.rawQuery("SELECT COUNT(*) FROM ${DatabaseHelper.TABLE_DICTIONARY}", null)
         cursor.moveToFirst()
         val count = cursor.getInt(0)
         cursor.close()
-        db.close()
 
         if (count == 0) {
             // level_id: 1=A1, 2=A2, 3=B1, 4=B2, 5=C1, 6=C2
@@ -227,7 +210,6 @@ class DictionaryWordDAO(context: Context) {
         }
     }
     fun getTotalWordCount(): Int {
-        val db = dbHelper.readableDatabase
         val cursor = db.rawQuery(
             "SELECT COUNT(*) FROM ${DatabaseHelper.TABLE_DICTIONARY}",
             null
@@ -237,7 +219,6 @@ class DictionaryWordDAO(context: Context) {
         val count = cursor.getInt(0)
 
         cursor.close()
-        db.close()
         return count
     }
 

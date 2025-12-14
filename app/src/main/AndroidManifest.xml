@@ -60,7 +60,12 @@
         <activity
             android:name=".ui.quiz.LevelSelectionActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.review.ReviewActivity"
+            android:exported="false" />
+
         <!-- Dictionary Activity -->
+
         <activity
             android:name=".ui.dictionary.DictionaryActivity"
             android:exported="false" />

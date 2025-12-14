@@ -5,60 +5,82 @@ import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import com.example.project.R
+import com.example.project.data.local.StudySessionDAO
+import com.example.project.data.model.StudySession
 import com.example.project.ui.base.BaseActivity
+import com.example.project.utils.UserSession
+import java.util.Date
 
 class QuizResultActivity : BaseActivity() {
 
     private val TAG = "QuizResult_DEBUG"
 
-    // Khai báo các view mới theo layout
     private lateinit var tvScoreBig: TextView
     private lateinit var tvCorrectCount: TextView
     private lateinit var tvWrongCount: TextView
-//    private lateinit var tvTitle: TextView
     private lateinit var closeButton: Button
+
+    private lateinit var studySessionDAO: StudySessionDAO
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_quiz_result)
 
-        // Ánh xạ View
         tvScoreBig = findViewById(R.id.tvScoreBig)
         tvCorrectCount = findViewById(R.id.tvCorrectCount)
         tvWrongCount = findViewById(R.id.tvWrongCount)
-        tvTitle = findViewById(R.id.tvTitle)
         closeButton = findViewById(R.id.closeButton)
 
-        // Lấy dữ liệu từ Intent (Logic cũ giữ nguyên)
+        // Set a default title using the existing setHeaderTitle from BaseActivity
+        setHeaderTitle("Kết quả Quiz")
+
+        studySessionDAO = StudySessionDAO(this)
+
         val score = intent.getIntExtra("SCORE", -1)
-        val total = intent.getIntExtra("TOTAL_QUESTIONS", -1)
+        val totalQuestions = intent.getIntExtra("TOTAL_QUESTIONS", -1)
 
-        Log.d(TAG, "Received Score: $score, Total: $total")
+        Log.d(TAG, "Received Score: $score, Total: $totalQuestions")
 
-        if (score == -1 || total == -1) {
-            tvTitle.text = "Lỗi!"
+        if (score == -1 || totalQuestions == -1) {
+            setHeaderTitle("Lỗi Quiz")
             tvScoreBig.text = "Error"
             Log.e(TAG, "Error receiving quiz results from Intent.")
         } else {
             val correct = score
-            val incorrect = total - score
+            val incorrect = totalQuestions - score
 
-            // Hiển thị dữ liệu lên giao diện mới
-            tvScoreBig.text = "$score/$total"
+            tvScoreBig.text = "$score/$totalQuestions"
             tvCorrectCount.text = "$correct"
             tvWrongCount.text = "$incorrect"
 
-            // Thêm chút logic vui vẻ: Đổi tiêu đề dựa trên điểm số
-            val percentage = (score.toFloat() / total.toFloat()) * 100
+            val percentage = if (totalQuestions > 0) (score.toFloat() / totalQuestions.toFloat()) * 100 else 0f
             if (percentage >= 80) {
-                tvTitle.text = "Tuyệt vời! \uD83C\uDF89" // Icon pháo hoa
+                setHeaderTitle("Tuyệt vời! \uD83C\uDF89")
             } else if (percentage >= 50) {
-                tvTitle.text = "Làm tốt lắm!"
+                setHeaderTitle("Làm tốt lắm!")
             } else {
-                tvTitle.text = "Cố gắng hơn nhé!"
+                setHeaderTitle("Cố gắng hơn nhé!")
             }
+
+            // --- Ghi lại phiên học Quiz ---
+            saveQuizSession(totalQuestions)
         }
 
         closeButton.setOnClickListener { finish() }
+    }
+
+    private fun saveQuizSession(questionCount: Int) {
+        val userId = UserSession.getUserId(this)
+        if (userId != -1 && questionCount > 0) {
+            val session = StudySession(
+                userId = userId,
+                wordsCount = questionCount, // Coi mỗi câu hỏi là một "từ" đã học
+                date = Date()
+            )
+            studySessionDAO.addSession(session)
+            Log.d(TAG, "Quiz session saved for user $userId with $questionCount questions.")
+        } else {
+            Log.w(TAG, "Could not save quiz session. UserId: $userId, QuestionCount: $questionCount")
+        }
     }
 }

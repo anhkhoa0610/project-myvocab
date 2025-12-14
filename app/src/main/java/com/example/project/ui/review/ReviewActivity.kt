@@ -1,69 +1,137 @@
 package com.example.project.ui.review
 
 import android.os.Bundle
+import android.view.View
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.example.project.R
-import com.example.project.data.model.Word
-import com.example.project.databinding.ActivityReviewBinding
+import com.example.project.data.local.DictionaryWordDAO
+import com.example.project.data.local.StudySessionDAO
+import com.example.project.data.local.UserWordStatusDAO
+import com.example.project.data.model.DictionaryWord
+import com.example.project.data.model.StudySession
+import com.example.project.data.model.UserWordStatus
+import com.example.project.ui.base.BaseActivity
+import com.example.project.utils.UserSession
+import com.google.android.material.button.MaterialButton
+import java.util.Date
 
-class ReviewActivity : AppCompatActivity() {
+class ReviewActivity : BaseActivity() {
 
-    private lateinit var binding: ActivityReviewBinding
-    private lateinit var wordsToReview: MutableList<Word>
+    // Data
+    private lateinit var wordsToReview: List<DictionaryWord>
     private var currentWordIndex = 0
+    private var reviewedWordsCount = 0
+    private var userId: Int = -1
+
+    // DAOs
+    private lateinit var dictionaryWordDAO: DictionaryWordDAO
+    private lateinit var userWordStatusDAO: UserWordStatusDAO
+    private lateinit var studySessionDAO: StudySessionDAO
+
+    // Views
+    private lateinit var wordTextView: TextView
+    private lateinit var definitionTextView: TextView
+    private lateinit var tvProgress: TextView
+    private lateinit var cardContentLayout: LinearLayout // Dùng để làm animation
+    private lateinit var knownButton: MaterialButton
+    private lateinit var unknownButton: MaterialButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityReviewBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setContentView(R.layout.activity_review)
 
-        loadWords()
+        initViews()
+        initData()
 
-        binding.knownButton.setOnClickListener {
+        // Sự kiện nút bấm
+        knownButton.setOnClickListener {
             markCurrentWordAsKnown()
-            showNextWord()
+            animateAndShowNext()
         }
 
-        binding.unknownButton.setOnClickListener {
-            showNextWord()
+        unknownButton.setOnClickListener {
+            animateAndShowNext()
         }
     }
 
-    private fun loadWords() {
-        // TODO: Replace this with actual data from your database/repository
-        wordsToReview = mutableListOf(
-            Word(1, "Apple", "A fruit", "Easy", "Fruit", "Example sentence for apple.", "", 0, 0),
-            Word(2, "Banana", "A yellow fruit", "Easy", "Fruit", "Example sentence for banana.", "", 0, 0),
-            Word(3, "Cat", "A domestic animal", "Easy", "Animal", "Example sentence for cat.", "", 0, 0),
-            Word(4, "Dog", "A loyal animal", "Easy", "Animal", "Example sentence for dog.", "", 0, 0)
-        )
+    private fun initViews() {
+        wordTextView = findViewById(R.id.wordTextView)
+        definitionTextView = findViewById(R.id.definitionTextView)
+        tvProgress = findViewById(R.id.tvProgress)
+        cardContentLayout = findViewById(R.id.cardContentLayout)
+        knownButton = findViewById(R.id.knownButton)
+        unknownButton = findViewById(R.id.unknownButton)
+    }
+
+    private fun initData() {
+        userId = UserSession.getUserId(this)
+        if (userId == -1) {
+            Toast.makeText(this, "Lỗi: Không tìm thấy người dùng.", Toast.LENGTH_LONG).show()
+            finish()
+            return
+        }
+
+        dictionaryWordDAO = DictionaryWordDAO(this)
+        userWordStatusDAO = UserWordStatusDAO(this)
+        studySessionDAO = StudySessionDAO(this)
+
+        loadWordsToReview()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (reviewedWordsCount > 0) {
+            saveStudySession()
+        }
+    }
+
+    private fun loadWordsToReview() {
+        val allWords = dictionaryWordDAO.getAllWords()
+        val knownWordIds = userWordStatusDAO.getKnownWordIds(userId).toSet()
+
+        // Lọc từ chưa biết và xáo trộn
+        wordsToReview = allWords.filter { it.id !in knownWordIds }.shuffled()
+        currentWordIndex = 0
+        reviewedWordsCount = 0
 
         if (wordsToReview.isNotEmpty()) {
             showWordAtIndex(currentWordIndex)
+            enableButtons(true)
         } else {
-            binding.wordTextView.text = "No words to review!"
-            binding.definitionTextView.text = ""
-            binding.knownButton.isEnabled = false
-            binding.unknownButton.isEnabled = false
+            showEmptyState()
         }
     }
 
     private fun showWordAtIndex(index: Int) {
         if (index >= 0 && index < wordsToReview.size) {
             val word = wordsToReview[index]
-            binding.wordTextView.text = word.word
-            binding.definitionTextView.text = word.meaning
+            wordTextView.text = word.word
+            definitionTextView.text = word.meaning
+
+            // Cập nhật tiến độ: Ví dụ "Word 1 of 5"
+            tvProgress.text = "Word ${index + 1} of ${wordsToReview.size}"
         }
     }
 
-    private fun showNextWord() {
+    // Hàm tạo hiệu ứng chuyển cảnh mượt mà
+    private fun animateAndShowNext() {
+        // Fade out (mờ đi)
+        cardContentLayout.animate().alpha(0f).setDuration(150).withEndAction {
+            showNextWordLogic()
+            // Fade in (hiện lại)
+            cardContentLayout.animate().alpha(1f).setDuration(150).start()
+        }.start()
+    }
+
+    private fun showNextWordLogic() {
+        reviewedWordsCount++
         currentWordIndex++
         if (currentWordIndex < wordsToReview.size) {
             showWordAtIndex(currentWordIndex)
         } else {
-            // End of review session
-            Toast.makeText(this, "Review session finished!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Chúc mừng! Bạn đã hoàn thành phiên ôn tập.", Toast.LENGTH_SHORT).show()
             finish()
         }
     }
@@ -71,9 +139,38 @@ class ReviewActivity : AppCompatActivity() {
     private fun markCurrentWordAsKnown() {
         if (currentWordIndex >= 0 && currentWordIndex < wordsToReview.size) {
             val word = wordsToReview[currentWordIndex]
-            // TODO: Update the word's status in your database
-            // For now, we'll just show a toast message
-            Toast.makeText(this, "'${word.word}' marked as known!", Toast.LENGTH_SHORT).show()
+            val status = UserWordStatus(
+                userId = userId,
+                wordId = word.id,
+                status = "known",
+                lastReviewed = Date(),
+                reviewCount = 1
+            )
+            userWordStatusDAO.addOrUpdateStatus(status)
         }
+    }
+
+    private fun saveStudySession() {
+        val session = StudySession(
+            userId = userId,
+            wordsCount = reviewedWordsCount,
+            date = Date()
+        )
+        studySessionDAO.addSession(session)
+    }
+
+    private fun showEmptyState() {
+        wordTextView.text = "Tuyệt vời!"
+        definitionTextView.text = "Bạn đã học hết tất cả các từ trong từ điển."
+        tvProgress.text = ""
+        enableButtons(false)
+    }
+
+    private fun enableButtons(enable: Boolean) {
+        knownButton.isEnabled = enable
+        unknownButton.isEnabled = enable
+        // Đổi màu nút khi disable để user dễ nhận biết (tuỳ chọn)
+        knownButton.alpha = if (enable) 1.0f else 0.5f
+        unknownButton.alpha = if (enable) 1.0f else 0.5f
     }
 }
