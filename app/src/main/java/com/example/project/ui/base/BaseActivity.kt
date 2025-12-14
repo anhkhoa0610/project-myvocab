@@ -9,9 +9,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.example.project.R
-import com.example.project.ui.main.MyVocabActivity
+import com.example.project.ui.admin.AdminDashboardActivity
+import com.example.project.ui.auth.DashboardActivity
+import com.example.project.ui.auth.LoginActivity
+import com.example.project.ui.dictionary.DictionaryActivity
 import com.example.project.ui.flashcards.StudySetupActivity
+import com.example.project.ui.main.MyVocabActivity
 import com.example.project.ui.setting.SettingsActivity
+import com.example.project.utils.UserSession
 import com.google.android.material.navigation.NavigationView
 
 abstract class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -50,8 +55,13 @@ abstract class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationIt
 
         navView.setNavigationItemSelectedListener(this)
         
+        // Set user name in navigation header
+        val headerView = navView.getHeaderView(0)
+        val tvUserName = headerView.findViewById<TextView>(R.id.tvUserName)
+        tvUserName.text = UserSession.getUserName(this)
+        
         // Check if user is admin and show/hide admin menu
-        val userRole = com.example.project.utils.UserSession.getUserRole(this)
+        val userRole = UserSession.getUserRole(this)
         val adminMenuItem = navView.menu.findItem(R.id.nav_admin_dashboard)
         adminMenuItem?.isVisible = userRole == "admin"
         
@@ -62,11 +72,9 @@ abstract class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationIt
         bottomNav?.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> {
-                    if (this !is com.example.project.ui.auth.DashboardActivity) {
-                        val intent =
-                            Intent(this, com.example.project.ui.auth.DashboardActivity::class.java)
-                        intent.flags =
-                            Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                    if (this !is DashboardActivity) {
+                        val intent = Intent(this, DashboardActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
                         startActivity(intent)
                         finish()
                     }
@@ -74,13 +82,9 @@ abstract class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationIt
                 }
 
                 R.id.nav_setting -> {
-                    if (this !is com.example.project.ui.setting.SettingsActivity) {
-                        val intent = Intent(
-                            this,
-                            com.example.project.ui.setting.SettingsActivity::class.java
-                        )
-                        intent.flags =
-                            Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                    if (this !is SettingsActivity) {
+                        val intent = Intent(this, SettingsActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
                         startActivity(intent)
                         finish()
                     }
@@ -103,9 +107,8 @@ abstract class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationIt
 
             // Home → Dashboard
             R.id.nav_home -> {
-                if (this !is com.example.project.ui.auth.DashboardActivity) {
-                    val intent =
-                        Intent(this, com.example.project.ui.auth.DashboardActivity::class.java)
+                if (this !is DashboardActivity) {
+                    val intent = Intent(this, DashboardActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
                     startActivity(intent)
                     finish()
@@ -132,19 +135,15 @@ abstract class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationIt
 
             // Dictionary
             R.id.nav_dictionary -> {
-                if (this !is com.example.project.ui.dictionary.DictionaryActivity) {
-                    val intent = Intent(
-                        this,
-                        com.example.project.ui.dictionary.DictionaryActivity::class.java
-                    )
+                if (this !is DictionaryActivity) {
+                    val intent = Intent(this, DictionaryActivity::class.java)
                     startActivity(intent)
                 }
             }
             //setting
             R.id.nav_setting -> {
-                if (this !is com.example.project.ui.setting.SettingsActivity) {
-                    val intent =
-                        Intent(this, com.example.project.ui.setting.SettingsActivity::class.java)
+                if (this !is SettingsActivity) {
+                    val intent = Intent(this, SettingsActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
                     startActivity(intent)
                     finish()
@@ -154,16 +153,16 @@ abstract class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationIt
 
             // Admin Dashboard
             R.id.nav_admin_dashboard -> {
-                if (this !is com.example.project.ui.admin.AdminDashboardActivity) {
-                    val intent = Intent(this, com.example.project.ui.admin.AdminDashboardActivity::class.java)
+                if (this !is AdminDashboardActivity) {
+                    val intent = Intent(this, AdminDashboardActivity::class.java)
                     startActivity(intent)
                 }
             }
 
             // Logout
             R.id.nav_logout -> {
-                com.example.project.utils.UserSession.clearSession(this)
-                val intent = Intent(this, com.example.project.ui.auth.LoginActivity::class.java)
+                UserSession.clearSession(this)
+                val intent = Intent(this, LoginActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
                 finish()
