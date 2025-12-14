@@ -14,25 +14,25 @@
         android:textStyle="bold"
         android:layout_marginBottom="16dp" />
 
-    <!-- Bar chart -->
+    <!-- Bar chart 1 -->
     <com.github.mikephil.charting.charts.BarChart
-        android:id="@+id/barChart"
+        android:id="@+id/barChartWords"
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:layout_marginBottom="24dp" />
 
-    <!-- Title Pie -->
+    <!-- Title 2 -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Tỉ lệ học từ"
+        android:text="Số phiên học theo ngày"
         android:textSize="18sp"
         android:textStyle="bold"
         android:layout_marginBottom="8dp" />
 
-    <!-- Pie chart -->
-    <com.github.mikephil.charting.charts.PieChart
-        android:id="@+id/pieChart"
+    <!-- Bar chart 2 (thay PieChart) -->
+    <com.github.mikephil.charting.charts.BarChart
+        android:id="@+id/barChartSessions"
         android:layout_width="match_parent"
         android:layout_height="280dp" />
 

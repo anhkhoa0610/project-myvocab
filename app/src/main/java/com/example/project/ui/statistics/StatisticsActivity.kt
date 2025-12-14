@@ -7,45 +7,49 @@ import com.example.project.ui.base.BaseActivity
 import com.example.project.utils.WordStatus
 import com.example.project.utils.UserSession
 import com.example.project.data.local.WordProgressDAO
+import com.example.project.data.local.StudySessionDAO
 import com.github.mikephil.charting.charts.BarChart
-import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.DefaultValueFormatter
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
-import com.github.mikephil.charting.utils.ColorTemplate
+import java.text.SimpleDateFormat
+import java.util.*
 
 class StatisticsActivity : BaseActivity() {
 
-    private lateinit var barChart: BarChart
-    private lateinit var pieChart: PieChart
+    private lateinit var barChartWords: BarChart
+    private lateinit var barChartSessions: BarChart
+
+    private val dateFormat = SimpleDateFormat("dd/MM", Locale.getDefault())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_statistics)
 
-        barChart = findViewById(R.id.barChart)
-        pieChart = findViewById(R.id.pieChart)
+        barChartWords = findViewById(R.id.barChartWords)
+        barChartSessions = findViewById(R.id.barChartSessions)
 
         setupCharts()
     }
 
     private fun setupCharts() {
         val userId = UserSession.getUserId(this)
-        val dao = WordProgressDAO(this)
 
+        setupWordProgressChart(userId)
+        setupStudySessionChart(userId)
+    }
+
+    // ================= BAR CHART 1 =================
+    // Tiến độ học từ (NEW / LEARNING / MASTERED)
+    private fun setupWordProgressChart(userId: Int) {
+        val dao = WordProgressDAO(this)
         val stats = dao.getWordCountByStatus(userId)
 
         val newCount = stats[WordStatus.NEW] ?: 0
         val learningCount = stats[WordStatus.LEARNING] ?: 0
         val masteredCount = stats[WordStatus.MASTERED] ?: 0
 
-        setupBarChart(newCount, learningCount, masteredCount)
-        setupPieChart(newCount, learningCount, masteredCount)
-    }
-
-    // ================= BAR CHART =================
-    private fun setupBarChart(newCount: Int, learningCount: Int, masteredCount: Int) {
         val entries = listOf(
             BarEntry(0f, newCount.toFloat()),
             BarEntry(1f, learningCount.toFloat()),
@@ -54,65 +58,73 @@ class StatisticsActivity : BaseActivity() {
 
         val dataSet = BarDataSet(entries, "Tiến độ học từ")
         dataSet.colors = listOf(
-            Color.parseColor("#03A9F4"), // NEW
-            Color.parseColor("#FFC107"), // LEARNING
-            Color.parseColor("#4CAF50")  // MASTERED
-        )
-        dataSet.valueTextSize = 12f
-        dataSet.valueTextColor = Color.BLACK
-        dataSet.valueFormatter = DefaultValueFormatter(0)
-
-        val barData = BarData(dataSet)
-        barData.barWidth = 0.6f
-
-        barChart.data = barData
-
-        val labels = listOf("Mới", "Đang học", "Thành thạo")
-        barChart.xAxis.valueFormatter = IndexAxisValueFormatter(labels)
-        barChart.xAxis.position = XAxis.XAxisPosition.BOTTOM
-        barChart.xAxis.granularity = 1f
-        barChart.xAxis.setDrawGridLines(false)
-
-        barChart.axisLeft.axisMinimum = 0f
-        barChart.axisLeft.granularity = 1f
-        barChart.axisRight.isEnabled = false
-
-        barChart.description.isEnabled = false
-        barChart.setFitBars(true)
-        barChart.animateY(1000)
-        barChart.invalidate()
-    }
-
-    // ================= PIE CHART =================
-    private fun setupPieChart(newCount: Int, learningCount: Int, masteredCount: Int) {
-        val entries = listOf(
-            PieEntry(newCount.toFloat(), "Mới"),
-            PieEntry(learningCount.toFloat(), "Đang học"),
-            PieEntry(masteredCount.toFloat(), "Thành thạo")
-        )
-
-        val dataSet = PieDataSet(entries, "")
-        dataSet.colors = listOf(
             Color.parseColor("#03A9F4"),
             Color.parseColor("#FFC107"),
             Color.parseColor("#4CAF50")
         )
         dataSet.valueTextSize = 12f
-        dataSet.valueTextColor = Color.WHITE
+        dataSet.valueTextColor = Color.BLACK
         dataSet.valueFormatter = DefaultValueFormatter(0)
 
-        val pieData = PieData(dataSet)
-        pieChart.data = pieData
+        barChartWords.data = BarData(dataSet).apply {
+            barWidth = 0.6f
+        }
 
-        pieChart.isDrawHoleEnabled = true
-        pieChart.holeRadius = 45f
-        pieChart.transparentCircleRadius = 50f
-        pieChart.centerText = "Tổng từ\n${newCount + learningCount + masteredCount}"
-        pieChart.setCenterTextSize(14f)
+        barChartWords.xAxis.apply {
+            valueFormatter =
+                IndexAxisValueFormatter(listOf("Mới", "Đang học", "Thành thạo"))
+            position = XAxis.XAxisPosition.BOTTOM
+            granularity = 1f
+            setDrawGridLines(false)
+        }
 
-        pieChart.description.isEnabled = false
-        pieChart.setUsePercentValues(false)
-        pieChart.animateY(1000)
-        pieChart.invalidate()
+        barChartWords.axisLeft.axisMinimum = 0f
+        barChartWords.axisRight.isEnabled = false
+        barChartWords.description.isEnabled = false
+        barChartWords.animateY(1000)
+        barChartWords.invalidate()
+    }
+
+    // ================= BAR CHART 2 =================
+    // Thống kê StudySession (số phiên + số từ theo ngày)
+    private fun setupStudySessionChart(userId: Int) {
+        val dao = StudySessionDAO(this)
+        val stats = dao.getDailyStatsAsSessions(userId)
+
+        if (stats.isEmpty()) {
+            barChartSessions.clear()
+            return
+        }
+
+        val entries = stats.mapIndexed { index, session ->
+            BarEntry(index.toFloat(), session.wordsCount.toFloat())
+        }
+
+        val dataSet = BarDataSet(entries, "Số từ học theo ngày")
+        dataSet.color = Color.parseColor("#673AB7")
+        dataSet.valueTextSize = 10f
+        dataSet.valueFormatter = DefaultValueFormatter(0)
+
+        barChartSessions.data = BarData(dataSet).apply {
+            barWidth = 0.6f
+        }
+
+        val labels = stats.map {
+            dateFormat.format(it.date)
+        }
+
+        barChartSessions.xAxis.apply {
+            valueFormatter = IndexAxisValueFormatter(labels)
+            position = XAxis.XAxisPosition.BOTTOM
+            granularity = 1f
+            labelRotationAngle = -30f
+            setDrawGridLines(false)
+        }
+
+        barChartSessions.axisLeft.axisMinimum = 0f
+        barChartSessions.axisRight.isEnabled = false
+        barChartSessions.description.isEnabled = false
+        barChartSessions.animateY(1000)
+        barChartSessions.invalidate()
     }
 }
