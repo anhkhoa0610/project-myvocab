@@ -25,6 +25,7 @@ class DictionaryManagementActivity : BaseActivity() {
     private lateinit var categoryDAO: CategoryDAO
     private lateinit var spinnerCategory: Spinner
     private lateinit var etSearch: EditText
+    private lateinit var btnAdd: ImageView
     private var categoryList = ArrayList<Category>()
     private var selectedCategoryId: Int = 0 // 0 means "All Categories"
 
@@ -51,18 +52,45 @@ class DictionaryManagementActivity : BaseActivity() {
         setContentView(R.layout.activity_dictionary_management)
 
         setHeaderTitle("Dictionary Management")
-        setupAddButton()
+        
+        setControl()
+        setEvent()
+        loadDataFromDB()
+    }
 
+    private fun setControl() {
         listView = findViewById(R.id.lvDictionaryWords)
         spinnerCategory = findViewById(R.id.spinnerCategory)
         etSearch = findViewById(R.id.etSearch)
         
         dictionaryWordDAO = DictionaryWordDAO(this)
         categoryDAO = CategoryDAO(this)
-
+        
+        // Setup Add Button
+        btnAdd = ImageView(this)
+        btnAdd.setImageResource(R.drawable.ic_add)
+        btnAdd.setPadding(15, 15, 15, 15)
+        
+        val outValue = android.util.TypedValue()
+        theme.resolveAttribute(
+            android.R.attr.selectableItemBackgroundBorderless,
+            outValue,
+            true
+        )
+        btnAdd.setBackgroundResource(outValue.resourceId)
+        frameRightAction.addView(btnAdd)
+        
         setupCategorySpinner()
+    }
+
+    private fun setEvent() {
         setupSearchListener()
-        loadDataFromDB()
+        
+        // Add Button Click Event
+        btnAdd.setOnClickListener {
+            val intent = Intent(this, AddDictionaryWordActivity::class.java)
+            addWordLauncher.launch(intent)
+        }
     }
 
     private fun setupCategorySpinner() {
@@ -145,26 +173,5 @@ class DictionaryManagementActivity : BaseActivity() {
         
         adapter = DictionaryWordAdapter(this, filteredList, categoryList)
         listView.adapter = adapter
-    }
-
-    private fun setupAddButton() {
-        val btnAdd = ImageView(this)
-        btnAdd.setImageResource(R.drawable.ic_add)
-        btnAdd.setPadding(15, 15, 15, 15)
-
-        val outValue = android.util.TypedValue()
-        theme.resolveAttribute(
-            android.R.attr.selectableItemBackgroundBorderless,
-            outValue,
-            true
-        )
-        btnAdd.setBackgroundResource(outValue.resourceId)
-
-        btnAdd.setOnClickListener {
-            val intent = Intent(this, AddDictionaryWordActivity::class.java)
-            addWordLauncher.launch(intent)
-        }
-
-        frameRightAction.addView(btnAdd)
     }
 }

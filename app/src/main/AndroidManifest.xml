@@ -92,6 +92,24 @@
         <activity
             android:name=".ui.auth.ChangePasswordActivity"
             android:exported="false" />
+
+        <activity android:name=".ui.admin.ManageCategoryActivity"
+            android:exported="false"/>
+
+        <activity android:name=".ui.admin.AddCategoryActivity"
+            android:exported="false"/>
+
+        <activity android:name=".ui.admin.EditCategoryActivity"
+            android:exported="false"/>
+
+        <activity android:name=".ui.statistics.StatisticsActivity"
+            android:exported="false"/>
+
+        <activity android:name=".ui.rename.RenameActivity"
+            android:exported="false"/>
+
+        <activity android:name=".ui.vocabStatus.VocabularyActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

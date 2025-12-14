@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@color/white">
+
+    <!-- Tiêu đề -->
+    <TextView
+        android:id="@+id/tvTitleRename"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Đổi tên người dùng"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="@color/black" />
+
+    <!-- Mô tả -->
+    <TextView
+        android:id="@+id/tvDescRename"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tên này sẽ được hiển thị trong menu và trên toàn bộ ứng dụng."
+        android:layout_marginTop="8dp"
+        android:textSize="14sp"
+        android:textColor="@color/gray" />
+
+    <!-- Input tên -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        app:boxBackgroundMode="outline"
+        app:boxCornerRadiusTopStart="12dp"
+        app:boxCornerRadiusTopEnd="12dp"
+        app:boxCornerRadiusBottomStart="12dp"
+        app:boxCornerRadiusBottomEnd="12dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edtUsername"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Nhập tên mới"
+            android:maxLines="1"
+            android:inputType="textPersonName" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Nút Lưu -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSaveUsername"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Lưu"
+        android:layout_marginTop="32dp"
+        app:cornerRadius="12dp"
+        app:backgroundTint="@color/gray"
+        android:textColor="@color/black" />
+
+</LinearLayout>

@@ -22,23 +22,36 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        initViews()
-        initData()
-        setupListeners()
+        setControl()
+        setEvent()
     }
 
-    private fun initViews() {
+    private fun setControl() {
         etEmail = findViewById(R.id.etEmail)
         etPassword = findViewById(R.id.etPassword)
         btnLogin = findViewById(R.id.btnLogin)
         tvRegister = findViewById(R.id.tvRegister)
-    }
-
-    private fun initData() {
+        
         userDAO = UserDAO(this)
         
         // Seed all data (chạy 1 lần khi app khởi động)
         seedAllData()
+    }
+
+    private fun setEvent() {
+        btnLogin.setOnClickListener {
+            val email = etEmail.text.toString().trim()
+            val password = etPassword.text.toString().trim()
+
+            if (validateInput(email, password)) {
+                login(email, password)
+            }
+        }
+
+        tvRegister.setOnClickListener {
+            val intent = Intent(this, RegisterActivity::class.java)
+            startActivity(intent)
+        }
     }
     
     private fun seedAllData() {
@@ -56,22 +69,6 @@ class LoginActivity : AppCompatActivity() {
         // 4. Seed dictionary words (requires levels & categories)
         val dictionaryDAO = com.example.project.data.local.DictionaryWordDAO(this)
         dictionaryDAO.seedSampleWords()
-    }
-
-    private fun setupListeners() {
-        btnLogin.setOnClickListener {
-            val email = etEmail.text.toString().trim()
-            val password = etPassword.text.toString().trim()
-
-            if (validateInput(email, password)) {
-                login(email, password)
-            }
-        }
-
-        tvRegister.setOnClickListener {
-            val intent = Intent(this, RegisterActivity::class.java)
-            startActivity(intent)
-        }
     }
 
     private fun validateInput(email: String, password: String): Boolean {
@@ -116,6 +113,10 @@ class LoginActivity : AppCompatActivity() {
             
             // Save user session
             com.example.project.utils.UserSession.saveUser(this, user.id, user.email, user.name, user.role)
+
+            // Gọi WordDAO để kiểm tra và tạo dữ liệu mẫu cho user này (nếu cần)
+            val wordDAO = com.example.project.data.local.WordDAO(this)
+            wordDAO.seedDefaultWordsForUser(user.id)
             
             // Navigate to Dashboard
             val intent = Intent(this, DashboardActivity::class.java)
