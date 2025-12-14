@@ -14,6 +14,11 @@ import com.example.project.R
 import com.example.project.data.model.Word
 import com.example.project.ui.base.BaseActivity
 import com.example.project.ui.main.MyVocabActivity
+import android.os.Handler
+import android.os.Looper
+import com.example.project.data.local.SettingsDAO
+
+
 
 class FlashCardActivity : BaseActivity() {
 
@@ -32,6 +37,8 @@ class FlashCardActivity : BaseActivity() {
     private var isFront = true
     private var studyList = ArrayList<Word>()
     private var currentIndex = 0
+    private lateinit var settingsDAO: SettingsDAO
+    private var isAutoFlipEnabled = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,18 +46,26 @@ class FlashCardActivity : BaseActivity() {
 
         setHeaderTitle("Luyện tập")
 
+        settingsDAO = SettingsDAO(this)
+        isAutoFlipEnabled = settingsDAO.isFlashcardAutoFlipEnabled()
+
         studyList = intent.getParcelableArrayListExtra("list_word") ?: ArrayList()
 
         setControl()
 
         if (studyList.isNotEmpty()) {
             loadCardData(0)
+
+            if (isAutoFlipEnabled) {
+                startAutoFlip()
+            }
         } else {
             Toast.makeText(this, "Không có từ vựng nào!", Toast.LENGTH_SHORT).show()
         }
 
         setEvent()
     }
+
 
     private fun setControl() {
         card = findViewById(R.id.cardContainer)
@@ -128,6 +143,9 @@ class FlashCardActivity : BaseActivity() {
 
         btnPrev.alpha = if (index > 0) 1.0f else 0.5f
         btnNext.alpha = if (index < studyList.size - 1) 1.0f else 0.5f
+        if (isAutoFlipEnabled) {
+            startAutoFlip()
+        }
     }
 
     private fun flip(from: View, to: View) {
@@ -150,4 +168,30 @@ class FlashCardActivity : BaseActivity() {
         })
         flipOut.start()
     }
+    private val handler = Handler(Looper.getMainLooper())
+    private val autoFlipRunnable = object : Runnable {
+        override fun run() {
+            if (isFront) {
+                flip(front, back)
+            } else {
+                flip(back, front)
+            }
+            isFront = !isFront
+            handler.postDelayed(this, 3000) // ⏱ 3 giây tự lật
+        }
+    }
+    private fun startAutoFlip() {
+        stopAutoFlip()
+        handler.postDelayed(autoFlipRunnable, 3000)
+    }
+
+    private fun stopAutoFlip() {
+        handler.removeCallbacks(autoFlipRunnable)
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        stopAutoFlip()
+    }
+
+
 }
