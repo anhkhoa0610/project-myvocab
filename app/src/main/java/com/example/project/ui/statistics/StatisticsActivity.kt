@@ -41,23 +41,20 @@ class StatisticsActivity : BaseActivity() {
         val stats = dao.getWordCountByStatus(userId)
 
 
-        val newCount = stats[WordStatus.NEW] ?: 2
-        val learningCount = stats[WordStatus.LEARNING] ?: 3
-        val masteredCount = stats[WordStatus.MASTERED] ?: 4
-        val ignoreCount = stats[WordStatus.IGNORED] ?: 5
+        val newCount = stats[WordStatus.NEW] ?: 0
+        val learningCount = stats[WordStatus.LEARNING] ?: 0
+        val masteredCount = stats[WordStatus.MASTERED] ?: 0
 
 
         val entries = listOf(
             BarEntry(0f, newCount.toFloat()),
             BarEntry(1f, learningCount.toFloat()),
-            BarEntry(2f, masteredCount.toFloat()),
-            BarEntry(3f, ignoreCount.toFloat())
+            BarEntry(2f, masteredCount.toFloat())
         )
 
 
         val dataSet = BarDataSet(entries, "Tiến độ học từ")
         dataSet.colors = listOf(
-            Color.parseColor("#F44336"), // IGNORED
             Color.parseColor("#03A9F4"), // NEW
             Color.parseColor("#FFC107"), // LEARNING
             Color.parseColor("#4CAF50") // MASTER
@@ -74,7 +71,7 @@ class StatisticsActivity : BaseActivity() {
 
 
 // X Axis
-        val labels = listOf("Bỏ Qua", "Mới", "Đang học", "Thành thạo")
+        val labels = listOf("Mới", "Đang học", "Thành thạo")
         barChart.xAxis.valueFormatter = IndexAxisValueFormatter(labels)
         barChart.xAxis.position = XAxis.XAxisPosition.BOTTOM
         barChart.xAxis.granularity = 1f
