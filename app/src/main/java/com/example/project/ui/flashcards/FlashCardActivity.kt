@@ -14,6 +14,7 @@ import com.example.project.R
 import com.example.project.data.model.Word
 import com.example.project.ui.base.BaseActivity
 import com.example.project.ui.main.MyVocabActivity
+import com.example.project.ui.games.MatchingGameActivity
 
 class FlashCardActivity : BaseActivity() {
 
@@ -37,7 +38,7 @@ class FlashCardActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_flash_card)
 
-        setHeaderTitle("Luyện tập")
+        setHeaderTitle("Practice")
 
         studyList = intent.getParcelableArrayListExtra("list_word") ?: ArrayList()
 
@@ -46,7 +47,7 @@ class FlashCardActivity : BaseActivity() {
         if (studyList.isNotEmpty()) {
             loadCardData(0)
         } else {
-            Toast.makeText(this, "Không có từ vựng nào!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "No vocabulary available!", Toast.LENGTH_SHORT).show()
         }
 
         setEvent()
@@ -77,7 +78,7 @@ class FlashCardActivity : BaseActivity() {
                 currentIndex++
                 loadCardData(currentIndex)
             } else {
-                showFinishDialog()   // ⬅️ xử lý khi học hết
+                showFinishDialog()   // when all cards are studied
             }
         }
 
@@ -91,18 +92,43 @@ class FlashCardActivity : BaseActivity() {
 
     private fun showFinishDialog() {
         AlertDialog.Builder(this)
-            .setTitle("Hoàn thành 🎉")
-            .setMessage("Bạn đã học hết tất cả từ trong bài này!")
-            .setPositiveButton("Về trang chủ") { _, _ ->
+            .setTitle("Lesson Completed 🎉")
+            .setMessage(
+                "You have reviewed all the vocabulary! " +
+                        "Try the matching game to test your memory."
+            )
+
+            // BUTTON 1: GO TO GAME (Primary)
+            .setPositiveButton("Play Matching Game ") { _, _ ->
+                val intent = Intent(this, MatchingGameActivity::class.java)
+                // Important: pass the studied word list to the game
+                intent.putParcelableArrayListExtra("list_word", studyList)
+                startActivity(intent)
+
+                // Smooth transition animation
+                overridePendingTransition(
+                    android.R.anim.fade_in,
+                    android.R.anim.fade_out
+                )
+
+                finish()
+            }
+
+            // BUTTON 2: GO HOME
+            .setNegativeButton("Go to Home") { _, _ ->
                 val intent = Intent(this, MyVocabActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                intent.flags =
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
                 startActivity(intent)
                 finish()
             }
-            .setNegativeButton("Học lại") { _, _ ->
+
+            // BUTTON 3: REVIEW AGAIN
+            .setNeutralButton("Review Again") { _, _ ->
                 currentIndex = 0
                 loadCardData(0)
             }
+            .setCancelable(false)
             .show()
     }
 
@@ -112,10 +138,9 @@ class FlashCardActivity : BaseActivity() {
         tvEnWord.text = word.word
         tvPronun.text = word.pronunciation
         tvViMeaning.text = word.meaning
-
         tvCount.text = "${index + 1} / ${studyList.size}"
 
-        // Reset card về mặt trước nếu đang ở mặt sau
+        // Reset card to front side
         if (!isFront) {
             back.visibility = View.GONE
             front.visibility = View.VISIBLE
@@ -124,10 +149,16 @@ class FlashCardActivity : BaseActivity() {
         }
 
         btnPrev.isEnabled = index > 0
-        btnNext.isEnabled = index < studyList.size - 1
+        btnPrev.alpha = if (index > 0) 1f else 0.5f
 
-        btnPrev.alpha = if (index > 0) 1.0f else 0.5f
-        btnNext.alpha = if (index < studyList.size - 1) 1.0f else 0.5f
+        //  NEXT button logic
+        if (index == studyList.size - 1) {
+            btnNext.text = "Finish"
+            btnNext.alpha = 1f
+        } else {
+            btnNext.text = "Next"
+            btnNext.alpha = 1f
+        }
     }
 
     private fun flip(from: View, to: View) {

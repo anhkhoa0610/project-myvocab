@@ -98,6 +98,14 @@
 
         <activity android:name=".ui.admin.EditCategoryActivity"
             android:exported="false"/>
+
+        <activity
+            android:name=".ui.games.MatchingGameActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.games.WritingGameActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

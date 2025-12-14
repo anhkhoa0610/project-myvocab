@@ -1,4 +1,13 @@
 package com.example.project.data.model
-
-class MatchingCard {
+enum class CardType {
+    EN,
+    VI
 }
+
+data class MatchingCard(
+    val id: Int,
+    val content: String,
+    val type: CardType,
+    var isSelected: Boolean = false,
+    var isVisible: Boolean = true
+)
