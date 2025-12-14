@@ -11,6 +11,7 @@ import com.example.project.ui.dictionary.DictionaryActivity
 import com.example.project.ui.flashcards.StudySetupActivity
 import com.example.project.ui.main.MyVocabActivity
 import com.example.project.ui.quiz.LevelSelectionActivity
+import com.example.project.ui.statistics.StatisticsActivity
 
 class DashboardActivity : BaseActivity() {
 
@@ -79,7 +80,8 @@ class DashboardActivity : BaseActivity() {
 
         // Statistic (Coming soon)
         cardStatistic.setOnClickListener {
-            Toast.makeText(this, "Statistic feature coming soon!", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, StatisticsActivity::class.java)
+            startActivity(intent)
         }
 
         // Study by Level

@@ -15,6 +15,10 @@
             android:icon="@drawable/ic_flashcard"
             android:title="Flashcard" />
         <item
+            android:id="@+id/nav_status"
+            android:icon="@drawable/ic_assignment"
+            android:title="Word Status" />
+        <item
             android:id="@+id/nav_dictionary"
             android:icon="@android:drawable/ic_menu_search"
             android:title="Dictionary" />

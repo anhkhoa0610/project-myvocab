@@ -71,6 +71,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:background="#FFFFFF"
+        app:headerLayout="@layout/nav_header"
         app:itemTextAppearance="@style/NavMenuTextAppearance"
         app:itemVerticalPadding="12dp"
         app:itemBackground="@drawable/nav_item_background"

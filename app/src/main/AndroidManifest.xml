@@ -55,6 +55,9 @@
             android:name=".ui.quiz.QuizActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.quiz.QuizResultActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.quiz.LevelSelectionActivity"
             android:exported="false" />
         <!-- Dictionary Activity -->
@@ -105,6 +108,15 @@
 
         <activity
             android:name=".ui.games.WritingGameActivity"
+            android:exported="false" />
+            
+        <activity android:name=".ui.statistics.StatisticsActivity"
+            android:exported="false"/>
+
+        <activity android:name=".ui.rename.RenameActivity"
+            android:exported="false"/>
+
+        <activity android:name=".ui.vocabStatus.VocabularyActivity"
             android:exported="false" />
     </application>
 

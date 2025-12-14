@@ -3,6 +3,7 @@ package com.example.project.data.local
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
+import com.example.project.ui.vocabStatus.Vocabulary
 import com.example.project.utils.WordStatus
 
 class WordProgressDAO(context: Context) {
@@ -96,9 +97,100 @@ class WordProgressDAO(context: Context) {
     }
 
     /**
+     * Hàm: getAllWordsWithStatus
+     * Chức năng: Lấy TOÀN BỘ từ vựng trong bảng WORDS.
+     * Logic:
+     * - Kết hợp (JOIN) với bảng WORD_PROGRESS của userId hiện tại.
+     * - Nếu tìm thấy trạng thái trong PROGRESS -> Lấy trạng thái đó.
+     * - Nếu KHÔNG tìm thấy (NULL) -> Tự động coi là 'new' (không cần insert vào DB).
+     */
+    fun getAllWordsWithStatus(userId: Int): List<Vocabulary> {
+        val list = ArrayList<Vocabulary>()
+        val db = dbHelper.readableDatabase
+
+        val query = """
+            SELECT 
+                w.${DatabaseHelper.COLUMN_WORD_ID}, 
+                w.${DatabaseHelper.COLUMN_WORD_WORD}, 
+                w.${DatabaseHelper.COLUMN_WORD_MEANING}, 
+                w.${DatabaseHelper.COLUMN_WORD_PRONUNCIATION}, 
+                IFNULL(wp.${DatabaseHelper.COLUMN_WP_STATUS}, '${WordStatus.NEW}') as calculated_status
+            FROM ${DatabaseHelper.TABLE_WORDS} w
+            LEFT JOIN ${DatabaseHelper.TABLE_WORD_PROGRESS} wp 
+            ON w.${DatabaseHelper.COLUMN_WORD_ID} = wp.${DatabaseHelper.COLUMN_WP_WORD_ID} 
+            AND wp.${DatabaseHelper.COLUMN_WP_USER_ID} = ?
+            
+            -- QUAN TRỌNG: Phải lọc từ vựng thuộc về User ID này
+            WHERE w.${DatabaseHelper.COLUMN_WORD_USER_ID} = ?
+        """
+
+        // Truyền userId 2 lần: 1 cho JOIN, 1 cho WHERE
+        val cursor: Cursor = db.rawQuery(query, arrayOf(userId.toString(), userId.toString()))
+
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_ID))
+                val word = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_WORD))
+                val meaning = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_MEANING))
+                val pronunIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_WORD_PRONUNCIATION)
+                val phonetic = if (pronunIndex != -1 && !cursor.isNull(pronunIndex)) cursor.getString(pronunIndex) else ""
+                val status = cursor.getString(cursor.getColumnIndexOrThrow("calculated_status"))
+
+                list.add(Vocabulary(id, word, meaning, phonetic, status))
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        db.close()
+        return list
+    }
+
+    /**
+     * Hàm lấy danh sách từ vựng theo trạng thái
+     * [ĐÃ SỬA LỖI] Dùng LEFT JOIN để hiển thị cả những từ chưa từng học (mặc định là New)
+     */
+    fun getVocabularyByStatus(userId: Int, status: String): List<Vocabulary> {
+        val list = ArrayList<Vocabulary>()
+        val db = dbHelper.readableDatabase
+
+        val query = """
+            SELECT w.${DatabaseHelper.COLUMN_WORD_ID}, 
+                   w.${DatabaseHelper.COLUMN_WORD_WORD}, 
+                   w.${DatabaseHelper.COLUMN_WORD_MEANING}, 
+                   w.${DatabaseHelper.COLUMN_WORD_PRONUNCIATION}, 
+                   IFNULL(wp.${DatabaseHelper.COLUMN_WP_STATUS}, '${WordStatus.NEW}') as real_status
+            FROM ${DatabaseHelper.TABLE_WORDS} w
+            LEFT JOIN ${DatabaseHelper.TABLE_WORD_PROGRESS} wp 
+            ON w.${DatabaseHelper.COLUMN_WORD_ID} = wp.${DatabaseHelper.COLUMN_WP_WORD_ID} 
+            AND wp.${DatabaseHelper.COLUMN_WP_USER_ID} = ?
+            
+            -- QUAN TRỌNG: Lọc status VÀ lọc User sở hữu từ
+            WHERE real_status = ? AND w.${DatabaseHelper.COLUMN_WORD_USER_ID} = ?
+        """
+
+        // Thứ tự tham số: 1. userId (cho Join), 2. status, 3. userId (cho Where)
+        val cursor: Cursor = db.rawQuery(query, arrayOf(userId.toString(), status, userId.toString()))
+
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_ID))
+                val word = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_WORD))
+                val meaning = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_MEANING))
+                val pronunIndex = cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_PRONUNCIATION)
+                val phonetic = if (cursor.isNull(pronunIndex)) "" else cursor.getString(pronunIndex)
+                val currentStatus = cursor.getString(cursor.getColumnIndexOrThrow("real_status"))
+
+                list.add(Vocabulary(id, word, meaning, phonetic, currentStatus))
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        db.close()
+        return list
+    }
+
+    /**
      * Hàm nội bộ dùng chung để cập nhật Status
      */
-    private fun updateStatus(userId: Int, wordId: Int, newStatus: String) {
+    fun updateStatus(userId: Int, wordId: Int, newStatus: String) {
         val db = dbHelper.writableDatabase
         try {
             val values = ContentValues().apply {
@@ -146,4 +238,29 @@ class WordProgressDAO(context: Context) {
         db.close()
         return status
     }
+    fun getWordCountByStatus(userId: Int): Map<String, Int> {
+        val result = mutableMapOf<String, Int>()
+        val db = dbHelper.readableDatabase
+
+        val cursor = db.rawQuery(
+            """
+        SELECT ${DatabaseHelper.COLUMN_WP_STATUS}, COUNT(*) as count
+        FROM ${DatabaseHelper.TABLE_WORD_PROGRESS}
+        WHERE ${DatabaseHelper.COLUMN_WP_USER_ID} = ?
+        GROUP BY ${DatabaseHelper.COLUMN_WP_STATUS}
+        """,
+            arrayOf(userId.toString())
+        )
+
+        while (cursor.moveToNext()) {
+            val status = cursor.getString(0)
+            val count = cursor.getInt(1)
+            result[status] = count
+        }
+
+        cursor.close()
+        db.close()
+        return result
+    }
+
 }

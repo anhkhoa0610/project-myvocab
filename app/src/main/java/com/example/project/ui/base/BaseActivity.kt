@@ -9,26 +9,31 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.example.project.R
-import com.example.project.ui.main.MyVocabActivity
+import com.example.project.ui.admin.AdminDashboardActivity
+import com.example.project.ui.auth.DashboardActivity
+import com.example.project.ui.auth.LoginActivity
+import com.example.project.ui.dictionary.DictionaryActivity
 import com.example.project.ui.flashcards.StudySetupActivity
+import com.example.project.ui.main.MyVocabActivity
 import com.example.project.ui.setting.SettingsActivity
+import com.example.project.utils.UserSession
+import com.example.project.ui.vocabStatus.VocabularyActivity
 import com.google.android.material.navigation.NavigationView
 
-abstract class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+abstract class BaseActivity : AppCompatActivity(),
+    NavigationView.OnNavigationItemSelectedListener {
 
     protected lateinit var drawerLayout: DrawerLayout
     protected lateinit var tvTitle: TextView
     protected lateinit var frameRightAction: FrameLayout
 
     override fun setContentView(layoutResID: Int) {
-        // Gắn layout cha + layout con
         val fullView = layoutInflater.inflate(R.layout.activity_base, null)
         val activityContainer = fullView.findViewById<FrameLayout>(R.id.container_view)
 
-        // Gắn layout của activity con vào container
         layoutInflater.inflate(layoutResID, activityContainer, true)
-
         super.setContentView(fullView)
+
         initBaseControls()
     }
 
@@ -49,45 +54,47 @@ abstract class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationIt
         }
 
         navView.setNavigationItemSelectedListener(this)
-        
+
         // Check if user is admin and show/hide admin menu
-        val userRole = com.example.project.utils.UserSession.getUserRole(this)
+        val userRole = UserSession.getUserRole(this)
         val adminMenuItem = navView.menu.findItem(R.id.nav_admin_dashboard)
         adminMenuItem?.isVisible = userRole == "admin"
-        
 
         // Bottom Navigation
         val bottomNav =
-            findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottom_nav_base)
+            findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(
+                R.id.bottom_nav_base
+            )
+
         bottomNav?.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> {
-                    if (this !is com.example.project.ui.auth.DashboardActivity) {
-                        val intent =
-                            Intent(this, com.example.project.ui.auth.DashboardActivity::class.java)
-                        intent.flags =
-                            Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-                        startActivity(intent)
+                    if (this !is DashboardActivity) {
+                        startActivity(
+                            Intent(this, DashboardActivity::class.java).apply {
+                                flags =
+                                    Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                            }
+                        )
                         finish()
                     }
                     true
                 }
 
                 R.id.nav_setting -> {
-                    if (this !is com.example.project.ui.setting.SettingsActivity) {
-                        val intent = Intent(
-                            this,
-                            com.example.project.ui.setting.SettingsActivity::class.java
+                    if (this !is SettingsActivity) {
+                        startActivity(
+                            Intent(this, SettingsActivity::class.java).apply {
+                                flags =
+                                    Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                            }
                         )
-                        intent.flags =
-                            Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-                        startActivity(intent)
                         finish()
                     }
                     true
                 }
+
                 R.id.nav_exit -> {
-                    // Exit
                     finishAffinity()
                     true
                 }
@@ -97,25 +104,56 @@ abstract class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationIt
         }
     }
 
+ // update name
+    private fun updateUserNameInDrawer(navView: NavigationView? = null) {
+        val navigationView =
+            navView ?: findViewById(R.id.nav_view_base)
+
+        val headerView = navigationView.getHeaderView(0)
+        val tvUserName = headerView.findViewById<TextView>(R.id.tvUserName)
+
+        tvUserName.text = UserSession.getUserName(this)
+    }
+
+ // lưu ve base update
+    override fun onResume() {
+        super.onResume()
+        updateUserNameInDrawer()
+    }
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
 
-
             // Home → Dashboard
             R.id.nav_home -> {
-                if (this !is com.example.project.ui.auth.DashboardActivity) {
-                    val intent =
-                        Intent(this, com.example.project.ui.auth.DashboardActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-                    startActivity(intent)
+                if (this !is DashboardActivity) {
+                    startActivity(
+                        Intent(this, DashboardActivity::class.java).apply {
+                            flags =
+                                Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                        }
+                    )
                     finish()
                 }
             }
 
-            // My Vocabularies
             R.id.nav_my_vocab -> {
                 if (this !is MyVocabActivity) {
-                    val intent = Intent(this, MyVocabActivity::class.java)
+                    startActivity(
+                        Intent(this, MyVocabActivity::class.java).apply {
+                            flags =
+                                Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                        }
+                    )
+                    finish()
+                }
+            }
+
+            // Learning Progress / Word Status
+            R.id.nav_status -> {
+                if (this !is VocabularyActivity) {
+                    val intent = Intent(this, VocabularyActivity::class.java)
+                    // Dùng cờ này để đảm bảo back stack hợp lý (giống như MyVocab)
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
                     startActivity(intent)
                     finish()
@@ -125,54 +163,46 @@ abstract class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationIt
             // Trang Flashcard → chuyển sang trang CHUẨN BỊ
             R.id.nav_flashcard -> {
                 if (this !is StudySetupActivity) {
-                    val intent = Intent(this, StudySetupActivity::class.java)
-                    startActivity(intent)
+                    startActivity(Intent(this, StudySetupActivity::class.java))
                 }
             }
 
-            // Dictionary
             R.id.nav_dictionary -> {
-                if (this !is com.example.project.ui.dictionary.DictionaryActivity) {
-                    val intent = Intent(
-                        this,
-                        com.example.project.ui.dictionary.DictionaryActivity::class.java
-                    )
-                    startActivity(intent)
+                if (this !is DictionaryActivity) {
+                    startActivity(Intent(this, DictionaryActivity::class.java))
                 }
             }
-            //setting
+
             R.id.nav_setting -> {
-                if (this !is com.example.project.ui.setting.SettingsActivity) {
-                    val intent =
-                        Intent(this, com.example.project.ui.setting.SettingsActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-                    startActivity(intent)
+                if (this !is SettingsActivity) {
+                    startActivity(
+                        Intent(this, SettingsActivity::class.java).apply {
+                            flags =
+                                Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                        }
+                    )
                     finish()
                 }
-                true
             }
 
-            // Admin Dashboard
             R.id.nav_admin_dashboard -> {
-                if (this !is com.example.project.ui.admin.AdminDashboardActivity) {
-                    val intent = Intent(this, com.example.project.ui.admin.AdminDashboardActivity::class.java)
-                    startActivity(intent)
+                if (this !is AdminDashboardActivity) {
+                    startActivity(Intent(this, AdminDashboardActivity::class.java))
                 }
             }
 
-            // Logout
             R.id.nav_logout -> {
-                com.example.project.utils.UserSession.clearSession(this)
-                val intent = Intent(this, com.example.project.ui.auth.LoginActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
+                UserSession.clearSession(this)
+                startActivity(
+                    Intent(this, LoginActivity::class.java).apply {
+                        flags =
+                            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    }
+                )
                 finish()
             }
 
-            // Thoát app
-            R.id.nav_exit -> {
-                finishAffinity()
-            }
+            R.id.nav_exit -> finishAffinity()
         }
 
         drawerLayout.closeDrawer(GravityCompat.START)
