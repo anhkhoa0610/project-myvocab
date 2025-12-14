@@ -226,4 +226,19 @@ class DictionaryWordDAO(context: Context) {
             addWord(DictionaryWord(0, "Internet", "Mạng internet", "/ˈɪntərnet/", "Noun", 2, 5, "I can't connect to the internet.", false))
         }
     }
+    fun getTotalWordCount(): Int {
+        val db = dbHelper.readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT COUNT(*) FROM ${DatabaseHelper.TABLE_DICTIONARY}",
+            null
+        )
+
+        cursor.moveToFirst()
+        val count = cursor.getInt(0)
+
+        cursor.close()
+        db.close()
+        return count
+    }
+
 }
