@@ -146,4 +146,29 @@ class WordProgressDAO(context: Context) {
         db.close()
         return status
     }
+    fun getWordCountByStatus(userId: Int): Map<String, Int> {
+        val result = mutableMapOf<String, Int>()
+        val db = dbHelper.readableDatabase
+
+        val cursor = db.rawQuery(
+            """
+        SELECT ${DatabaseHelper.COLUMN_WP_STATUS}, COUNT(*) as count
+        FROM ${DatabaseHelper.TABLE_WORD_PROGRESS}
+        WHERE ${DatabaseHelper.COLUMN_WP_USER_ID} = ?
+        GROUP BY ${DatabaseHelper.COLUMN_WP_STATUS}
+        """,
+            arrayOf(userId.toString())
+        )
+
+        while (cursor.moveToNext()) {
+            val status = cursor.getString(0)
+            val count = cursor.getInt(1)
+            result[status] = count
+        }
+
+        cursor.close()
+        db.close()
+        return result
+    }
+
 }
