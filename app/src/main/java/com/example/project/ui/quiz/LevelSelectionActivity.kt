@@ -9,8 +9,9 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.project.R
 import com.example.project.data.local.LevelDAO
 import com.example.project.data.local.QuizDAO
+import com.example.project.ui.base.BaseActivity
 
-class LevelSelectionActivity : AppCompatActivity() {
+class LevelSelectionActivity : BaseActivity() {
 
     private lateinit var levelsListView: ListView
     private lateinit var levelDAO: LevelDAO

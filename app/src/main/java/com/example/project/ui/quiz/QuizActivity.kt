@@ -1,29 +1,42 @@
 package com.example.project.ui.quiz
 
+import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
-import android.widget.Button
-import android.widget.RadioButton
-import android.widget.RadioGroup
-import android.widget.TextView
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import android.util.Log
+import android.view.Gravity
+import android.view.View
+import android.widget.*
+import androidx.core.content.ContextCompat
 import com.example.project.R
 import com.example.project.data.local.QuizDAO
 import com.example.project.data.model.QuizQuestion
+import com.example.project.ui.base.BaseActivity
 import com.example.project.utils.UserSession
+import com.google.android.material.button.MaterialButton
 
-class QuizActivity : AppCompatActivity() {
+class QuizActivity : BaseActivity() {
 
+    private val TAG = "QuizActivity_DEBUG"
+
+    // Views
     private lateinit var questionTextView: TextView
+    private lateinit var tvDifficulty: TextView // Mới thêm
+    private lateinit var tvProgress: TextView // Mới thêm
+    private lateinit var progressBar: ProgressBar // Mới thêm
     private lateinit var optionsRadioGroup: RadioGroup
-    private lateinit var submitButton: Button
+    private lateinit var submitButton: MaterialButton // Đổi thành MaterialButton cho đẹp
+    private lateinit var btnFinishSubmit: TextView // Đổi thành TextView (dạng link) cho đỡ rối
 
+    // Data
     private lateinit var quizDAO: QuizDAO
     private var currentQuestionIndex = 0
     private var score = 0
     private var questions: List<QuizQuestion> = emptyList()
     private var quizId: Int = -1
     private var userId: Int = -1
+    private var userAnswers: MutableList<String?> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,18 +47,27 @@ class QuizActivity : AppCompatActivity() {
         loadQuizData()
 
         submitButton.setOnClickListener {
-            checkAnswer()
+            handleNextOrSubmit()
+        }
+
+        btnFinishSubmit.setOnClickListener {
+            Log.d(TAG, "'Finish Anytime' clicked.")
+            saveCurrentSelection() // Lưu lựa chọn hiện tại trước khi thoát
+            calculateAndFinish()
         }
     }
 
     private fun initViews() {
         questionTextView = findViewById(R.id.questionTextView)
+        tvDifficulty = findViewById(R.id.tvDifficulty)
+        tvProgress = findViewById(R.id.tvProgress)
+        progressBar = findViewById(R.id.quizProgressBar)
         optionsRadioGroup = findViewById(R.id.optionsRadioGroup)
         submitButton = findViewById(R.id.submitButton)
+        btnFinishSubmit = findViewById(R.id.btnFinishSubmit)
     }
 
     private fun initDAOs() {
-        // Khởi tạo DAO với Context (this)
         quizDAO = QuizDAO(this)
     }
 
@@ -61,62 +83,115 @@ class QuizActivity : AppCompatActivity() {
 
         questions = quizDAO.getQuestionsForQuiz(quizId)
         if (questions.isEmpty()) {
-            Toast.makeText(this, "Không có câu hỏi nào cho bài kiểm tra này!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Không có câu hỏi nào!", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
 
+        // Cài đặt Max cho ProgressBar
+        progressBar.max = questions.size
+
+        userAnswers = MutableList(questions.size) { null }
         displayQuestion()
     }
 
     private fun displayQuestion() {
         if (currentQuestionIndex < questions.size) {
             val question = questions[currentQuestionIndex]
-            questionTextView.text = question.question
 
+            // SỬA LỖI 1: Ép kiểu về String khi gán text
+            questionTextView.text = question.question
+            tvDifficulty.text = "${question.difficulty}" // Thêm "" để biến thành String
+
+            val displayIndex = currentQuestionIndex + 1
+            // SỬA LỖI 1: Dùng String template "$biến"
+            tvProgress.text = "$displayIndex/${questions.size}"
+            progressBar.progress = displayIndex
+
+            // Tạo RadioButtons
             optionsRadioGroup.removeAllViews()
             optionsRadioGroup.clearCheck()
 
             question.options.forEach { option ->
                 val radioButton = RadioButton(this).apply {
                     text = option
-                    id = android.view.View.generateViewId()
+                    id = View.generateViewId()
+                    textSize = 16f
+                    setTextColor(Color.parseColor("#333333"))
+
+                    // SỬA LỖI 2: Đảm bảo file selector_quiz_option đã được tạo
+                    buttonDrawable = null
+                    background = ContextCompat.getDrawable(context, R.drawable.selector_quiz_option)
+
+                    setPadding(50, 40, 50, 40)
+                    val params = RadioGroup.LayoutParams(
+                        RadioGroup.LayoutParams.MATCH_PARENT,
+                        RadioGroup.LayoutParams.WRAP_CONTENT
+                    )
+                    params.setMargins(0, 0, 0, 24)
+                    layoutParams = params
                 }
                 optionsRadioGroup.addView(radioButton)
             }
+
+            userAnswers[currentQuestionIndex]?.let { selected ->
+                (0 until optionsRadioGroup.childCount).forEach { i ->
+                    val rb = optionsRadioGroup.getChildAt(i) as RadioButton
+                    if (rb.text == selected) rb.isChecked = true
+                }
+            }
+
+            submitButton.text = if (currentQuestionIndex == questions.size - 1) "HOÀN THÀNH" else "CÂU TIẾP THEO"
+
         } else {
-            finishQuiz()
+            calculateAndFinish()
         }
     }
 
-    private fun checkAnswer() {
-        val selectedRadioButtonId = optionsRadioGroup.checkedRadioButtonId
-        if (selectedRadioButtonId == -1) {
+    private fun saveCurrentSelection() {
+        val selectedId = optionsRadioGroup.checkedRadioButtonId
+        if (selectedId != -1) {
+            val selectedRb = findViewById<RadioButton>(selectedId)
+            userAnswers[currentQuestionIndex] = selectedRb.text.toString()
+        }
+    }
+
+    private fun handleNextOrSubmit() {
+        val selectedId = optionsRadioGroup.checkedRadioButtonId
+        if (selectedId == -1) {
             Toast.makeText(this, "Vui lòng chọn một đáp án!", Toast.LENGTH_SHORT).show()
             return
         }
 
-        val selectedRadioButton = findViewById<RadioButton>(selectedRadioButtonId)
-        val selectedAnswer = selectedRadioButton.text.toString()
+        saveCurrentSelection()
 
-        if (selectedAnswer == questions[currentQuestionIndex].answer) {
-            score++
-            Toast.makeText(this, "Chính xác!", Toast.LENGTH_SHORT).show()
+        if (currentQuestionIndex < questions.size - 1) {
+            currentQuestionIndex++
+            displayQuestion()
         } else {
-            Toast.makeText(this, "Sai rồi! Đáp án là: ${questions[currentQuestionIndex].answer}", Toast.LENGTH_SHORT).show()
+            calculateAndFinish()
         }
-
-        currentQuestionIndex++
-        optionsRadioGroup.postDelayed({ displayQuestion() }, 1000)
     }
 
-    private fun finishQuiz() {
+    private fun calculateAndFinish() {
+        score = 0
+        for (i in questions.indices) {
+            val userAnswer = userAnswers.getOrNull(i)
+            val correctAnswer = questions[i].answer
+            if (userAnswer == correctAnswer) {
+                score++
+            }
+        }
+
         if (userId != -1) {
             quizDAO.saveQuizResult(quizId, userId, score)
         }
 
-        val message = "Hoàn thành! Điểm của bạn: $score/${questions.size}"
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+        val intent = Intent(this, QuizResultActivity::class.java).apply {
+            putExtra("SCORE", score)
+            putExtra("TOTAL_QUESTIONS", questions.size)
+        }
+        startActivity(intent)
         finish()
     }
 }
