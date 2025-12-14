@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
@@ -8,7 +8,6 @@
     android:paddingHorizontal="16dp"
     android:gravity="center_vertical">
 
-    <!-- Vòng tròn chữ cái đầu -->
     <TextView
         android:id="@+id/tvFirstLetter"
         android:layout_width="40dp"
@@ -21,7 +20,6 @@
         android:backgroundTint="@color/light_purple"
         android:background="@drawable/circle_background" />
 
-    <!-- Nội dung từ -->
     <LinearLayout
         android:layout_width="100dp"
         android:layout_height="wrap_content"
@@ -51,26 +49,14 @@
         android:layout_height="wrap_content"
         android:text="/ˈap(ə)l/"
         android:layout_weight="1"
-        android:layout_gravity="top"
-        />
+        android:layout_gravity="top" />
 
-    <ImageButton
-        android:id="@+id/btnEdit"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:src="@drawable/ic_edit"
-        android:clickable="true"
-        android:focusable="true"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        app:tint="@color/black" />
-
-    <ImageButton
-        android:id="@+id/btnDelete"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:src="@drawable/ic_delete"
-        android:clickable="true"
-        android:focusable="true"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        app:tint="@color/black" />
+    <androidx.appcompat.widget.AppCompatSpinner
+        android:id="@+id/spinnerStatus"
+        android:layout_width="110dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:spinnerMode="dropdown"
+        android:gravity="end"
+        tools:listitem="@android:layout/simple_spinner_item" />
 </LinearLayout>

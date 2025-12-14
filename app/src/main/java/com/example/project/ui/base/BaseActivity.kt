@@ -17,6 +17,7 @@ import com.example.project.ui.flashcards.StudySetupActivity
 import com.example.project.ui.main.MyVocabActivity
 import com.example.project.ui.setting.SettingsActivity
 import com.example.project.utils.UserSession
+import com.example.project.ui.vocabStatus.VocabularyActivity
 import com.google.android.material.navigation.NavigationView
 
 abstract class BaseActivity : AppCompatActivity(),
@@ -54,10 +55,7 @@ abstract class BaseActivity : AppCompatActivity(),
 
         navView.setNavigationItemSelectedListener(this)
 
-        // Set username lần đầu
-        updateUserNameInDrawer(navView)
-
-        // Check admin role
+        // Check if user is admin and show/hide admin menu
         val userRole = UserSession.getUserRole(this)
         val adminMenuItem = navView.menu.findItem(R.id.nav_admin_dashboard)
         adminMenuItem?.isVisible = userRole == "admin"
@@ -126,6 +124,7 @@ abstract class BaseActivity : AppCompatActivity(),
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
 
+            // Home → Dashboard
             R.id.nav_home -> {
                 if (this !is DashboardActivity) {
                     startActivity(
@@ -150,6 +149,18 @@ abstract class BaseActivity : AppCompatActivity(),
                 }
             }
 
+            // Learning Progress / Word Status
+            R.id.nav_status -> {
+                if (this !is VocabularyActivity) {
+                    val intent = Intent(this, VocabularyActivity::class.java)
+                    // Dùng cờ này để đảm bảo back stack hợp lý (giống như MyVocab)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(intent)
+                    finish()
+                }
+            }
+
+            // Trang Flashcard → chuyển sang trang CHUẨN BỊ
             R.id.nav_flashcard -> {
                 if (this !is StudySetupActivity) {
                     startActivity(Intent(this, StudySetupActivity::class.java))
