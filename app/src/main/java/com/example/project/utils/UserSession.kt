@@ -38,6 +38,10 @@ object UserSession {
         return getPreferences(context).getString(KEY_USER_NAME, null)
     }
 
+    fun setUserName(context: Context, newName: String) {
+        val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        prefs.edit().putString(KEY_USER_NAME, newName).apply()
+    }
     fun getUserRole(context: Context): String? {
         return getPreferences(context).getString(KEY_USER_ROLE, "user")
     }
