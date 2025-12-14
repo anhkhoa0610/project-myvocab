@@ -66,27 +66,6 @@ class LevelDAO(context: Context) {
         return getLevelById(levelId)?.name ?: "Unknown"
     }
 
-    // Seed CEFR levels (A1-C2)
-    fun seedLevels() {
-        val db = dbHelper.readableDatabase
-        val cursor = db.rawQuery("SELECT COUNT(*) FROM ${DatabaseHelper.TABLE_LEVELS}", null)
-        cursor.moveToFirst()
-        val count = cursor.getInt(0)
-        cursor.close()
-        db.close()
-
-        // Chỉ seed nếu chưa có levels
-        if (count == 0) {
-            // CEFR Levels với màu sắc
-            addLevel(Level(0, "A1", "#4CAF50"))  // Green - Beginner
-            addLevel(Level(0, "A2", "#8BC34A"))  // Light Green - Elementary
-            addLevel(Level(0, "B1", "#2196F3"))  // Blue - Intermediate
-            addLevel(Level(0, "B2", "#03A9F4"))  // Light Blue - Upper Intermediate
-            addLevel(Level(0, "C1", "#FF9800"))  // Orange - Advanced
-            addLevel(Level(0, "C2", "#F44336"))  // Red - Proficiency
-        }
-    }
-
     // Update level
     fun updateLevel(level: Level): Int {
         val db = dbHelper.writableDatabase

@@ -16,6 +16,7 @@ import com.example.project.data.model.DictionaryWord
 import com.example.project.ui.base.BaseActivity
 import com.example.project.ui.itemDetail.ItemDetailDictionary
 import com.example.project.ui.itemDetail.ItemDetailMyVocabActivity
+import com.example.project.utils.TTSHelper
 
 class DictionaryActivity : BaseActivity() {
 
@@ -28,6 +29,7 @@ class DictionaryActivity : BaseActivity() {
     private lateinit var dictionaryDAO: DictionaryWordDAO
     private lateinit var categoryDAO: CategoryDAO
     private lateinit var adapter: DictionaryAdapter
+    private lateinit var ttsHelper: TTSHelper
     
     private var allWords = ArrayList<DictionaryWord>()
     private var currentTab = Tab.ALL
@@ -56,6 +58,7 @@ class DictionaryActivity : BaseActivity() {
         
         dictionaryDAO = DictionaryWordDAO(this)
         categoryDAO = CategoryDAO(this)
+        ttsHelper = TTSHelper(this)
     }
 
     private fun setEvent() {
@@ -148,9 +151,12 @@ class DictionaryActivity : BaseActivity() {
             lvDictionaryWords.visibility = View.VISIBLE
             tvEmptyState.visibility = View.GONE
             
-            adapter = DictionaryAdapter(this, allWords) { word ->
-                toggleFavorite(word)
-            }
+            adapter = DictionaryAdapter(
+                this,
+                allWords,
+                onFavoriteClick = { word -> toggleFavorite(word) },
+                onSpeakClick = { word -> ttsHelper.speak(word) }
+            )
             lvDictionaryWords.adapter = adapter
 
             // Xử lý khi bấm vào một dòng (item) để mở chi tiết
@@ -184,5 +190,10 @@ class DictionaryActivity : BaseActivity() {
                 loadWords()
             }
         }
+    }
+    
+    override fun onDestroy() {
+        ttsHelper.shutdown()
+        super.onDestroy()
     }
 }
