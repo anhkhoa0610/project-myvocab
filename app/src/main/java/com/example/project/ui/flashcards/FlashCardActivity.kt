@@ -33,6 +33,8 @@ class FlashCardActivity : BaseActivity() {
     private var isFront = true
     private var studyList = ArrayList<Word>()
     private var currentIndex = 0
+    private lateinit var settingsDAO: SettingsDAO
+    private var isAutoFlipEnabled = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,18 +42,26 @@ class FlashCardActivity : BaseActivity() {
 
         setHeaderTitle("Practice")
 
+        settingsDAO = SettingsDAO(this)
+        isAutoFlipEnabled = settingsDAO.isFlashcardAutoFlipEnabled()
+
         studyList = intent.getParcelableArrayListExtra("list_word") ?: ArrayList()
 
         setControl()
 
         if (studyList.isNotEmpty()) {
             loadCardData(0)
+
+            if (isAutoFlipEnabled) {
+                startAutoFlip()
+            }
         } else {
             Toast.makeText(this, "No vocabulary available!", Toast.LENGTH_SHORT).show()
         }
 
         setEvent()
     }
+
 
     private fun setControl() {
         card = findViewById(R.id.cardContainer)
@@ -181,4 +191,30 @@ class FlashCardActivity : BaseActivity() {
         })
         flipOut.start()
     }
+    private val handler = Handler(Looper.getMainLooper())
+    private val autoFlipRunnable = object : Runnable {
+        override fun run() {
+            if (isFront) {
+                flip(front, back)
+            } else {
+                flip(back, front)
+            }
+            isFront = !isFront
+            handler.postDelayed(this, 3000) // ⏱ 3 giây tự lật
+        }
+    }
+    private fun startAutoFlip() {
+        stopAutoFlip()
+        handler.postDelayed(autoFlipRunnable, 3000)
+    }
+
+    private fun stopAutoFlip() {
+        handler.removeCallbacks(autoFlipRunnable)
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        stopAutoFlip()
+    }
+
+
 }

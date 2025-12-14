@@ -9,110 +9,90 @@ class WordDAO(context: Context) {
 
     private val dbHelper = DatabaseHelper(context)
 
+    /**
+     * THÊM TỪ MỚI
+     * Logic: Thêm vào bảng WORDS -> Lấy ID -> Thêm tiếp vào bảng WORD_PROGRESS
+     */
     fun addWord(word: Word): Long {
         val db = dbHelper.writableDatabase
+        var result: Long = -1
 
-        val values = ContentValues().apply {
-            put(DatabaseHelper.COLUMN_WORD_USER_ID, word.user_id)
-            put(DatabaseHelper.COLUMN_WORD_WORD, word.word)
-            put(DatabaseHelper.COLUMN_WORD_MEANING, word.meaning)
-            put(DatabaseHelper.COLUMN_WORD_PRONUNCIATION, word.pronunciation)
-            put(DatabaseHelper.COLUMN_WORD_PART_OF_SPEECH, word.part_of_speech)
+        db.beginTransaction() // Bắt đầu giao dịch
+        try {
+            // 1. Insert vào bảng WORDS
+            val values = ContentValues().apply {
+                put(DatabaseHelper.COLUMN_WORD_USER_ID, word.user_id)
+                put(DatabaseHelper.COLUMN_WORD_WORD, word.word)
+                put(DatabaseHelper.COLUMN_WORD_MEANING, word.meaning)
+                put(DatabaseHelper.COLUMN_WORD_PRONUNCIATION, word.pronunciation)
+                put(DatabaseHelper.COLUMN_WORD_PART_OF_SPEECH, word.part_of_speech)
+            }
+
+            result = db.insert(DatabaseHelper.TABLE_WORDS, null, values)
+
+            // 2. Nếu thêm word thành công (result là ID mới tạo), thêm tiếp vào WORD_PROGRESS
+            if (result > -1) {
+                val progressValues = ContentValues().apply {
+                    put(DatabaseHelper.COLUMN_WP_USER_ID, word.user_id)
+                    put(DatabaseHelper.COLUMN_WP_WORD_ID, result.toInt())
+                    put(DatabaseHelper.COLUMN_WP_STATUS, "new") // Mặc định trạng thái new
+                    put(DatabaseHelper.COLUMN_WP_REVIEW_COUNT, 0)
+                }
+                db.insert(DatabaseHelper.TABLE_WORD_PROGRESS, null, progressValues)
+            }
+
+            db.setTransactionSuccessful() // Đánh dấu giao dịch thành công
+        } catch (e: Exception) {
+            e.printStackTrace()
+            result = -1 // Nếu lỗi thì trả về -1
+        } finally {
+            db.endTransaction() // Kết thúc giao dịch
+            db.close()
         }
-
-        val result = db.insert(DatabaseHelper.TABLE_WORDS, null, values)
-        db.close()
 
         return result
     }
 
-    fun getAllWords(): ArrayList<Word> {
-        val listWords = ArrayList<Word>()
-        val db = dbHelper.readableDatabase
+    /**
+     * XÓA TỪ
+     * Logic: Xóa bên bảng WORD_PROGRESS trước -> Xóa bên bảng WORDS sau
+     */
+    fun deleteWord(wordId: Int): Int {
+        val db = dbHelper.writableDatabase
+        var result = 0
 
-        val query = "SELECT * FROM ${DatabaseHelper.TABLE_WORDS}"
-        val cursor: Cursor = db.rawQuery(query, null)
+        db.beginTransaction()
+        try {
+            // 1. Xóa dữ liệu tiến độ (bảng con) trước
+            db.delete(
+                DatabaseHelper.TABLE_WORD_PROGRESS,
+                "${DatabaseHelper.COLUMN_WP_WORD_ID} = ?",
+                arrayOf(wordId.toString())
+            )
 
-        if (cursor.moveToFirst()) {
-            do {
-                val id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_ID))
-                val userId =
-                    cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_USER_ID))
-                val wordText =
-                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_WORD))
-                val meaning =
-                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_MEANING))
-                val pronunciation =
-                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_PRONUNCIATION))
-                val partOfSpeech =
-                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_PART_OF_SPEECH))
+            // 2. Xóa từ vựng (bảng cha) sau
+            result = db.delete(
+                DatabaseHelper.TABLE_WORDS,
+                "${DatabaseHelper.COLUMN_WORD_ID} = ?",
+                arrayOf(wordId.toString())
+            )
 
-                val wordObj = Word(
-                    id = id,
-                    user_id = userId,
-                    word = wordText,
-                    meaning = meaning,
-                    pronunciation = pronunciation,
-                    part_of_speech = partOfSpeech,
-                    isSelected = false
-                )
-
-                listWords.add(wordObj)
-
-            } while (cursor.moveToNext())
+            db.setTransactionSuccessful()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            db.endTransaction()
+            db.close()
         }
 
-        cursor.close()
-        db.close()
-
-        return listWords
+        return result
     }
 
-    fun getWordsByUserId(userId: Int): ArrayList<Word> {
-        val listWords = ArrayList<Word>()
-        val db = dbHelper.readableDatabase
-
-        val query =
-            "SELECT * FROM ${DatabaseHelper.TABLE_WORDS} WHERE ${DatabaseHelper.COLUMN_WORD_USER_ID} = ?"
-        val cursor = db.rawQuery(query, arrayOf(userId.toString()))
-
-        if (cursor.moveToFirst()) {
-            do {
-                val id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_ID))
-                val userIdCol =
-                    cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_USER_ID))
-                val wordText =
-                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_WORD))
-                val meaning =
-                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_MEANING))
-                val pronunciation =
-                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_PRONUNCIATION))
-                val partOfSpeech =
-                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_PART_OF_SPEECH))
-
-                val wordObj = Word(
-                    id = id,
-                    user_id = userIdCol,
-                    word = wordText,
-                    meaning = meaning,
-                    pronunciation = pronunciation,
-                    part_of_speech = partOfSpeech,
-                    isSelected = false
-                )
-
-                listWords.add(wordObj)
-            } while (cursor.moveToNext())
-        }
-
-        cursor.close()
-        db.close()
-
-        return listWords
-    }
-
+    /**
+     * UPDATE TỪ (Chỉ update nội dung chữ, nghĩa... không ảnh hưởng progress)
+     */
     fun updateWord(word: Word): Int {
         val db = dbHelper.writableDatabase
-
         val values = ContentValues().apply {
             put(DatabaseHelper.COLUMN_WORD_USER_ID, word.user_id)
             put(DatabaseHelper.COLUMN_WORD_WORD, word.word)
@@ -132,25 +112,14 @@ class WordDAO(context: Context) {
         return result
     }
 
-    fun deleteWord(wordId: Int): Int {
-        val db = dbHelper.writableDatabase
-
-        val result = db.delete(
-            DatabaseHelper.TABLE_WORDS,
-            "${DatabaseHelper.COLUMN_WORD_ID} = ?",
-            arrayOf(wordId.toString())
-        )
-
-        db.close()
-        return result
-    }
-
-    // Hàm thêm từ mẫu cho user
+    /**
+     * TẠO DỮ LIỆU MẪU
+     * Cập nhật: Thêm word xong cũng thêm luôn progress cho các từ mẫu này
+     */
     fun seedDefaultWordsForUser(userId: Int) {
         val db = dbHelper.writableDatabase
 
         // 1. Kiểm tra xem user này đã có dữ liệu chưa
-        // Chỉ đếm các từ của RIÊNG user này thôi
         val cursor = db.rawQuery(
             "SELECT count(*) FROM ${DatabaseHelper.TABLE_WORDS} WHERE ${DatabaseHelper.COLUMN_WORD_USER_ID} = ?",
             arrayOf(userId.toString())
@@ -159,7 +128,6 @@ class WordDAO(context: Context) {
         val count = cursor.getInt(0)
         cursor.close()
 
-        // 2. Nếu đã có từ rồi (>0) thì return, không làm gì cả
         if (count > 0) {
             db.close()
             return
@@ -171,7 +139,6 @@ class WordDAO(context: Context) {
             Word(0, userId, "Success", "Thành công", "/səkˈses/", "noun", false),
             Word(0, userId, "Dream", "Giấc mơ", "/driːm/", "noun", false),
             Word(0, userId, "Knowledge", "Kiến thức", "/ˈnɒlɪdʒ/", "noun", false),
-
             Word(0, userId, "Developer", "Lập trình viên", "/dɪˈveləpə(r)/", "noun", false),
             Word(0, userId, "Computer", "Máy tính", "/kəmˈpjuːtə(r)/", "noun", false),
             Word(0, userId, "Algorithm", "Thuật toán", "/ˈælɡərɪðəm/", "noun", false),
@@ -181,7 +148,6 @@ class WordDAO(context: Context) {
             Word(0, userId, "Hardware", "Phần cứng", "/ˈhɑːdweə(r)/", "noun", false),
             Word(0, userId, "Keyboard", "Bàn phím", "/ˈkiːbɔːd/", "noun", false),
             Word(0, userId, "Screen", "Màn hình", "/skriːn/", "noun", false),
-
             Word(0, userId, "Project", "Dự án", "/ˈprɒdʒekt/", "noun", false),
             Word(0, userId, "Deadline", "Hạn chót", "/ˈdedlaɪn/", "noun", false),
             Word(0, userId, "Meeting", "Cuộc họp", "/ˈmiːtɪŋ/", "noun", false),
@@ -193,6 +159,7 @@ class WordDAO(context: Context) {
         db.beginTransaction()
         try {
             for (word in sampleWords) {
+                // Insert Word
                 val values = ContentValues().apply {
                     put(DatabaseHelper.COLUMN_WORD_USER_ID, word.user_id)
                     put(DatabaseHelper.COLUMN_WORD_WORD, word.word)
@@ -200,7 +167,18 @@ class WordDAO(context: Context) {
                     put(DatabaseHelper.COLUMN_WORD_PRONUNCIATION, word.pronunciation)
                     put(DatabaseHelper.COLUMN_WORD_PART_OF_SPEECH, word.part_of_speech)
                 }
-                db.insert(DatabaseHelper.TABLE_WORDS, null, values)
+                val newWordId = db.insert(DatabaseHelper.TABLE_WORDS, null, values)
+
+                // Insert Progress ngay lập tức cho từ mẫu này
+                if (newWordId > -1) {
+                    val progressValues = ContentValues().apply {
+                        put(DatabaseHelper.COLUMN_WP_USER_ID, word.user_id)
+                        put(DatabaseHelper.COLUMN_WP_WORD_ID, newWordId)
+                        put(DatabaseHelper.COLUMN_WP_STATUS, "new")
+                        put(DatabaseHelper.COLUMN_WP_REVIEW_COUNT, 0)
+                    }
+                    db.insert(DatabaseHelper.TABLE_WORD_PROGRESS, null, progressValues)
+                }
             }
             db.setTransactionSuccessful()
         } catch (e: Exception) {
@@ -211,68 +189,76 @@ class WordDAO(context: Context) {
         }
     }
 
+    // --- CÁC HÀM GET KHÔNG THAY ĐỔI ---
+
+    fun getAllWords(): ArrayList<Word> {
+        val listWords = ArrayList<Word>()
+        val db = dbHelper.readableDatabase
+        val query = "SELECT * FROM ${DatabaseHelper.TABLE_WORDS}"
+        val cursor: Cursor = db.rawQuery(query, null)
+        if (cursor.moveToFirst()) {
+            do {
+                listWords.add(parseWord(cursor))
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        db.close()
+        return listWords
+    }
+
+    fun getWordsByUserId(userId: Int): ArrayList<Word> {
+        val listWords = ArrayList<Word>()
+        val db = dbHelper.readableDatabase
+        val query = "SELECT * FROM ${DatabaseHelper.TABLE_WORDS} WHERE ${DatabaseHelper.COLUMN_WORD_USER_ID} = ?"
+        val cursor = db.rawQuery(query, arrayOf(userId.toString()))
+        if (cursor.moveToFirst()) {
+            do {
+                listWords.add(parseWord(cursor))
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        db.close()
+        return listWords
+    }
+
     fun getWordById(id: Int): Word? {
         val db = dbHelper.readableDatabase
         var word: Word? = null
+        val query = "SELECT * FROM ${DatabaseHelper.TABLE_WORDS} WHERE ${DatabaseHelper.COLUMN_WORD_ID} = ?"
+        val cursor = db.rawQuery(query, arrayOf(id.toString()))
 
-        val projection = arrayOf(
-            DatabaseHelper.COLUMN_WORD_ID,
-            DatabaseHelper.COLUMN_WORD_USER_ID,
-            DatabaseHelper.COLUMN_WORD_WORD,
-            DatabaseHelper.COLUMN_WORD_MEANING,
-            DatabaseHelper.COLUMN_WORD_PRONUNCIATION,
-            DatabaseHelper.COLUMN_WORD_PART_OF_SPEECH
-        )
-
-        val selection = "${DatabaseHelper.COLUMN_WORD_ID} = ?"
-        val selectionArgs = arrayOf(id.toString())
-
-        val cursor: Cursor? = db.query(
-            DatabaseHelper.TABLE_WORDS,
-            projection,
-            selection,
-            selectionArgs,
-            null,
-            null,
-            null
-        )
-
-        cursor?.use {
-            if (it.moveToFirst()) {
-                val idColumnIndex = it.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_ID)
-                val userIdColumnIndex = it.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_USER_ID)
-                val wordColumnIndex = it.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_WORD)
-                val meaningColumnIndex =
-                    it.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_MEANING)
-                val pronunciationColumnIndex =
-                    it.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_PRONUNCIATION)
-                val partOfSpeechColumnIndex =
-                    it.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_PART_OF_SPEECH)
-
-                val wordId = it.getInt(idColumnIndex)
-                val userId = it.getInt(userIdColumnIndex)
-                val wordText = it.getString(wordColumnIndex)
-                val meaning = it.getString(meaningColumnIndex)
-                val pronunciation =
-                    it.getStringOrNull(pronunciationColumnIndex) // Vẫn giữ để xử lý null an toàn
-                val partOfSpeech =
-                    it.getStringOrNull(partOfSpeechColumnIndex)   // Vẫn giữ để xử lý null an toàn
-
-                word = Word(
-                    id = wordId,
-                    user_id = userId,
-                    word = wordText,
-                    meaning = meaning,
-                    pronunciation = pronunciation,
-                    part_of_speech = partOfSpeech
-                )
-            }
+        if (cursor.moveToFirst()) {
+            word = parseWord(cursor)
         }
+        cursor.close()
         db.close()
         return word
     }
 
-    private fun Cursor.getStringOrNull(columnIndex: Int): String? {
-        return if (isNull(columnIndex)) null else getString(columnIndex)
+    // Hàm helper để parse cursor ra Word object cho gọn code
+    private fun parseWord(cursor: Cursor): Word {
+        val id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_ID))
+        val userId = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_USER_ID))
+        val wordText = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_WORD))
+        val meaning = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_MEANING))
+
+        // Xử lý null an toàn cho các cột optional
+        val pronunIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_WORD_PRONUNCIATION)
+        val pronunciation = if (pronunIndex != -1 && !cursor.isNull(pronunIndex))
+            cursor.getString(pronunIndex) else null
+
+        val posIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_WORD_PART_OF_SPEECH)
+        val partOfSpeech = if (posIndex != -1 && !cursor.isNull(posIndex))
+            cursor.getString(posIndex) else null
+
+        return Word(
+            id = id,
+            user_id = userId,
+            word = wordText,
+            meaning = meaning,
+            pronunciation = pronunciation,
+            part_of_speech = partOfSpeech,
+            isSelected = false
+        )
     }
 }

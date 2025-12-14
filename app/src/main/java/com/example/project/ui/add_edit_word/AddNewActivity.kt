@@ -8,6 +8,7 @@ import com.example.project.R
 import com.example.project.data.local.WordDAO
 import com.example.project.data.model.Word
 import com.example.project.ui.base.BaseActivity
+import com.example.project.utils.UserSession
 
 class AddNewActivity : BaseActivity() {
     private lateinit var btnSave: Button
@@ -56,7 +57,7 @@ class AddNewActivity : BaseActivity() {
             }
 
             // 1. Tạo đối tượng Word (ID mặc định là 0, SQLite tự sinh)
-            val userId = com.example.project.utils.UserSession.getUserId(this)
+            val userId = UserSession.getUserId(this)
             val newWord = Word(
                 id = 0,
                 user_id = userId,

@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:paddingVertical="12dp"
+    android:paddingHorizontal="16dp"
     android:gravity="center_vertical">
 
     <!-- Vòng tròn chữ cái đầu -->

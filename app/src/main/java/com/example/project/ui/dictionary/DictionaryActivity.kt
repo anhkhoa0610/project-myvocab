@@ -42,28 +42,23 @@ class DictionaryActivity : BaseActivity() {
 
         setHeaderTitle("Dictionary")
         
-        initViews()
-        initData()
-        setupListeners()
+        setControl()
+        setEvent()
+        loadWords()
     }
 
-    private fun initViews() {
+    private fun setControl() {
         etSearch = findViewById(R.id.etSearch)
         tvTabAll = findViewById(R.id.tvTabAll)
         tvTabFavorites = findViewById(R.id.tvTabFavorites)
         lvDictionaryWords = findViewById(R.id.lvDictionaryWords)
         tvEmptyState = findViewById(R.id.tvEmptyState)
-    }
-
-    private fun initData() {
+        
         dictionaryDAO = DictionaryWordDAO(this)
         categoryDAO = CategoryDAO(this)
-        
-        // Load all words (data đã được seed ở LoginActivity)
-        loadWords()
     }
 
-    private fun setupListeners() {
+    private fun setEvent() {
         // Search listener
         etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}

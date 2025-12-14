@@ -8,6 +8,27 @@
     android:padding="24dp"
     android:background="#FFFFFF">
 
+    <!-- Group Information -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nhóm 2"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#2196F3"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Trần Kim Anh Khoa\nVõ Hà Anh Huy\nÂu Thanh Kiệt\nNguyễn Minh Nhựt\nLương Tuấn Kiệt"
+        android:textSize="14sp"
+        android:textColor="#757575"
+        android:gravity="center"
+        android:lineSpacingExtra="4dp"
+        android:layout_marginBottom="32dp" />
+
     <!-- Logo/Title -->
     <TextView
         android:layout_width="wrap_content"

@@ -25,25 +25,22 @@ class RegisterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
-        initViews()
-        initData()
-        setupListeners()
+        setControl()
+        setEvent()
     }
 
-    private fun initViews() {
+    private fun setControl() {
         etName = findViewById(R.id.etName)
         etEmail = findViewById(R.id.etEmail)
         etPassword = findViewById(R.id.etPassword)
         etConfirmPassword = findViewById(R.id.etConfirmPassword)
         btnRegister = findViewById(R.id.btnRegister)
         tvLogin = findViewById(R.id.tvLogin)
-    }
-
-    private fun initData() {
+        
         userDAO = UserDAO(this)
     }
 
-    private fun setupListeners() {
+    private fun setEvent() {
         btnRegister.setOnClickListener {
             val name = etName.text.toString().trim()
             val email = etEmail.text.toString().trim()
