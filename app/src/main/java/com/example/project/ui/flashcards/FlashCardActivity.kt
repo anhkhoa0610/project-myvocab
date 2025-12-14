@@ -5,20 +5,19 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.example.project.R
+import com.example.project.data.local.SettingsDAO
 import com.example.project.data.model.Word
 import com.example.project.ui.base.BaseActivity
+import com.example.project.ui.games.MatchingGameActivity
 import com.example.project.ui.main.MyVocabActivity
-import android.os.Handler
-import android.os.Looper
-import com.example.project.data.local.SettingsDAO
-
-
 
 class FlashCardActivity : BaseActivity() {
 
@@ -37,35 +36,47 @@ class FlashCardActivity : BaseActivity() {
     private var isFront = true
     private var studyList = ArrayList<Word>()
     private var currentIndex = 0
+
     private lateinit var settingsDAO: SettingsDAO
     private var isAutoFlipEnabled = false
+
+    // ===== AUTO FLIP =====
+    private val handler = Handler(Looper.getMainLooper())
+    private val autoFlipRunnable = object : Runnable {
+        override fun run() {
+            if (isFront) {
+                flip(front, back)
+            } else {
+                flip(back, front)
+            }
+            isFront = !isFront
+            handler.postDelayed(this, 3000)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_flash_card)
 
-        setHeaderTitle("Luyện tập")
+        setHeaderTitle("Practice")
 
         settingsDAO = SettingsDAO(this)
         isAutoFlipEnabled = settingsDAO.isFlashcardAutoFlipEnabled()
 
-        studyList = intent.getParcelableArrayListExtra("list_word") ?: ArrayList()
+        studyList =
+            intent.getParcelableArrayListExtra("list_word") ?: ArrayList()
 
         setControl()
+        setEvent()
 
         if (studyList.isNotEmpty()) {
             loadCardData(0)
-
-            if (isAutoFlipEnabled) {
-                startAutoFlip()
-            }
+            if (isAutoFlipEnabled) startAutoFlip()
         } else {
-            Toast.makeText(this, "Không có từ vựng nào!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "No vocabulary available!", Toast.LENGTH_SHORT)
+                .show()
         }
-
-        setEvent()
     }
-
 
     private fun setControl() {
         card = findViewById(R.id.cardContainer)
@@ -82,9 +93,12 @@ class FlashCardActivity : BaseActivity() {
     }
 
     private fun setEvent() {
-        card.setOnClickListener {
-            if (isFront) flip(front, back) else flip(back, front)
-            isFront = !isFront
+
+        if (!isAutoFlipEnabled) {
+            card.setOnClickListener {
+                if (isFront) flip(front, back) else flip(back, front)
+                isFront = !isFront
+            }
         }
 
         btnNext.setOnClickListener {
@@ -92,7 +106,7 @@ class FlashCardActivity : BaseActivity() {
                 currentIndex++
                 loadCardData(currentIndex)
             } else {
-                showFinishDialog()   // ⬅️ xử lý khi học hết
+                showFinishDialog()
             }
         }
 
@@ -104,22 +118,6 @@ class FlashCardActivity : BaseActivity() {
         }
     }
 
-    private fun showFinishDialog() {
-        AlertDialog.Builder(this)
-            .setTitle("Hoàn thành 🎉")
-            .setMessage("Bạn đã học hết tất cả từ trong bài này!")
-            .setPositiveButton("Về trang chủ") { _, _ ->
-                val intent = Intent(this, MyVocabActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-                startActivity(intent)
-                finish()
-            }
-            .setNegativeButton("Học lại") { _, _ ->
-                currentIndex = 0
-                loadCardData(0)
-            }
-            .show()
-    }
 
     private fun loadCardData(index: Int) {
         val word = studyList[index]
@@ -127,10 +125,9 @@ class FlashCardActivity : BaseActivity() {
         tvEnWord.text = word.word
         tvPronun.text = word.pronunciation
         tvViMeaning.text = word.meaning
-
         tvCount.text = "${index + 1} / ${studyList.size}"
 
-        // Reset card về mặt trước nếu đang ở mặt sau
+        // Reset card to front
         if (!isFront) {
             back.visibility = View.GONE
             front.visibility = View.VISIBLE
@@ -138,25 +135,66 @@ class FlashCardActivity : BaseActivity() {
             isFront = true
         }
 
+        // PREV
         btnPrev.isEnabled = index > 0
-        btnNext.isEnabled = index < studyList.size - 1
+        btnPrev.alpha = if (index > 0) 1f else 0.5f
 
-        btnPrev.alpha = if (index > 0) 1.0f else 0.5f
-        btnNext.alpha = if (index < studyList.size - 1) 1.0f else 0.5f
+        // NEXT / FINISH
+        btnNext.text =
+            if (index == studyList.size - 1) "Finish" else "Next"
+        btnNext.alpha = 1f
+
+        // Auto flip restart
         if (isAutoFlipEnabled) {
             startAutoFlip()
         }
     }
 
+    private fun showFinishDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Lesson Completed 🎉")
+            .setMessage(
+                "You have reviewed all the vocabulary!\n" +
+                        "Try the matching game to test your memory."
+            )
+            .setPositiveButton("Play Matching Game") { _, _ ->
+                val intent =
+                    Intent(this, MatchingGameActivity::class.java)
+                intent.putParcelableArrayListExtra(
+                    "list_word",
+                    studyList
+                )
+                startActivity(intent)
+                finish()
+            }
+            .setNegativeButton("Go to Home") { _, _ ->
+                val intent =
+                    Intent(this, MyVocabActivity::class.java)
+                intent.flags =
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                            Intent.FLAG_ACTIVITY_NEW_TASK
+                startActivity(intent)
+                finish()
+            }
+            .setNeutralButton("Review Again") { _, _ ->
+                currentIndex = 0
+                loadCardData(0)
+            }
+            .setCancelable(false)
+            .show()
+    }
+
     private fun flip(from: View, to: View) {
-        val scale = applicationContext.resources.displayMetrics.density
+        val scale = resources.displayMetrics.density
         from.cameraDistance = 8000 * scale
         to.cameraDistance = 8000 * scale
 
-        val flipOut = ObjectAnimator.ofFloat(from, "rotationY", 0f, 90f)
-        flipOut.duration = 300
+        val flipOut =
+            ObjectAnimator.ofFloat(from, "rotationY", 0f, 90f)
+        val flipIn =
+            ObjectAnimator.ofFloat(to, "rotationY", -90f, 0f)
 
-        val flipIn = ObjectAnimator.ofFloat(to, "rotationY", -90f, 0f)
+        flipOut.duration = 300
         flipIn.duration = 300
 
         flipOut.addListener(object : AnimatorListenerAdapter() {
@@ -168,18 +206,7 @@ class FlashCardActivity : BaseActivity() {
         })
         flipOut.start()
     }
-    private val handler = Handler(Looper.getMainLooper())
-    private val autoFlipRunnable = object : Runnable {
-        override fun run() {
-            if (isFront) {
-                flip(front, back)
-            } else {
-                flip(back, front)
-            }
-            isFront = !isFront
-            handler.postDelayed(this, 3000) // ⏱ 3 giây tự lật
-        }
-    }
+
     private fun startAutoFlip() {
         stopAutoFlip()
         handler.postDelayed(autoFlipRunnable, 3000)
@@ -188,10 +215,9 @@ class FlashCardActivity : BaseActivity() {
     private fun stopAutoFlip() {
         handler.removeCallbacks(autoFlipRunnable)
     }
+
     override fun onDestroy() {
         super.onDestroy()
         stopAutoFlip()
     }
-
-
 }

@@ -7,28 +7,52 @@ import android.view.ViewGroup
 import android.widget.*
 import com.example.project.R
 import com.example.project.data.local.WordDAO
+import com.example.project.data.local.WordProgressDAO
 import com.example.project.data.model.Word
 import com.example.project.ui.base.BaseActivity
+import com.example.project.utils.UserSession
+import com.example.project.utils.WordStatus
 
 class StudySetupActivity : BaseActivity() {
 
+    // UI
     private lateinit var lvSelection: ListView
     private lateinit var btnStart: Button
 
+    // DAO
     private lateinit var wordDAO: WordDAO
+    private lateinit var progressDAO: WordProgressDAO
+
+    // Data
     private var allWords = ArrayList<Word>()
+    private val wordStatusMap = mutableMapOf<Int, String>()
+
+    // Adapter
+    private lateinit var adapter: ArrayAdapter<Word>
+
+    // User
+    private var userId: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_study_setup)
 
-        setHeaderTitle("Chọn bài học")
+        setHeaderTitle("Choose Lesson")
+
+        // Get real userId from session
+        userId = UserSession.getUserId(this)
+        if (userId <= 0) {
+            Toast.makeText(this, "Invalid login session!", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
 
         initControls()
 
         wordDAO = WordDAO(this)
-        loadDataFromDB()
+        progressDAO = WordProgressDAO(this)
 
+        loadDataFromDB()
         setupEventStart()
     }
 
@@ -38,35 +62,72 @@ class StudySetupActivity : BaseActivity() {
     }
 
     private fun loadDataFromDB() {
-        val userId = com.example.project.utils.UserSession.getUserId(this)
         allWords = wordDAO.getWordsByUserId(userId)
 
         if (allWords.isEmpty()) {
-            Toast.makeText(this, "Chưa có từ để học!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "No words available to study!", Toast.LENGTH_SHORT).show()
         }
 
-        val adapter = object : ArrayAdapter<Word>(this, R.layout.item_selection, allWords) {
+        // Load status for each word
+        allWords.forEach { word ->
+            wordStatusMap[word.id] = progressDAO.getWordStatus(userId, word.id)
+        }
+
+        adapter = object : ArrayAdapter<Word>(this, R.layout.item_selection, allWords) {
 
             override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-                val view = convertView ?: layoutInflater.inflate(R.layout.item_selection, parent, false)
+                val view = convertView
+                    ?: layoutInflater.inflate(R.layout.item_selection, parent, false)
+
                 val word = getItem(position)!!
 
                 val tvWord = view.findViewById<TextView>(R.id.tvWordSel)
                 val tvMeaning = view.findViewById<TextView>(R.id.tvMeaningSel)
                 val checkBox = view.findViewById<CheckBox>(R.id.cbSelect)
+                val btnReset = view.findViewById<ImageButton>(R.id.btnReset)
 
                 tvWord.text = word.word
                 tvMeaning.text = word.meaning
 
-                checkBox.setOnCheckedChangeListener(null)
-                checkBox.isChecked = word.isSelected
+                val status = wordStatusMap[word.id] ?: WordStatus.NEW
 
-                checkBox.setOnCheckedChangeListener { _, isChecked ->
-                    word.isSelected = isChecked
-                }
+                // Reset view (avoid recycle issues)
+                checkBox.visibility = View.GONE
+                btnReset.visibility = View.GONE
+                view.setOnClickListener(null)
 
-                view.setOnClickListener {
-                    checkBox.isChecked = !checkBox.isChecked
+                if (status == WordStatus.MASTERED) {
+                    // ===== MASTERED =====
+                    btnReset.visibility = View.VISIBLE
+                    btnReset.setOnClickListener {
+
+                        progressDAO.resetToLearning(userId, word.id)
+                        wordStatusMap[word.id] = WordStatus.LEARNING
+                        word.isSelected = false
+
+                        notifyDataSetChanged()
+
+                        Toast.makeText(
+                            context,
+                            "Reset to learning: ${word.word}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
+                } else {
+                    // ===== NOT MASTERED =====
+                    checkBox.visibility = View.VISIBLE
+
+                    checkBox.setOnCheckedChangeListener(null)
+                    checkBox.isChecked = word.isSelected
+
+                    checkBox.setOnCheckedChangeListener { _, isChecked ->
+                        word.isSelected = isChecked
+                    }
+
+                    view.setOnClickListener {
+                        checkBox.isChecked = !checkBox.isChecked
+                    }
                 }
 
                 return view
@@ -78,15 +139,34 @@ class StudySetupActivity : BaseActivity() {
 
     private fun setupEventStart() {
         btnStart.setOnClickListener {
-            val selectedList = allWords.filter { it.isSelected } as ArrayList<Word>
 
-            if (selectedList.isEmpty()) {
-                Toast.makeText(this, "Bạn chưa chọn từ nào!", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+            val selectedList = allWords.filter { it.isSelected }
+
+            when {
+                selectedList.size < 2 -> {
+                    Toast.makeText(
+                        this,
+                        "Please select at least 2 words",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@setOnClickListener
+                }
+
+                selectedList.size > 4 -> {
+                    Toast.makeText(
+                        this,
+                        "You can select up to 4 words only",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@setOnClickListener
+                }
             }
 
             val intent = Intent(this, FlashCardActivity::class.java)
-            intent.putParcelableArrayListExtra("list_word", selectedList)
+            intent.putParcelableArrayListExtra(
+                "list_word",
+                ArrayList(selectedList)
+            )
             startActivity(intent)
         }
     }

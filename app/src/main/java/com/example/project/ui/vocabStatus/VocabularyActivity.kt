@@ -39,20 +39,28 @@ class VocabularyActivity : BaseActivity() {
         tabLayout = findViewById(R.id.tabLayoutStatus)
         etSearch = findViewById(R.id.etSearch)
 
+        // --- BƯỚC 1: THÊM TAB "ALL" VÀO GIAO DIỆN ---
+        // Nếu trong XML bạn chưa thêm TabItem thứ 4, bạn có thể bỏ comment dòng dưới để thêm bằng code:
+        // tabLayout.addTab(tabLayout.newTab().setText("All"))
+
         rvVocabulary.layoutManager = LinearLayoutManager(this)
         val dividerItemDecoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         rvVocabulary.addItemDecoration(dividerItemDecoration)
 
+        // --- BƯỚC 2: SỬA LỖI KHỞI TẠO ADAPTER ---
+        // (Lỗi cũ: bạn gọi nhầm tên hàm getAllWordsWithStatus ở đây)
         adapter = VocabularyStatusAdapter(this, emptyList()) { wordId, newStatus ->
-            // Sử dụng biến 'userId' ở đây
             wordProgressDAO.updateStatus(userId, wordId, newStatus)
+
+            // Logic UX: Nếu đang ở Tab "All" hoặc "Search" thì không cần reload
+            // Nhưng để đơn giản, ta cứ reload lại list để cập nhật đúng vị trí
             loadDataForCurrentTab()
         }
         rvVocabulary.adapter = adapter
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                etSearch.setText("")
+                etSearch.setText("") // Xóa text tìm kiếm khi chuyển tab
                 loadDataForCurrentTab()
             }
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
@@ -85,17 +93,25 @@ class VocabularyActivity : BaseActivity() {
         }
     }
 
+    // --- BƯỚC 3: TÍCH HỢP HÀM getAllWordsWithStatus ---
     private fun loadDataForCurrentTab() {
-        val statusToCheck = when (tabLayout.selectedTabPosition) {
-            0 -> WordStatus.NEW
-            1 -> WordStatus.LEARNING
-            2 -> WordStatus.MASTERED
-            else -> WordStatus.NEW
+        val currentTabPosition = tabLayout.selectedTabPosition
+
+        // Giả sử thứ tự Tab là: 0:New, 1:Learning, 2:Mastered, 3:ALL
+        if (currentTabPosition == 3) {
+            // Đây là lúc sử dụng hàm "thần thánh" bạn đã viết trong DAO
+            originalList = wordProgressDAO.getAllWordsWithStatus(userId)
+        } else {
+            val statusToCheck = when (currentTabPosition) {
+                0 -> WordStatus.NEW
+                1 -> WordStatus.LEARNING
+                2 -> WordStatus.MASTERED
+                else -> WordStatus.NEW
+            }
+            originalList = wordProgressDAO.getVocabularyByStatus(userId, statusToCheck)
         }
 
-        // Sử dụng biến 'userId' ở đây giống file mẫu
-        originalList = wordProgressDAO.getVocabularyByStatus(userId, statusToCheck)
-
+        // Logic giữ lại kết quả tìm kiếm (nếu có)
         val currentSearchText = etSearch.text.toString()
         if (currentSearchText.isNotEmpty()) {
             filterList(currentSearchText)

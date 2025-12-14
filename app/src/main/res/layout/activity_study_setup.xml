@@ -26,7 +26,7 @@
         android:id="@+id/btnStartFlashcard"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:text="BẮT ĐẦU HỌC"
+        android:text="Start Learning"
         android:textSize="18sp"
         android:textStyle="bold"
         android:backgroundTint="#FF9800"
