@@ -198,4 +198,53 @@ class UserDAO(private val context: Context) {
         db.close()
         return rowsAffected > 0
     }
+    fun getUserCountLast7Days(): List<Int> {
+        val result = MutableList(7) { 0 }
+        val db = dbHelper.readableDatabase
+
+        val cursor = db.rawQuery(
+            """
+        SELECT DATE(created_at) as day, COUNT(*) 
+        FROM users
+        WHERE created_at >= date('now', '-6 day')
+        GROUP BY DATE(created_at)
+        ORDER BY day
+        """,
+            null
+        )
+
+        var index = 7 - cursor.count
+        while (cursor.moveToNext()) {
+            result[index++] = cursor.getInt(1)
+        }
+
+        cursor.close()
+        return result
+    }
+    fun getLatestUserName(): String? {
+        val db = dbHelper.readableDatabase
+        var name: String? = null
+
+        val cursor = db.rawQuery(
+            """
+        SELECT ${DatabaseHelper.COLUMN_USER_NAME}
+        FROM ${DatabaseHelper.TABLE_USERS}
+        ORDER BY ${DatabaseHelper.COLUMN_USER_CREATED_AT} DESC
+        LIMIT 1
+        """.trimIndent(),
+            null
+        )
+
+        if (cursor.moveToFirst()) {
+            name = cursor.getString(0)
+        }
+
+        cursor.close()
+        db.close()
+        return name
+    }
+
+
+
+
 }
