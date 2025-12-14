@@ -18,6 +18,7 @@ import com.example.project.data.local.SettingsDAO
 import com.example.project.ui.auth.ChangePasswordActivity
 import com.example.project.ui.auth.LoginActivity // Giả sử LoginActivity là nơi quay về sau reset
 import com.example.project.ui.base.BaseActivity
+import com.example.project.ui.rename.RenameActivity
 
 class SettingsActivity : BaseActivity() {
 
@@ -32,6 +33,8 @@ class SettingsActivity : BaseActivity() {
     private lateinit var switchAutoFlip: SwitchCompat     // 5. Flashcard Auto-flip
     private lateinit var switchSoundEffects: SwitchCompat // 3. Sound Effects
     private lateinit var btnResetApp: Button              // 6. Reset App
+    private lateinit var btnRename : RelativeLayout
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,6 +74,8 @@ class SettingsActivity : BaseActivity() {
         switchAutoFlip = findViewById(R.id.switch_flashcard_auto_flip)
         switchSoundEffects = findViewById(R.id.switch_sound_effects)
         btnResetApp = findViewById(R.id.btn_reset_app)
+        btnRename = findViewById(R.id.rename)
+
     }
 
     private fun loadInitialSettings() {
@@ -108,6 +113,11 @@ class SettingsActivity : BaseActivity() {
 
         // 6. Reset toàn bộ App
         btnResetApp.setOnClickListener { showResetConfirmationDialog() }
+
+        btnRename.setOnClickListener {
+            val intent = Intent(this, RenameActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     // Hàm hiển thị Dialog chọn Theme
