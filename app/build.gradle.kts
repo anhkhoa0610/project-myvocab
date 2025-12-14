@@ -52,4 +52,5 @@ dependencies {
 //    kapt("androidx.room:room-compiler:$room_version")
 //    implementation("androidx.room:room-ktx:$room_version")
     implementation("org.mindrot:jbcrypt:0.4")
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }
