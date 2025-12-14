@@ -93,9 +93,12 @@ class FlashCardActivity : BaseActivity() {
     }
 
     private fun setEvent() {
-        card.setOnClickListener {
-            if (isFront) flip(front, back) else flip(back, front)
-            isFront = !isFront
+
+        if (!isAutoFlipEnabled) {
+            card.setOnClickListener {
+                if (isFront) flip(front, back) else flip(back, front)
+                isFront = !isFront
+            }
         }
 
         btnNext.setOnClickListener {
@@ -114,6 +117,7 @@ class FlashCardActivity : BaseActivity() {
             }
         }
     }
+
 
     private fun loadCardData(index: Int) {
         val word = studyList[index]
