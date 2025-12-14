@@ -12,6 +12,7 @@ import com.example.project.R
 import com.example.project.ui.main.MyVocabActivity
 import com.example.project.ui.flashcards.StudySetupActivity
 import com.example.project.ui.setting.SettingsActivity
+import com.example.project.ui.vocabStatus.VocabularyActivity
 import com.google.android.material.navigation.NavigationView
 
 abstract class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -49,12 +50,12 @@ abstract class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationIt
         }
 
         navView.setNavigationItemSelectedListener(this)
-        
+
         // Check if user is admin and show/hide admin menu
         val userRole = com.example.project.utils.UserSession.getUserRole(this)
         val adminMenuItem = navView.menu.findItem(R.id.nav_admin_dashboard)
         adminMenuItem?.isVisible = userRole == "admin"
-        
+
 
         // Bottom Navigation
         val bottomNav =
@@ -100,7 +101,6 @@ abstract class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationIt
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
 
-
             // Home → Dashboard
             R.id.nav_home -> {
                 if (this !is com.example.project.ui.auth.DashboardActivity) {
@@ -116,6 +116,17 @@ abstract class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationIt
             R.id.nav_my_vocab -> {
                 if (this !is MyVocabActivity) {
                     val intent = Intent(this, MyVocabActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(intent)
+                    finish()
+                }
+            }
+
+            // Learning Progress / Word Status
+            R.id.nav_status -> {
+                if (this !is VocabularyActivity) {
+                    val intent = Intent(this, VocabularyActivity::class.java)
+                    // Dùng cờ này để đảm bảo back stack hợp lý (giống như MyVocab)
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
                     startActivity(intent)
                     finish()

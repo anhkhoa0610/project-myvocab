@@ -5,21 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.recyclerview.widget.RecyclerView
 import com.example.project.R
 import com.example.project.utils.WordStatus
-
-// Model dữ liệu (Nên chuyển ra file riêng nếu có thể, tạm thời để đây)
-data class Vocabulary(
-    val id: Int,        // wordId
-    val word: String,
-    val meaning: String,
-    val phonetic: String,
-    var status: String  // Trạng thái: "new", "learning", "mastered"
-)
 
 class VocabularyStatusAdapter(
     private val context: Context,
@@ -54,13 +44,11 @@ class VocabularyStatusAdapter(
         }
 
         // 2. Setup Spinner
-        // Sử dụng WordStatus.displayList thay vì StatusMapper
-        val adapter = ArrayAdapter(
+        val adapter = StatusSpinnerAdapter(
             context,
-            android.R.layout.simple_spinner_item,
-            WordStatus.displayList // ["New", "Learning", "Mastered"]
+            android.R.layout.simple_spinner_dropdown_item, // Dùng layout có padding sẵn cho đẹp
+            WordStatus.displayList
         )
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         holder.spinnerStatus.adapter = adapter
 
         // 3. Set trạng thái hiện tại (Tắt listener trước khi setSelection để tránh loop)

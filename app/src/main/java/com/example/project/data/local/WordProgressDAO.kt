@@ -3,6 +3,7 @@ package com.example.project.data.local
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
+import com.example.project.ui.vocabStatus.Vocabulary
 import com.example.project.utils.WordStatus
 
 class WordProgressDAO(context: Context) {
@@ -96,9 +97,56 @@ class WordProgressDAO(context: Context) {
     }
 
     /**
+     * Hàm lấy danh sách từ vựng theo trạng thái
+     * [ĐÃ SỬA LỖI] Dùng LEFT JOIN để hiển thị cả những từ chưa từng học (mặc định là New)
+     */
+    fun getVocabularyByStatus(userId: Int, status: String): List<Vocabulary> {
+        val list = ArrayList<Vocabulary>()
+        val db = dbHelper.readableDatabase
+
+        // Logic sửa đổi:
+        // 1. Sử dụng LEFT JOIN: Lấy hết từ bảng WORDS, dù bên WORD_PROGRESS chưa có.
+        // 2. Sử dụng IFNULL: Nếu trạng thái trong DB là null (chưa học), coi nó là 'new'.
+
+        val query = """
+            SELECT w.${DatabaseHelper.COLUMN_WORD_ID}, 
+                   w.${DatabaseHelper.COLUMN_WORD_WORD}, 
+                   w.${DatabaseHelper.COLUMN_WORD_MEANING}, 
+                   w.${DatabaseHelper.COLUMN_WORD_PRONUNCIATION}, 
+                   IFNULL(wp.${DatabaseHelper.COLUMN_WP_STATUS}, '${WordStatus.NEW}') as real_status
+            FROM ${DatabaseHelper.TABLE_WORDS} w
+            LEFT JOIN ${DatabaseHelper.TABLE_WORD_PROGRESS} wp 
+            ON w.${DatabaseHelper.COLUMN_WORD_ID} = wp.${DatabaseHelper.COLUMN_WP_WORD_ID} 
+            AND wp.${DatabaseHelper.COLUMN_WP_USER_ID} = ?
+            WHERE real_status = ?
+        """
+
+        val cursor: Cursor = db.rawQuery(query, arrayOf(userId.toString(), status))
+
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_ID))
+                val word = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_WORD))
+                val meaning = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_MEANING))
+
+                val pronunIndex = cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_PRONUNCIATION)
+                val phonetic = if (cursor.isNull(pronunIndex)) "" else cursor.getString(pronunIndex)
+
+                // Lấy cột real_status mà mình vừa alias ở câu SQL trên
+                val currentStatus = cursor.getString(cursor.getColumnIndexOrThrow("real_status"))
+
+                list.add(Vocabulary(id, word, meaning, phonetic, currentStatus))
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        db.close()
+        return list
+    }
+
+    /**
      * Hàm nội bộ dùng chung để cập nhật Status
      */
-    private fun updateStatus(userId: Int, wordId: Int, newStatus: String) {
+    fun updateStatus(userId: Int, wordId: Int, newStatus: String) {
         val db = dbHelper.writableDatabase
         try {
             val values = ContentValues().apply {
