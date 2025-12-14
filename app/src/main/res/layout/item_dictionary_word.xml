@@ -60,6 +60,19 @@
 
         </LinearLayout>
 
+        <!-- Speaker Icon -->
+        <ImageView
+            android:id="@+id/ivSpeaker"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@android:drawable/ic_lock_silent_mode_off"
+            android:tint="#424242"
+            android:layout_gravity="center_vertical"
+            android:padding="4dp"
+            android:layout_marginEnd="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Speak" />
+
         <!-- Favorite Icon -->
         <ImageView
             android:id="@+id/ivFavorite"

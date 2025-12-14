@@ -181,34 +181,6 @@ class DictionaryWordDAO(context: Context) {
         )
     }
 
-    // Seed sample dictionary words
-    fun seedSampleWords() {
-        val cursor = db.rawQuery("SELECT COUNT(*) FROM ${DatabaseHelper.TABLE_DICTIONARY}", null)
-        cursor.moveToFirst()
-        val count = cursor.getInt(0)
-        cursor.close()
-
-        if (count == 0) {
-            // level_id: 1=A1, 2=A2, 3=B1, 4=B2, 5=C1, 6=C2
-            
-            // Common words (category_id = 1, level_id = 1)
-            addWord(DictionaryWord(0, "Hello", "Xin chào", "/həˈloʊ/", "Interjection", 1, 1, "Hello, how are you?", false))
-            addWord(DictionaryWord(0, "Goodbye", "Tạm biệt", "/ɡʊdˈbaɪ/", "Interjection", 1, 1, "Goodbye, see you later!", false))
-            addWord(DictionaryWord(0, "Thank you", "Cảm ơn", "/θæŋk juː/", "Phrase", 1, 1, "Thank you for your help.", false))
-            addWord(DictionaryWord(0, "Please", "Làm ơn", "/pliːz/", "Adverb", 1, 1, "Please help me.", false))
-            addWord(DictionaryWord(0, "Sorry", "Xin lỗi", "/ˈsɒri/", "Adjective", 1, 1, "I'm sorry for being late.", false))
-            
-            // Business words (category_id = 2, level_id = 3)
-            addWord(DictionaryWord(0, "Meeting", "Cuộc họp", "/ˈmiːtɪŋ/", "Noun", 3, 2, "We have a meeting at 3 PM.", false))
-            addWord(DictionaryWord(0, "Deadline", "Hạn chót", "/ˈdedlaɪn/", "Noun", 3, 2, "The deadline is tomorrow.", false))
-            addWord(DictionaryWord(0, "Presentation", "Bài thuyết trình", "/ˌprezənˈteɪʃn/", "Noun", 3, 2, "I have to give a presentation.", false))
-            
-            // Technology words (category_id = 5, level_id = 2)
-            addWord(DictionaryWord(0, "Computer", "Máy tính", "/kəmˈpjuːtər/", "Noun", 2, 5, "I use my computer every day.", false))
-            addWord(DictionaryWord(0, "Software", "Phần mềm", "/ˈsɒftweər/", "Noun", 3, 5, "This software is very useful.", false))
-            addWord(DictionaryWord(0, "Internet", "Mạng internet", "/ˈɪntərnet/", "Noun", 2, 5, "I can't connect to the internet.", false))
-        }
-    }
     fun getTotalWordCount(): Int {
         val cursor = db.rawQuery(
             "SELECT COUNT(*) FROM ${DatabaseHelper.TABLE_DICTIONARY}",
