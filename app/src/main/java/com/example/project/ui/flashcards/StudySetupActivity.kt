@@ -2,6 +2,7 @@ package com.example.project.ui.flashcards
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.TextWatcher
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -18,6 +19,7 @@ class StudySetupActivity : BaseActivity() {
     // UI
     private lateinit var lvSelection: ListView
     private lateinit var btnStart: Button
+    private lateinit var etSearch: EditText
 
     // DAO
     private lateinit var wordDAO: WordDAO
@@ -25,6 +27,7 @@ class StudySetupActivity : BaseActivity() {
 
     // Data
     private var allWords = ArrayList<Word>()
+    private var displayWords = ArrayList<Word>()
     private val wordStatusMap = mutableMapOf<Int, String>()
 
     // Adapter
@@ -39,7 +42,6 @@ class StudySetupActivity : BaseActivity() {
 
         setHeaderTitle("Choose Lesson")
 
-        // Get real userId from session
         userId = UserSession.getUserId(this)
         if (userId <= 0) {
             Toast.makeText(this, "Invalid login session!", Toast.LENGTH_SHORT).show()
@@ -53,12 +55,14 @@ class StudySetupActivity : BaseActivity() {
         progressDAO = WordProgressDAO(this)
 
         loadDataFromDB()
+        setupSearch()
         setupEventStart()
     }
 
     private fun initControls() {
         lvSelection = findViewById(R.id.lvWordSelection)
         btnStart = findViewById(R.id.btnStartFlashcard)
+        etSearch = findViewById(R.id.etWordSearch)
     }
 
     private fun loadDataFromDB() {
@@ -68,12 +72,15 @@ class StudySetupActivity : BaseActivity() {
             Toast.makeText(this, "No words available to study!", Toast.LENGTH_SHORT).show()
         }
 
-        // Load status for each word
+        wordStatusMap.clear()
         allWords.forEach { word ->
             wordStatusMap[word.id] = progressDAO.getWordStatus(userId, word.id)
         }
 
-        adapter = object : ArrayAdapter<Word>(this, R.layout.item_selection, allWords) {
+        displayWords.clear()
+        displayWords.addAll(allWords)
+
+        adapter = object : ArrayAdapter<Word>(this, R.layout.item_selection, displayWords) {
 
             override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                 val view = convertView
@@ -91,7 +98,7 @@ class StudySetupActivity : BaseActivity() {
 
                 val status = wordStatusMap[word.id] ?: WordStatus.NEW
 
-                // Reset view (avoid recycle issues)
+                // Reset trạng thái view
                 checkBox.visibility = View.GONE
                 btnReset.visibility = View.GONE
                 view.setOnClickListener(null)
@@ -100,11 +107,9 @@ class StudySetupActivity : BaseActivity() {
                     // ===== MASTERED =====
                     btnReset.visibility = View.VISIBLE
                     btnReset.setOnClickListener {
-
                         progressDAO.resetToLearning(userId, word.id)
                         wordStatusMap[word.id] = WordStatus.LEARNING
                         word.isSelected = false
-
                         notifyDataSetChanged()
 
                         Toast.makeText(
@@ -117,7 +122,6 @@ class StudySetupActivity : BaseActivity() {
                 } else {
                     // ===== NOT MASTERED =====
                     checkBox.visibility = View.VISIBLE
-
                     checkBox.setOnCheckedChangeListener(null)
                     checkBox.isChecked = word.isSelected
 
@@ -136,6 +140,38 @@ class StudySetupActivity : BaseActivity() {
 
         lvSelection.adapter = adapter
     }
+
+    // ================= SEARCH =================
+
+    private fun setupSearch() {
+        etSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                filterWords(s.toString())
+            }
+        })
+    }
+
+    private fun filterWords(keyword: String) {
+        val query = keyword.trim().lowercase()
+        displayWords.clear()
+
+        if (query.isEmpty()) {
+            displayWords.addAll(allWords)
+        } else {
+            displayWords.addAll(
+                allWords.filter {
+                    it.word.lowercase().contains(query) ||
+                            it.meaning.lowercase().contains(query)
+                }
+            )
+        }
+        adapter.notifyDataSetChanged()
+    }
+
+    // ================= START FLASHCARD =================
 
     private fun setupEventStart() {
         btnStart.setOnClickListener {
