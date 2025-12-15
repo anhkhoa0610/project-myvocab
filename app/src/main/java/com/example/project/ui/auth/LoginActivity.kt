@@ -55,20 +55,8 @@ class LoginActivity : AppCompatActivity() {
     }
     
     private fun seedAllData() {
-        // 1. Seed levels (required first)
-        val levelDAO = com.example.project.data.local.LevelDAO(this)
-        levelDAO.seedLevels()
-        
-        // 2. Seed categories
-        val categoryDAO = com.example.project.data.local.CategoryDAO(this)
-        categoryDAO.seedDefaultCategories()
-        
-        // 3. Seed users
+        // Seed users
         userDAO.seedDefaultAccounts()
-        
-        // 4. Seed dictionary words (requires levels & categories)
-        val dictionaryDAO = com.example.project.data.local.DictionaryWordDAO(this)
-        dictionaryDAO.seedSampleWords()
     }
 
     private fun validateInput(email: String, password: String): Boolean {

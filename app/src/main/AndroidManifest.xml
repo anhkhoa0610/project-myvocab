@@ -123,6 +123,18 @@
 
         <activity android:name=".ui.vocabStatus.VocabularyActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".ui.admin.UserManagementActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.admin.AddUserActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.admin.EditUserActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

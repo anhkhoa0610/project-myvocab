@@ -67,26 +67,6 @@ class CategoryDAO(context: Context) {
         return category
     }
 
-    // Seed default categories (gọi 1 lần khi app khởi động)
-    fun seedDefaultCategories() {
-        val db = dbHelper.readableDatabase
-        val cursor = db.rawQuery("SELECT COUNT(*) FROM ${DatabaseHelper.TABLE_CATEGORIES}", null)
-        cursor.moveToFirst()
-        val count = cursor.getInt(0)
-        cursor.close()
-        db.close()
-
-        // Chỉ seed nếu chưa có category nào
-        if (count == 0) {
-            addCategory(Category(0, "Common", "Từ vựng thông dụng hàng ngày", "ic_common", "#4CAF50"))
-            addCategory(Category(0, "Business", "Từ vựng kinh doanh", "ic_business", "#2196F3"))
-            addCategory(Category(0, "Academic", "Từ vựng học thuật", "ic_academic", "#9C27B0"))
-            addCategory(Category(0, "Travel", "Từ vựng du lịch", "ic_travel", "#FF9800"))
-            addCategory(Category(0, "Technology", "Từ vựng công nghệ", "ic_tech", "#607D8B"))
-            addCategory(Category(0, "Food", "Từ vựng ẩm thực", "ic_food", "#FF5722"))
-        }
-    }
-
     // Cập nhật category
     fun updateCategory(category: Category): Int {
         val db = dbHelper.writableDatabase

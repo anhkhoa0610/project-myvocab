@@ -244,7 +244,58 @@ class UserDAO(private val context: Context) {
         return name
     }
 
+    fun getAllUsers(): ArrayList<User> {
+        val userList = ArrayList<User>()
+        val db = dbHelper.readableDatabase
+        // Sắp xếp theo ngày tạo mới nhất trước
+        val cursor = db.rawQuery("SELECT * FROM ${DatabaseHelper.TABLE_USERS} ORDER BY ${DatabaseHelper.COLUMN_USER_CREATED_AT} DESC", null)
 
+        if (cursor.moveToFirst()) {
+            do {
+                val user = User(
+                    id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_ID)),
+                    email = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_EMAIL)),
+                    password = "", // Không cần load hash password ra list để hiển thị
+                    name = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_NAME)) ?: "",
+                    role = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_ROLE)) ?: "user",
+                    created_at = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_CREATED_AT)) ?: ""
+                )
+                userList.add(user)
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return userList
+    }
+
+    // 2. Cập nhật thông tin User (Tên, Role) - Không đổi pass ở đây
+    fun updateUserInfo(user: User): Int {
+        val db = dbHelper.writableDatabase
+        val values = ContentValues().apply {
+            put(DatabaseHelper.COLUMN_USER_NAME, user.name)
+            put(DatabaseHelper.COLUMN_USER_EMAIL, user.email)
+            put(DatabaseHelper.COLUMN_USER_ROLE, user.role)
+        }
+        val rows = db.update(
+            DatabaseHelper.TABLE_USERS,
+            values,
+            "${DatabaseHelper.COLUMN_USER_ID} = ?",
+            arrayOf(user.id.toString())
+        )
+        db.close()
+        return rows
+    }
+
+    // 3. Xóa User
+    fun deleteUser(userId: Int): Int {
+        val db = dbHelper.writableDatabase
+        val result = db.delete(
+            DatabaseHelper.TABLE_USERS,
+            "${DatabaseHelper.COLUMN_USER_ID} = ?",
+            arrayOf(userId.toString())
+        )
+        db.close()
+        return result
+    }
 
 
 }

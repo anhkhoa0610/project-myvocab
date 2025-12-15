@@ -22,12 +22,10 @@ class AdminDashboardActivity : BaseActivity() {
 
     private lateinit var cardManageWords: CardView
     private lateinit var cardManageCategories: CardView
-    private lateinit var cardManageLevels: CardView
+    private lateinit var cardManageUsers: CardView
     private lateinit var lineChartUsers: LineChart
     private lateinit var tvTotalWords: TextView
     private lateinit var tvNewUser: TextView
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +50,7 @@ class AdminDashboardActivity : BaseActivity() {
     private fun initViews() {
         cardManageWords = findViewById(R.id.cardManageWords)
         cardManageCategories = findViewById(R.id.cardManageCategories)
-        cardManageLevels = findViewById(R.id.cardManageLevels)
+        cardManageUsers = findViewById(R.id.cardManageUsers)
         lineChartUsers = findViewById(R.id.lineChartUsers)
         tvTotalWords = findViewById(R.id.tvTotalWords)
         tvNewUser = findViewById(R.id.tvNewUser)
@@ -67,8 +65,8 @@ class AdminDashboardActivity : BaseActivity() {
             startActivity(Intent(this, ManageCategoryActivity::class.java))
         }
 
-        cardManageLevels.setOnClickListener {
-            Toast.makeText(this, "Quản lý level - Coming soon", Toast.LENGTH_SHORT).show()
+        cardManageUsers.setOnClickListener {
+            startActivity(Intent(this, UserManagementActivity::class.java))
         }
     }
 
@@ -100,7 +98,6 @@ class AdminDashboardActivity : BaseActivity() {
         }
 
         // Y Axis
-
         lineChartUsers.axisLeft.apply {
             axisMinimum = 0f
             granularity = 1f
@@ -123,21 +120,17 @@ class AdminDashboardActivity : BaseActivity() {
         lineChartUsers.description.isEnabled = false
         lineChartUsers.animateX(1000)
         lineChartUsers.invalidate()
-
     }
-    fun getTotalWords()
-    {
+
+    fun getTotalWords() {
         val dao = DictionaryWordDAO(this)
         val totalWords = dao.getTotalWordCount()
-
         tvTotalWords.text = "Tổng số từ trong từ điển: $totalWords"
-
     }
-    fun getNewUser()
-    {
+
+    fun getNewUser() {
         val userDao = UserDAO(this)
         val totalNewUser = userDao.getLatestUserName()
-
         tvNewUser.text = "User Mới Đăng Ký Hôm Nay: $totalNewUser"
     }
 }

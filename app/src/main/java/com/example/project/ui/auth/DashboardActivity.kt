@@ -10,7 +10,7 @@ import com.example.project.ui.dictionary.DictionaryActivity
 import com.example.project.ui.flashcards.StudySetupActivity
 import com.example.project.ui.main.MyVocabActivity
 import com.example.project.ui.quiz.LevelSelectionActivity
-import com.example.project.ui.review.ReviewActivity // Import ReviewActivity
+import com.example.project.ui.review.ReviewActivity
 import com.example.project.ui.statistics.StatisticsActivity
 import com.example.project.utils.UserSession
 
@@ -23,14 +23,14 @@ class DashboardActivity : BaseActivity() {
     private lateinit var cardFlashcard: CardView
     private lateinit var cardStatistic: CardView
     private lateinit var cardStudyByLevel: CardView
-    private lateinit var cardReviewWords: CardView // Thêm CardView cho ôn tập
+    private lateinit var cardReviewWords: CardView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
 
         setHeaderTitle("Dashboard")
-        
+
         initViews()
         setupWelcomeMessage()
         setupListeners()
@@ -38,7 +38,6 @@ class DashboardActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        // Refresh welcome message when returning to dashboard
         setupWelcomeMessage()
     }
 
@@ -50,45 +49,38 @@ class DashboardActivity : BaseActivity() {
         cardFlashcard = findViewById(R.id.cardFlashcard)
         cardStatistic = findViewById(R.id.cardStatistic)
         cardStudyByLevel = findViewById(R.id.cardStudyByLevel)
-        // Ánh xạ CardView mới. Giả sử bạn đã thêm một card với ID này vào layout
-        cardReviewWords = findViewById(R.id.cardReviewWords) 
+        cardReviewWords = findViewById(R.id.cardReviewWords)
     }
 
     private fun setupWelcomeMessage() {
         val userName = UserSession.getUserName(this) ?: "User"
         val userRole = UserSession.getUserRole(this) ?: "user"
-        
+
         tvWelcome.text = "Welcome, $userName!"
         tvRole.text = if (userRole == "admin") "👑 Admin" else "👤 User"
     }
 
     private fun setupListeners() {
-        // My Vocabularies
         cardMyVocab.setOnClickListener {
             startActivity(Intent(this, MyVocabActivity::class.java))
         }
 
-        // Dictionary
         cardDictionary.setOnClickListener {
             startActivity(Intent(this, DictionaryActivity::class.java))
         }
 
-        // Flashcard
         cardFlashcard.setOnClickListener {
             startActivity(Intent(this, StudySetupActivity::class.java))
         }
 
-        // Statistic
         cardStatistic.setOnClickListener {
             startActivity(Intent(this, StatisticsActivity::class.java))
         }
 
-        // Study by Level
         cardStudyByLevel.setOnClickListener {
             startActivity(Intent(this, LevelSelectionActivity::class.java))
         }
 
-        // Review Words - Khởi chạy ReviewActivity
         cardReviewWords.setOnClickListener {
             startActivity(Intent(this, ReviewActivity::class.java))
         }

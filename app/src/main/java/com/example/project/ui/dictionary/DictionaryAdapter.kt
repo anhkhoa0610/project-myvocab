@@ -13,7 +13,8 @@ import com.example.project.data.model.DictionaryWord
 class DictionaryAdapter(
     private val context: Context,
     private var wordList: ArrayList<DictionaryWord>,
-    private val onFavoriteClick: (DictionaryWord) -> Unit
+    private val onFavoriteClick: (DictionaryWord) -> Unit,
+    private val onSpeakClick: (String) -> Unit
 ) : BaseAdapter() {
 
     override fun getCount(): Int = wordList.size
@@ -36,7 +37,7 @@ class DictionaryAdapter(
         }
 
         val word = getItem(position)
-        holder.bind(word, onFavoriteClick)
+        holder.bind(word, onFavoriteClick, onSpeakClick)
 
         return view
     }
@@ -51,9 +52,14 @@ class DictionaryAdapter(
         private val tvPronunciation: TextView = view.findViewById(R.id.tvPronunciation)
         private val tvMeaning: TextView = view.findViewById(R.id.tvMeaning)
         private val tvExample: TextView = view.findViewById(R.id.tvExample)
+        private val ivSpeaker: ImageView = view.findViewById(R.id.ivSpeaker)
         private val ivFavorite: ImageView = view.findViewById(R.id.ivFavorite)
 
-        fun bind(word: DictionaryWord, onFavoriteClick: (DictionaryWord) -> Unit) {
+        fun bind(
+            word: DictionaryWord,
+            onFavoriteClick: (DictionaryWord) -> Unit,
+            onSpeakClick: (String) -> Unit
+        ) {
             tvWord.text = word.word
             
             // Pronunciation + Part of Speech + Level
@@ -80,6 +86,11 @@ class DictionaryAdapter(
                 tvExample.visibility = View.VISIBLE
             } else {
                 tvExample.visibility = View.GONE
+            }
+            
+            // Speaker icon
+            ivSpeaker.setOnClickListener {
+                onSpeakClick(word.word)
             }
             
             // Favorite icon
