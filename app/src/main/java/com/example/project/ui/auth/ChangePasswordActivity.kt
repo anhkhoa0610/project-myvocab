@@ -31,8 +31,8 @@ class ChangePasswordActivity : BaseActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         userDAO = UserDAO(this)
-        bindViews()
-        setupListener()
+        setControl()
+        setEvent()
     }
 
     // Xử lý nút Back trên ActionBar
@@ -41,7 +41,7 @@ class ChangePasswordActivity : BaseActivity() {
         return true
     }
 
-    private fun bindViews() {
+    private fun setControl() {
         etOldPassword = findViewById(R.id.et_old_password)
         etNewPassword = findViewById(R.id.et_new_password)
         etConfirmPassword = findViewById(R.id.et_confirm_password)
@@ -51,7 +51,7 @@ class ChangePasswordActivity : BaseActivity() {
         btnChangePassword = findViewById(R.id.btn_change_password)
     }
 
-    private fun setupListener() {
+    private fun setEvent() {
         btnChangePassword.setOnClickListener {
             // Xóa mọi thông báo lỗi cũ khi click nút
             clearAllErrors()
