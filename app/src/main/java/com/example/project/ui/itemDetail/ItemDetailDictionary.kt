@@ -20,8 +20,6 @@ class ItemDetailDictionary : BaseActivity() {
     companion object {
         const val EXTRA_DICTIONARY_WORD = "extra_dictionary_word"
     }
-
-    // Views
     private lateinit var tvWord: TextView
     private lateinit var tvPronunciation: TextView
     private lateinit var tvTypeAndLevel: TextView
@@ -30,23 +28,20 @@ class ItemDetailDictionary : BaseActivity() {
     private lateinit var btnFavorite: ImageView
     private lateinit var layoutExample: View
     private lateinit var btnAddVocab: Button
-
-    // Data & DAO
     private lateinit var currentWord: DictionaryWord
     private lateinit var dao: DictionaryWordDAO
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_item_detail_dictionary)
-
-        //title
         setHeaderTitle("Vocab Details")
 
-        initViews()
+        setControl()
         initData()
+        setEvent()
     }
 
-    private fun initViews() {
+    private fun setControl() {
         tvWord = findViewById(R.id.tvDetailWord)
         tvPronunciation = findViewById(R.id.tvDetailPronunciation)
         tvTypeAndLevel = findViewById(R.id.tvDetailTypeAndLevel)
@@ -57,14 +52,30 @@ class ItemDetailDictionary : BaseActivity() {
         layoutExample = tvExample
     }
 
+    private fun setEvent() {
+        btnFavorite.setOnClickListener {
+            if (::currentWord.isInitialized) {
+                toggleFavorite()
+            }
+        }
+
+        btnAddVocab.setOnClickListener {
+            if (::currentWord.isInitialized) {
+                addToMyVocab(currentWord)
+            }
+        }
+    }
+
     private fun initData() {
         dao = DictionaryWordDAO(this)
+
         val wordFromIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             intent.getParcelableExtra(EXTRA_DICTIONARY_WORD, DictionaryWord::class.java)
         } else {
             @Suppress("DEPRECATION")
             intent.getParcelableExtra(EXTRA_DICTIONARY_WORD)
         }
+
         if (wordFromIntent != null) {
             currentWord = wordFromIntent
             bindData(currentWord)
@@ -77,12 +88,12 @@ class ItemDetailDictionary : BaseActivity() {
     private fun bindData(word: DictionaryWord) {
         tvWord.text = word.word
         tvPronunciation.text = word.pronunciation
+
         val levelName = word.getLevelName()
         val partOfSpeech = word.part_of_speech
-
         val typeAndLevelBuilder = StringBuilder()
-        if (partOfSpeech.isNotEmpty()) typeAndLevelBuilder.append(partOfSpeech)
 
+        if (partOfSpeech.isNotEmpty()) typeAndLevelBuilder.append(partOfSpeech)
         if (levelName.isNotEmpty()) {
             if (typeAndLevelBuilder.isNotEmpty()) typeAndLevelBuilder.append(" • ")
             typeAndLevelBuilder.append(levelName)
@@ -92,6 +103,7 @@ class ItemDetailDictionary : BaseActivity() {
         tvTypeAndLevel.visibility = if (typeAndLevelBuilder.isEmpty()) View.GONE else View.VISIBLE
 
         tvMeaning.text = word.meaning
+
         if (word.example_sentence.isNotEmpty()) {
             tvExample.text = word.example_sentence
             layoutExample.visibility = View.VISIBLE
@@ -100,14 +112,6 @@ class ItemDetailDictionary : BaseActivity() {
         }
 
         updateFavoriteIcon()
-
-        btnFavorite.setOnClickListener {
-            toggleFavorite()
-        }
-
-        btnAddVocab.setOnClickListener {
-            addToMyVocab(currentWord)
-        }
     }
 
     private fun updateFavoriteIcon() {
@@ -134,15 +138,9 @@ class ItemDetailDictionary : BaseActivity() {
 
     private fun addToMyVocab(dictWord: DictionaryWord) {
         val wordDAO = WordDAO(this)
-
-        // 1. Lấy ID người dùng hiện tại TRƯỚC (để dùng cho việc check)
         val currentUserId = com.example.project.utils.UserSession.getUserId(this)
 
-        // 2. Lấy danh sách từ của RIÊNG User này thôi
-        // (Thay vì getAllWords() lấy của cả thiên hạ)
         val myWords = wordDAO.getWordsByUserId(currentUserId)
-
-        // 3. Kiểm tra xem trong danh sách CỦA MÌNH đã có từ này chưa
         val isExist = myWords.any { it.word.equals(dictWord.word, ignoreCase = true) }
 
         if (isExist) {
@@ -150,9 +148,8 @@ class ItemDetailDictionary : BaseActivity() {
             return
         }
 
-        // 4. Nếu chưa có thì tạo mới và thêm vào
         val newWord = Word(
-            user_id = currentUserId, // Gán đúng chủ sở hữu
+            user_id = currentUserId,
             word = dictWord.word,
             meaning = dictWord.meaning,
             pronunciation = dictWord.pronunciation,

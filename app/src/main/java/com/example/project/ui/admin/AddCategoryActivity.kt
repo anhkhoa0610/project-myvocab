@@ -24,9 +24,13 @@ class AddCategoryActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_category)
 
-        // setHeaderTitle("New Category")
+        setControl()
+        initData()
+        setEvent()
+    }
 
-        categoryDAO = CategoryDAO(this)
+    private fun setControl() {
+        setHeaderTitle("Add Category")
 
         etName = findViewById(R.id.etCategoryName)
         etDesc = findViewById(R.id.etCategoryDesc)
@@ -34,11 +38,15 @@ class AddCategoryActivity : BaseActivity() {
         etIcon = findViewById(R.id.etCategoryIcon)
         btnSave = findViewById(R.id.btnAdd)
         btnCancel = findViewById(R.id.btnCancel)
+    }
 
-        // Set default color/icon if user doesn't type
+    private fun initData() {
+        categoryDAO = CategoryDAO(this)
         etColor.setText("#2196F3")
         etIcon.setText("ic_folder")
+    }
 
+    private fun setEvent() {
         btnSave.setOnClickListener {
             saveCategory()
         }
@@ -55,13 +63,12 @@ class AddCategoryActivity : BaseActivity() {
         val icon = etIcon.text.toString().trim()
 
         if (name.isEmpty()) {
-            Toast.makeText(this, "Category name is required!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Tên danh mục không được để trống!", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // Validate Color format (Optional basic check)
         if (!color.startsWith("#") || color.length !in 7..9) {
-            Toast.makeText(this, "Invalid color format! Use Hex (e.g. #FF0000)", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Mã màu không hợp lệ! Hãy dùng mã Hex (vd: #FF0000)", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -74,11 +81,13 @@ class AddCategoryActivity : BaseActivity() {
         )
 
         val result = categoryDAO.addCategory(newCategory)
+
         if (result > -1) {
+            Toast.makeText(this, "Thêm danh mục thành công!", Toast.LENGTH_SHORT).show()
             setResult(RESULT_OK)
             finish()
         } else {
-            Toast.makeText(this, "Failed to add category", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Lỗi: Không thể thêm danh mục", Toast.LENGTH_SHORT).show()
         }
     }
 }
