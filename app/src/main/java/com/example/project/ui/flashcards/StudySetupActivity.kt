@@ -49,21 +49,22 @@ class StudySetupActivity : BaseActivity() {
             return
         }
 
-        initControls()
+        setControl()
 
         wordDAO = WordDAO(this)
         progressDAO = WordProgressDAO(this)
 
         loadDataFromDB()
         setupSearch()
-        setupEventStart()
+        setEvent()
     }
 
-    private fun initControls() {
+    private fun setControl() {
         lvSelection = findViewById(R.id.lvWordSelection)
         btnStart = findViewById(R.id.btnStartFlashcard)
         etSearch = findViewById(R.id.etWordSearch)
     }
+
 
     private fun loadDataFromDB() {
         allWords = wordDAO.getWordsByUserId(userId)
@@ -98,7 +99,7 @@ class StudySetupActivity : BaseActivity() {
 
                 val status = wordStatusMap[word.id] ?: WordStatus.NEW
 
-                // Reset trạng thái view
+                // Reset view state
                 checkBox.visibility = View.GONE
                 btnReset.visibility = View.GONE
                 view.setOnClickListener(null)
@@ -141,7 +142,7 @@ class StudySetupActivity : BaseActivity() {
         lvSelection.adapter = adapter
     }
 
-    // ================= SEARCH =================
+    // Search
 
     private fun setupSearch() {
         etSearch.addTextChangedListener(object : TextWatcher {
@@ -171,9 +172,7 @@ class StudySetupActivity : BaseActivity() {
         adapter.notifyDataSetChanged()
     }
 
-    // ================= START FLASHCARD =================
-
-    private fun setupEventStart() {
+    private fun setEvent() {
         btnStart.setOnClickListener {
 
             val selectedList = allWords.filter { it.isSelected }

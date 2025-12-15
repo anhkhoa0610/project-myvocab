@@ -18,33 +18,27 @@ import com.example.project.utils.UserSession
 
 class WritingGameActivity : BaseActivity() {
 
-    // UI
     private lateinit var tvQuestion: TextView
     private lateinit var edtAnswer: EditText
     private lateinit var btnCheck: Button
     private lateinit var btnHint: Button
 
-    // Data
     private var questionList = ArrayList<Word>()
     private var currentIndex = 0
     private var currentWord: Word? = null
 
-    // State
     private var isCheckingState = true
     private var isRetryState = false
     private var isUsedHint = false
 
-    // User
     private var userId: Int = -1
 
-    // DAO
     private lateinit var wordProgressDAO: WordProgressDAO
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_writing_game)
 
-        //  Get real userId from Session
         userId = UserSession.getUserId(this)
         if (userId <= 0) {
             Toast.makeText(this, "Invalid login session!", Toast.LENGTH_SHORT).show()
@@ -54,7 +48,7 @@ class WritingGameActivity : BaseActivity() {
 
         wordProgressDAO = WordProgressDAO(this)
 
-        initViews()
+        setControl()
 
         questionList = intent.getParcelableArrayListExtra("list_word") ?: ArrayList()
 
@@ -66,21 +60,22 @@ class WritingGameActivity : BaseActivity() {
 
         questionList.shuffle()
         setupGame(0)
-        setupEvents()
+        setEvent()
     }
 
-    private fun initViews() {
+
+    private fun setControl() {
         tvQuestion = findViewById(R.id.tvQuestion)
         edtAnswer = findViewById(R.id.edtAnswer)
         btnCheck = findViewById(R.id.btnCheck)
         btnHint = findViewById(R.id.btnHint)
     }
 
+
     private fun setupGame(index: Int) {
         currentIndex = index
         currentWord = questionList[currentIndex]
 
-        //  Record that the user has viewed this word
         currentWord?.let {
             wordProgressDAO.updateProgressOnView(userId, it.id)
         }
@@ -104,7 +99,8 @@ class WritingGameActivity : BaseActivity() {
         btnHint.alpha = 1f
     }
 
-    private fun setupEvents() {
+
+    private fun setEvent() {
 
         btnCheck.setOnClickListener {
             when {
@@ -156,12 +152,10 @@ class WritingGameActivity : BaseActivity() {
         edtAnswer.setTextColor(Color.parseColor("#4CAF50"))
         edtAnswer.isEnabled = false
 
-        //  Learning progress logic
         currentWord?.let {
             if (!isUsedHint) {
                 wordProgressDAO.markAsMastered(userId, it.id)
             }
-            // If hint was used → keep LEARNING
         }
 
         isCheckingState = false
@@ -174,7 +168,7 @@ class WritingGameActivity : BaseActivity() {
         btnHint.isEnabled = false
         btnHint.alpha = 0.5f
 
-        Toast.makeText(this, "Correct! ", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Correct!", Toast.LENGTH_SHORT).show()
     }
 
     private fun onWrongAnswer() {
@@ -215,7 +209,7 @@ class WritingGameActivity : BaseActivity() {
 
     private fun showFinishDialog() {
         AlertDialog.Builder(this)
-            .setTitle("Completed! ")
+            .setTitle("Completed!")
             .setMessage("You have finished the writing test.")
             .setPositiveButton("Finish") { _, _ -> finish() }
             .setNegativeButton("Play Again") { _, _ ->

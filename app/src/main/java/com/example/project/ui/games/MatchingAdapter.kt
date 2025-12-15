@@ -30,25 +30,22 @@ class MatchingAdapter(
 
         holder.tvContent.text = card.content
 
-        // 1. Xử lý Ẩn/Hiện (Khi ghép đúng)
         if (!card.isVisible) {
-            holder.itemView.visibility = View.INVISIBLE // Ẩn nhưng giữ chỗ để lưới không bị vỡ
+            holder.itemView.visibility = View.INVISIBLE
             holder.itemView.isClickable = false
         } else {
             holder.itemView.visibility = View.VISIBLE
             holder.itemView.isClickable = true
         }
 
-        // 2. Xử lý Màu sắc (Khi đang chọn)
         if (card.isSelected) {
-            holder.cardView.setCardBackgroundColor(Color.parseColor("#FFD54F")) // Màu vàng cam
+            holder.cardView.setCardBackgroundColor(Color.parseColor("#FFD54F"))
             holder.tvContent.setTextColor(Color.BLACK)
         } else {
-            holder.cardView.setCardBackgroundColor(Color.WHITE) // Màu trắng
+            holder.cardView.setCardBackgroundColor(Color.WHITE)
             holder.tvContent.setTextColor(Color.parseColor("#333333"))
         }
 
-        // Bắt sự kiện click
         holder.itemView.setOnClickListener {
             onCardClick(card, position)
         }

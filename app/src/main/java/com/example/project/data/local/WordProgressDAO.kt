@@ -10,37 +10,23 @@ class WordProgressDAO(context: Context) {
 
     private val dbHelper = DatabaseHelper(context)
 
-    /**
-     * Hàm 1: updateProgressOnView
-     * Tự động gọi khi User lật thẻ xem từ vựng.
-     * Logic:
-     * - Tăng số lần xem (review_count).
-     * - Nếu trạng thái đang là NEW -> Chuyển thành LEARNING.
-     * - Nếu chưa có trong DB -> Tạo mới với trạng thái LEARNING.
-     */
     fun updateProgressOnView(userId: Int, wordId: Int) {
         val db = dbHelper.writableDatabase
 
         try {
-            // 1. Kiểm tra xem đã có record tiến độ của user cho từ này chưa
             val cursor: Cursor = db.rawQuery(
                 "SELECT * FROM ${DatabaseHelper.TABLE_WORD_PROGRESS} WHERE ${DatabaseHelper.COLUMN_WP_USER_ID} = ? AND ${DatabaseHelper.COLUMN_WP_WORD_ID} = ?",
                 arrayOf(userId.toString(), wordId.toString())
             )
 
             if (cursor.moveToFirst()) {
-                // --- TRƯỜNG HỢP A: ĐÃ TỒN TẠI RECORD ---
                 val id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WP_ID))
                 val currentCount = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WP_REVIEW_COUNT))
                 val currentStatus = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WP_STATUS))
 
                 val values = ContentValues().apply {
-                    // Tăng số lần xem lên 1
                     put(DatabaseHelper.COLUMN_WP_REVIEW_COUNT, currentCount + 1)
 
-                    // Logic chuyển trạng thái:
-                    // Chỉ khi đang là NEW thì mới tự động chuyển sang LEARNING.
-                    // Nếu đang là MASTERED hoặc IGNORED thì giữ nguyên (không tự động reset).
                     if (currentStatus == WordStatus.NEW) {
                         put(DatabaseHelper.COLUMN_WP_STATUS, WordStatus.LEARNING)
                     }
@@ -54,12 +40,11 @@ class WordProgressDAO(context: Context) {
                 )
 
             } else {
-                // --- TRƯỜNG HỢP B: CHƯA CÓ RECORD (Lần đầu tiên nhìn thấy) ---
                 val values = ContentValues().apply {
                     put(DatabaseHelper.COLUMN_WP_USER_ID, userId)
                     put(DatabaseHelper.COLUMN_WP_WORD_ID, wordId)
-                    put(DatabaseHelper.COLUMN_WP_STATUS, WordStatus.LEARNING) // Set ngay là LEARNING
-                    put(DatabaseHelper.COLUMN_WP_REVIEW_COUNT, 1) // Lần xem đầu tiên
+                    put(DatabaseHelper.COLUMN_WP_STATUS, WordStatus.LEARNING)
+                    put(DatabaseHelper.COLUMN_WP_REVIEW_COUNT, 1)
                 }
                 db.insert(DatabaseHelper.TABLE_WORD_PROGRESS, null, values)
             }
@@ -72,38 +57,18 @@ class WordProgressDAO(context: Context) {
         }
     }
 
-    /**
-     * Hàm 2: markAsMastered
-     * Gọi khi người dùng bấm nút "Đã thuộc" (Checkbox/Button).
-     */
     fun markAsMastered(userId: Int, wordId: Int) {
         updateStatus(userId, wordId, WordStatus.MASTERED)
     }
 
-    /**
-     * Hàm 3: markAsIgnored
-     * Gọi khi người dùng bấm nút "Bỏ qua".
-     */
     fun markAsIgnored(userId: Int, wordId: Int) {
         updateStatus(userId, wordId, WordStatus.IGNORED)
     }
 
-    /**
-     * Hàm 4: resetToLearning
-     * Gọi khi người dùng muốn học lại từ đã thuộc (Optional).
-     */
     fun resetToLearning(userId: Int, wordId: Int) {
         updateStatus(userId, wordId, WordStatus.LEARNING)
     }
 
-    /**
-     * Hàm: getAllWordsWithStatus
-     * Chức năng: Lấy TOÀN BỘ từ vựng trong bảng WORDS.
-     * Logic:
-     * - Kết hợp (JOIN) với bảng WORD_PROGRESS của userId hiện tại.
-     * - Nếu tìm thấy trạng thái trong PROGRESS -> Lấy trạng thái đó.
-     * - Nếu KHÔNG tìm thấy (NULL) -> Tự động coi là 'new' (không cần insert vào DB).
-     */
     fun getAllWordsWithStatus(userId: Int): List<Vocabulary> {
         val list = ArrayList<Vocabulary>()
         val db = dbHelper.readableDatabase
@@ -120,11 +85,9 @@ class WordProgressDAO(context: Context) {
             ON w.${DatabaseHelper.COLUMN_WORD_ID} = wp.${DatabaseHelper.COLUMN_WP_WORD_ID} 
             AND wp.${DatabaseHelper.COLUMN_WP_USER_ID} = ?
             
-            -- QUAN TRỌNG: Phải lọc từ vựng thuộc về User ID này
             WHERE w.${DatabaseHelper.COLUMN_WORD_USER_ID} = ?
         """
 
-        // Truyền userId 2 lần: 1 cho JOIN, 1 cho WHERE
         val cursor: Cursor = db.rawQuery(query, arrayOf(userId.toString(), userId.toString()))
 
         if (cursor.moveToFirst()) {
@@ -144,10 +107,6 @@ class WordProgressDAO(context: Context) {
         return list
     }
 
-    /**
-     * Hàm lấy danh sách từ vựng theo trạng thái
-     * [ĐÃ SỬA LỖI] Dùng LEFT JOIN để hiển thị cả những từ chưa từng học (mặc định là New)
-     */
     fun getVocabularyByStatus(userId: Int, status: String): List<Vocabulary> {
         val list = ArrayList<Vocabulary>()
         val db = dbHelper.readableDatabase
@@ -163,11 +122,9 @@ class WordProgressDAO(context: Context) {
             ON w.${DatabaseHelper.COLUMN_WORD_ID} = wp.${DatabaseHelper.COLUMN_WP_WORD_ID} 
             AND wp.${DatabaseHelper.COLUMN_WP_USER_ID} = ?
             
-            -- QUAN TRỌNG: Lọc status VÀ lọc User sở hữu từ
             WHERE real_status = ? AND w.${DatabaseHelper.COLUMN_WORD_USER_ID} = ?
         """
 
-        // Thứ tự tham số: 1. userId (cho Join), 2. status, 3. userId (cho Where)
         val cursor: Cursor = db.rawQuery(query, arrayOf(userId.toString(), status, userId.toString()))
 
         if (cursor.moveToFirst()) {
@@ -187,9 +144,6 @@ class WordProgressDAO(context: Context) {
         return list
     }
 
-    /**
-     * Hàm nội bộ dùng chung để cập nhật Status
-     */
     fun updateStatus(userId: Int, wordId: Int, newStatus: String) {
         val db = dbHelper.writableDatabase
         try {
@@ -197,7 +151,6 @@ class WordProgressDAO(context: Context) {
                 put(DatabaseHelper.COLUMN_WP_STATUS, newStatus)
             }
 
-            // Thử update record có sẵn
             val rows = db.update(
                 DatabaseHelper.TABLE_WORD_PROGRESS,
                 values,
@@ -205,11 +158,10 @@ class WordProgressDAO(context: Context) {
                 arrayOf(userId.toString(), wordId.toString())
             )
 
-            // Nếu rows == 0 nghĩa là chưa có record nào -> Insert mới luôn
             if (rows == 0) {
                 values.put(DatabaseHelper.COLUMN_WP_USER_ID, userId)
                 values.put(DatabaseHelper.COLUMN_WP_WORD_ID, wordId)
-                values.put(DatabaseHelper.COLUMN_WP_REVIEW_COUNT, 0) // Mặc định 0 hoặc 1 tùy bạn
+                values.put(DatabaseHelper.COLUMN_WP_REVIEW_COUNT, 0)
                 db.insert(DatabaseHelper.TABLE_WORD_PROGRESS, null, values)
             }
         } catch (e: Exception) {
@@ -219,11 +171,8 @@ class WordProgressDAO(context: Context) {
         }
     }
 
-    /**
-     * Hàm lấy trạng thái hiện tại của 1 từ (để hiển thị lên UI, ví dụ checkbox đã tick chưa)
-     */
     fun getWordStatus(userId: Int, wordId: Int): String {
-        var status = WordStatus.NEW // Mặc định
+        var status = WordStatus.NEW
         val db = dbHelper.readableDatabase
 
         val cursor = db.rawQuery(

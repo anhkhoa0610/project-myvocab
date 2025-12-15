@@ -23,7 +23,6 @@ class MatchingGameActivity : BaseActivity() {
 
     private var originalWordList = ArrayList<Word>()
 
-    // Game state
     private var firstSelectedCard: MatchingCard? = null
     private var firstSelectedPos: Int = -1
     private var isProcessing = false
@@ -35,11 +34,9 @@ class MatchingGameActivity : BaseActivity() {
 
         rvCards = findViewById(R.id.rvMatchingCards)
 
-        // 1. Receive data from previous screen
         val wordList = intent.getParcelableArrayListExtra<Word>("list_word") ?: ArrayList()
 
         if (wordList.isNotEmpty()) {
-            //  Save original list for next games
             originalWordList = wordList
             setupGame(wordList)
         } else {
@@ -51,8 +48,8 @@ class MatchingGameActivity : BaseActivity() {
     private fun setupGame(words: ArrayList<Word>) {
         gameCards.clear()
 
-        val leftColumn = mutableListOf<MatchingCard>()   // EN
-        val rightColumn = mutableListOf<MatchingCard>()  // VI
+        val leftColumn = mutableListOf<MatchingCard>()
+        val rightColumn = mutableListOf<MatchingCard>()
 
         words.forEach { word ->
             leftColumn.add(
@@ -90,7 +87,6 @@ class MatchingGameActivity : BaseActivity() {
     private fun handleCardClick(clickedCard: MatchingCard, position: Int) {
         if (isProcessing || !clickedCard.isVisible) return
 
-        // Click the same card again → deselect
         if (clickedCard == firstSelectedCard) {
             clickedCard.isSelected = false
             firstSelectedCard = null
@@ -111,7 +107,6 @@ class MatchingGameActivity : BaseActivity() {
             val card2 = clickedCard
 
             if (card1.id == card2.id) {
-                // --- CORRECT MATCH ---
                 Handler(Looper.getMainLooper()).postDelayed({
                     card1.isVisible = false
                     card2.isVisible = false
@@ -126,7 +121,6 @@ class MatchingGameActivity : BaseActivity() {
                 }, 500)
 
             } else {
-                // --- WRONG MATCH ---
                 Toast.makeText(this, "Wrong match!", Toast.LENGTH_SHORT).show()
 
                 Handler(Looper.getMainLooper()).postDelayed({
@@ -164,7 +158,6 @@ class MatchingGameActivity : BaseActivity() {
                         "Now let’s challenge yourself with the writing test!"
             )
 
-            // Go to Writing Game
             .setPositiveButton("Start Writing Test") { _, _ ->
                 val intent = Intent(
                     this@MatchingGameActivity,
@@ -181,7 +174,6 @@ class MatchingGameActivity : BaseActivity() {
                 finish()
             }
 
-            // Go back to Home
             .setNegativeButton("Back to Home") { _, _ ->
                 val intent = Intent(
                     this@MatchingGameActivity,
@@ -193,7 +185,6 @@ class MatchingGameActivity : BaseActivity() {
                 finish()
             }
 
-            // Replay Matching Game
             .setNeutralButton("Play Again") { _, _ ->
                 setupGame(originalWordList)
             }
