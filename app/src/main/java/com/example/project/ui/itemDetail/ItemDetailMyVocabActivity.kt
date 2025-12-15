@@ -10,31 +10,41 @@ import com.example.project.data.model.Word
 import com.example.project.ui.base.BaseActivity
 
 class ItemDetailMyVocabActivity : BaseActivity() {
+
     companion object {
         const val EXTRA_WORD_ID = "word_id"
     }
-
     private lateinit var tvWord: TextView
     private lateinit var tvPronunciation: TextView
     private lateinit var tvMeaning: TextView
     private lateinit var wordDAO: WordDAO
+    private var currentWord: Word? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_item_detail_myvocab)
 
+        setControl()
+        initData()
+        setEvent()
+    }
+
+    private fun setControl() {
         tvWord = findViewById(R.id.tvWord)
         tvPronunciation = findViewById(R.id.tvPronunciation)
         tvMeaning = findViewById(R.id.tvMeaning)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
 
+    private fun initData() {
         wordDAO = WordDAO(this)
 
         val wordId = intent.getIntExtra(EXTRA_WORD_ID, -1)
 
         if (wordId != -1) {
-            val word = wordDAO.getWordById(wordId)
-            word?.let {
-                displayWordDetails(it)
+            currentWord = wordDAO.getWordById(wordId)
+            currentWord?.let {
+                bindData(it)
             } ?: run {
                 Toast.makeText(this, "Không tìm thấy chi tiết từ", Toast.LENGTH_SHORT).show()
                 finish()
@@ -43,11 +53,9 @@ class ItemDetailMyVocabActivity : BaseActivity() {
             Toast.makeText(this, "Lỗi: Không có ID từ được truyền", Toast.LENGTH_SHORT).show()
             finish()
         }
-
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
-    private fun displayWordDetails(word: Word) {
+    private fun bindData(word: Word) {
         tvWord.text = word.word
 
         if (!word.pronunciation.isNullOrBlank()) {
@@ -59,6 +67,11 @@ class ItemDetailMyVocabActivity : BaseActivity() {
 
         tvMeaning.text = word.meaning
     }
+
+    private fun setEvent() {
+        //
+    }
+
     override fun onSupportNavigateUp(): Boolean {
         onBackPressedDispatcher.onBackPressed()
         return true

@@ -1,5 +1,6 @@
 package com.example.project.ui.admin
 
+import android.os.Build
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -17,7 +18,6 @@ class EditCategoryActivity : BaseActivity() {
     private lateinit var etIcon: EditText
     private lateinit var btnUpdate: Button
     private lateinit var btnCancel: Button
-
     private lateinit var categoryDAO: CategoryDAO
     private var currentId: Int = 0
 
@@ -25,7 +25,13 @@ class EditCategoryActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_category)
 
-        categoryDAO = CategoryDAO(this)
+        setControl()
+        initData()
+        setEvent()
+    }
+
+    private fun setControl() {
+        setHeaderTitle("Edit Category")
 
         etName = findViewById(R.id.etCategoryName)
         etDesc = findViewById(R.id.etCategoryDesc)
@@ -33,27 +39,41 @@ class EditCategoryActivity : BaseActivity() {
         etIcon = findViewById(R.id.etCategoryIcon)
         btnUpdate = findViewById(R.id.btnUpdate)
         btnCancel = findViewById(R.id.btnCancel)
+    }
 
-        loadData()
+    private fun initData() {
+        categoryDAO = CategoryDAO(this)
 
+        val category = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra("category", Category::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getParcelableExtra("category")
+        }
+
+        if (category != null) {
+            currentId = category.id
+            bindData(category)
+        } else {
+            Toast.makeText(this, "Lỗi: Không tìm thấy danh mục", Toast.LENGTH_SHORT).show()
+            finish()
+        }
+    }
+
+    private fun bindData(category: Category) {
+        etName.setText(category.name)
+        etDesc.setText(category.description)
+        etColor.setText(category.color)
+        etIcon.setText(category.icon)
+    }
+
+    private fun setEvent() {
         btnUpdate.setOnClickListener {
             updateCategory()
         }
 
         btnCancel.setOnClickListener {
             finish()
-        }
-    }
-
-    private fun loadData() {
-        val category = intent.getParcelableExtra<Category>("category")
-
-        category?.let {
-            currentId = it.id
-            etName.setText(it.name)
-            etDesc.setText(it.description)
-            etColor.setText(it.color)
-            etIcon.setText(it.icon)
         }
     }
 
@@ -64,7 +84,7 @@ class EditCategoryActivity : BaseActivity() {
         val icon = etIcon.text.toString().trim()
 
         if (name.isEmpty()) {
-            Toast.makeText(this, "Category name is required!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Tên danh mục không được để trống!", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -77,11 +97,13 @@ class EditCategoryActivity : BaseActivity() {
         )
 
         val result = categoryDAO.updateCategory(updatedCategory)
+
         if (result > 0) {
+            Toast.makeText(this, "Cập nhật danh mục thành công!", Toast.LENGTH_SHORT).show()
             setResult(RESULT_OK)
             finish()
         } else {
-            Toast.makeText(this, "Failed to update category", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Lỗi: Không thể cập nhật danh mục", Toast.LENGTH_SHORT).show()
         }
     }
 }

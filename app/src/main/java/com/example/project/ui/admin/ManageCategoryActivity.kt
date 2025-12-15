@@ -47,31 +47,30 @@ class ManageCategoryActivity : BaseActivity(), CategoryAdapter.OnCategoryActionL
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_manage_category)
+
+        setControl()
+        initData()
+        setEvent()
+    }
+
+    private fun setControl() {
         setHeaderTitle("Manage Categories")
-
-        categoryDAO = CategoryDAO(this)
-
         listView = findViewById(R.id.lvCategories)
         etSearch = findViewById(R.id.etSearchCategory)
         fabAdd = findViewById(R.id.fabAddCategory)
+    }
 
-        setupSearchListener()
+    private fun initData() {
+        categoryDAO = CategoryDAO(this)
+        refreshData()
+    }
 
+    private fun setEvent() {
         fabAdd.setOnClickListener {
             val intent = Intent(this, AddCategoryActivity::class.java)
             addCategoryLauncher.launch(intent)
         }
 
-        refreshData()
-    }
-
-    private fun refreshData() {
-        categoryList = categoryDAO.getAllCategories()
-        // Nếu ô search đang có chữ, lọc lại theo chữ đó, nếu không thì hiện hết
-        filterList(etSearch.text.toString())
-    }
-
-    private fun setupSearchListener() {
         etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -79,6 +78,12 @@ class ManageCategoryActivity : BaseActivity(), CategoryAdapter.OnCategoryActionL
                 filterList(s.toString())
             }
         })
+    }
+
+    private fun refreshData() {
+        categoryList = categoryDAO.getAllCategories()
+        val currentSearchText = etSearch.text.toString()
+        filterList(currentSearchText)
     }
 
     private fun filterList(query: String) {
@@ -95,7 +100,11 @@ class ManageCategoryActivity : BaseActivity(), CategoryAdapter.OnCategoryActionL
                 }
             }
         }
-        adapter = CategoryAdapter(this, filteredList, this)
+        bindData(filteredList)
+    }
+
+    private fun bindData(list: ArrayList<Category>) {
+        adapter = CategoryAdapter(this, list, this)
         listView.adapter = adapter
     }
 
@@ -113,7 +122,7 @@ class ManageCategoryActivity : BaseActivity(), CategoryAdapter.OnCategoryActionL
                 val result = categoryDAO.deleteCategory(category.id)
                 if (result > 0) {
                     Toast.makeText(this, "Đã xóa!", Toast.LENGTH_SHORT).show()
-                    refreshData() // QUAN TRỌNG: Load lại DB để đồng bộ danh sách gốc và danh sách hiển thị
+                    refreshData()
                 } else {
                     Toast.makeText(this, "Lỗi khi xóa!", Toast.LENGTH_SHORT).show()
                 }

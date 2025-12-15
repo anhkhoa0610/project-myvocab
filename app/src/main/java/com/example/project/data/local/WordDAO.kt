@@ -9,17 +9,12 @@ class WordDAO(context: Context) {
 
     private val dbHelper = DatabaseHelper(context)
 
-    /**
-     * THÊM TỪ MỚI
-     * Logic: Thêm vào bảng WORDS -> Lấy ID -> Thêm tiếp vào bảng WORD_PROGRESS
-     */
     fun addWord(word: Word): Long {
         val db = dbHelper.writableDatabase
         var result: Long = -1
 
-        db.beginTransaction() // Bắt đầu giao dịch
+        db.beginTransaction()
         try {
-            // 1. Insert vào bảng WORDS
             val values = ContentValues().apply {
                 put(DatabaseHelper.COLUMN_WORD_USER_ID, word.user_id)
                 put(DatabaseHelper.COLUMN_WORD_WORD, word.word)
@@ -30,47 +25,40 @@ class WordDAO(context: Context) {
 
             result = db.insert(DatabaseHelper.TABLE_WORDS, null, values)
 
-            // 2. Nếu thêm word thành công (result là ID mới tạo), thêm tiếp vào WORD_PROGRESS
             if (result > -1) {
                 val progressValues = ContentValues().apply {
                     put(DatabaseHelper.COLUMN_WP_USER_ID, word.user_id)
                     put(DatabaseHelper.COLUMN_WP_WORD_ID, result.toInt())
-                    put(DatabaseHelper.COLUMN_WP_STATUS, "new") // Mặc định trạng thái new
+                    put(DatabaseHelper.COLUMN_WP_STATUS, "new")
                     put(DatabaseHelper.COLUMN_WP_REVIEW_COUNT, 0)
                 }
                 db.insert(DatabaseHelper.TABLE_WORD_PROGRESS, null, progressValues)
             }
 
-            db.setTransactionSuccessful() // Đánh dấu giao dịch thành công
+            db.setTransactionSuccessful()
         } catch (e: Exception) {
             e.printStackTrace()
-            result = -1 // Nếu lỗi thì trả về -1
+            result = -1
         } finally {
-            db.endTransaction() // Kết thúc giao dịch
+            db.endTransaction()
             db.close()
         }
 
         return result
     }
 
-    /**
-     * XÓA TỪ
-     * Logic: Xóa bên bảng WORD_PROGRESS trước -> Xóa bên bảng WORDS sau
-     */
     fun deleteWord(wordId: Int): Int {
         val db = dbHelper.writableDatabase
         var result = 0
 
         db.beginTransaction()
         try {
-            // 1. Xóa dữ liệu tiến độ (bảng con) trước
             db.delete(
                 DatabaseHelper.TABLE_WORD_PROGRESS,
                 "${DatabaseHelper.COLUMN_WP_WORD_ID} = ?",
                 arrayOf(wordId.toString())
             )
 
-            // 2. Xóa từ vựng (bảng cha) sau
             result = db.delete(
                 DatabaseHelper.TABLE_WORDS,
                 "${DatabaseHelper.COLUMN_WORD_ID} = ?",
@@ -88,9 +76,6 @@ class WordDAO(context: Context) {
         return result
     }
 
-    /**
-     * UPDATE TỪ (Chỉ update nội dung chữ, nghĩa... không ảnh hưởng progress)
-     */
     fun updateWord(word: Word): Int {
         val db = dbHelper.writableDatabase
         val values = ContentValues().apply {
@@ -112,14 +97,9 @@ class WordDAO(context: Context) {
         return result
     }
 
-    /**
-     * TẠO DỮ LIỆU MẪU
-     * Cập nhật: Thêm word xong cũng thêm luôn progress cho các từ mẫu này
-     */
     fun seedDefaultWordsForUser(userId: Int) {
         val db = dbHelper.writableDatabase
 
-        // 1. Kiểm tra xem user này đã có dữ liệu chưa
         val cursor = db.rawQuery(
             "SELECT count(*) FROM ${DatabaseHelper.TABLE_WORDS} WHERE ${DatabaseHelper.COLUMN_WORD_USER_ID} = ?",
             arrayOf(userId.toString())
@@ -159,7 +139,6 @@ class WordDAO(context: Context) {
         db.beginTransaction()
         try {
             for (word in sampleWords) {
-                // Insert Word
                 val values = ContentValues().apply {
                     put(DatabaseHelper.COLUMN_WORD_USER_ID, word.user_id)
                     put(DatabaseHelper.COLUMN_WORD_WORD, word.word)
@@ -169,7 +148,6 @@ class WordDAO(context: Context) {
                 }
                 val newWordId = db.insert(DatabaseHelper.TABLE_WORDS, null, values)
 
-                // Insert Progress ngay lập tức cho từ mẫu này
                 if (newWordId > -1) {
                     val progressValues = ContentValues().apply {
                         put(DatabaseHelper.COLUMN_WP_USER_ID, word.user_id)
@@ -188,8 +166,6 @@ class WordDAO(context: Context) {
             db.close()
         }
     }
-
-    // --- CÁC HÀM GET KHÔNG THAY ĐỔI ---
 
     fun getAllWords(): ArrayList<Word> {
         val listWords = ArrayList<Word>()
@@ -235,14 +211,12 @@ class WordDAO(context: Context) {
         return word
     }
 
-    // Hàm helper để parse cursor ra Word object cho gọn code
     private fun parseWord(cursor: Cursor): Word {
         val id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_ID))
         val userId = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_USER_ID))
         val wordText = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_WORD))
         val meaning = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WORD_MEANING))
 
-        // Xử lý null an toàn cho các cột optional
         val pronunIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_WORD_PRONUNCIATION)
         val pronunciation = if (pronunIndex != -1 && !cursor.isNull(pronunIndex))
             cursor.getString(pronunIndex) else null

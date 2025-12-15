@@ -61,10 +61,25 @@ class DictionaryAdapter(
             onSpeakClick: (String) -> Unit
         ) {
             tvWord.text = word.word
+            tvMeaning.text = word.meaning
             
-            // Pronunciation + Part of Speech + Level
-            val details = buildString {
-                if (word.pronunciation.isNotEmpty()) append(word.pronunciation)
+            setupDetailsText(word)
+            setupExampleText(word)
+            setupSpeakerIcon(word, onSpeakClick)
+            setupFavoriteIcon(word, onFavoriteClick)
+        }
+
+        private fun setupDetailsText(word: DictionaryWord) {
+            val details = buildDetailsText(word)
+            tvPronunciation.text = details
+            tvPronunciation.visibility = if (details.isEmpty()) View.GONE else View.VISIBLE
+        }
+
+        private fun buildDetailsText(word: DictionaryWord): String {
+            return buildString {
+                if (word.pronunciation.isNotEmpty()) {
+                    append(word.pronunciation)
+                }
                 if (word.part_of_speech.isNotEmpty()) {
                     if (isNotEmpty()) append(" • ")
                     append(word.part_of_speech)
@@ -75,29 +90,30 @@ class DictionaryAdapter(
                     append(levelName)
                 }
             }
-            tvPronunciation.text = details
-            tvPronunciation.visibility = if (details.isEmpty()) View.GONE else View.VISIBLE
-            
-            tvMeaning.text = word.meaning
-            
-            // Example
+        }
+
+        private fun setupExampleText(word: DictionaryWord) {
             if (word.example_sentence.isNotEmpty()) {
                 tvExample.text = "Example: ${word.example_sentence}"
                 tvExample.visibility = View.VISIBLE
             } else {
                 tvExample.visibility = View.GONE
             }
-            
-            // Speaker icon
+        }
+
+        private fun setupSpeakerIcon(word: DictionaryWord, onSpeakClick: (String) -> Unit) {
             ivSpeaker.setOnClickListener {
                 onSpeakClick(word.word)
             }
-            
-            // Favorite icon
-            ivFavorite.setImageResource(
-                if (word.is_favorite) android.R.drawable.star_big_on
-                else android.R.drawable.star_big_off
-            )
+        }
+
+        private fun setupFavoriteIcon(word: DictionaryWord, onFavoriteClick: (DictionaryWord) -> Unit) {
+            val iconResource = if (word.is_favorite) {
+                android.R.drawable.star_big_on
+            } else {
+                android.R.drawable.star_big_off
+            }
+            ivFavorite.setImageResource(iconResource)
             
             ivFavorite.setOnClickListener {
                 onFavoriteClick(word)

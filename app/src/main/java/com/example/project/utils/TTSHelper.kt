@@ -17,7 +17,7 @@ class TTSHelper(context: Context) {
                         result != TextToSpeech.LANG_NOT_SUPPORTED
                 
                 // Set speech rate (tốc độ đọc)
-                tts?.setSpeechRate(0.9f) // Hơi chậm một chút để dễ nghe
+                tts?.setSpeechRate(0.9f) 
             }
         }
     }
