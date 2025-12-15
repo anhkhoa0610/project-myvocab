@@ -26,6 +26,11 @@ abstract class BaseActivity : AppCompatActivity(),
     protected lateinit var drawerLayout: DrawerLayout
     protected lateinit var tvTitle: TextView
     protected lateinit var frameRightAction: FrameLayout
+    
+    // Base UI elements
+    private lateinit var navView: NavigationView
+    private lateinit var btnMenu: ImageView
+    private lateinit var bottomNav: com.google.android.material.bottomnavigation.BottomNavigationView
 
     override fun setContentView(layoutResID: Int) {
         val fullView = layoutInflater.inflate(R.layout.activity_base, null)
@@ -34,17 +39,33 @@ abstract class BaseActivity : AppCompatActivity(),
         layoutInflater.inflate(layoutResID, activityContainer, true)
         super.setContentView(fullView)
 
-        initBaseControls()
+        setControl()
+        setEvent()
     }
 
-    private fun initBaseControls() {
+    private fun setControl() {
+        // Initialize base UI elements
         drawerLayout = findViewById(R.id.drawer_layout)
         tvTitle = findViewById(R.id.tvTitleBase)
         frameRightAction = findViewById(R.id.frameRightAction)
+        btnMenu = findViewById(R.id.btnMenuBase)
+        navView = findViewById(R.id.nav_view_base)
+        bottomNav = findViewById(R.id.bottom_nav_base)
 
-        val navView = findViewById<NavigationView>(R.id.nav_view_base)
-        val btnMenu = findViewById<ImageView>(R.id.btnMenuBase)
+        // Setup navigation view
+        navView.setNavigationItemSelectedListener(this)
+        
+        // Update user name in header
+        updateUserNameInDrawer(navView)
+        
+        // Check if user is admin and show/hide admin menu
+        val userRole = UserSession.getUserRole(this)
+        val adminMenuItem = navView.menu.findItem(R.id.nav_admin_dashboard)
+        adminMenuItem?.isVisible = userRole == "admin"
+    }
 
+    private fun setEvent() {
+        // Menu button click listener
         btnMenu.setOnClickListener {
             if (!drawerLayout.isDrawerOpen(GravityCompat.START)) {
                 drawerLayout.openDrawer(GravityCompat.START)
@@ -53,27 +74,14 @@ abstract class BaseActivity : AppCompatActivity(),
             }
         }
 
-        navView.setNavigationItemSelectedListener(this)
-
-        // Check if user is admin and show/hide admin menu
-        val userRole = UserSession.getUserRole(this)
-        val adminMenuItem = navView.menu.findItem(R.id.nav_admin_dashboard)
-        adminMenuItem?.isVisible = userRole == "admin"
-
-        // Bottom Navigation
-        val bottomNav =
-            findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(
-                R.id.bottom_nav_base
-            )
-
-        bottomNav?.setOnItemSelectedListener { item ->
+        // Bottom Navigation listener
+        bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> {
                     if (this !is DashboardActivity) {
                         startActivity(
                             Intent(this, DashboardActivity::class.java).apply {
-                                flags =
-                                    Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
                             }
                         )
                         finish()
@@ -85,8 +93,7 @@ abstract class BaseActivity : AppCompatActivity(),
                     if (this !is SettingsActivity) {
                         startActivity(
                             Intent(this, SettingsActivity::class.java).apply {
-                                flags =
-                                    Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
                             }
                         )
                         finish()

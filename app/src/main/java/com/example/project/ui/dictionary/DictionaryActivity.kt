@@ -15,7 +15,6 @@ import com.example.project.data.local.DictionaryWordDAO
 import com.example.project.data.model.DictionaryWord
 import com.example.project.ui.base.BaseActivity
 import com.example.project.ui.itemDetail.ItemDetailDictionary
-import com.example.project.ui.itemDetail.ItemDetailMyVocabActivity
 import com.example.project.utils.TTSHelper
 
 class DictionaryActivity : BaseActivity() {
@@ -62,7 +61,6 @@ class DictionaryActivity : BaseActivity() {
     }
 
     private fun setEvent() {
-        // Search listener
         etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -76,7 +74,6 @@ class DictionaryActivity : BaseActivity() {
             }
         })
 
-        // Tab listeners
         tvTabAll.setOnClickListener {
             switchTab(Tab.ALL)
         }
@@ -98,7 +95,6 @@ class DictionaryActivity : BaseActivity() {
     private fun searchWords(query: String) {
         val searchResults = dictionaryDAO.searchWords(query)
         
-        // Filter by current tab
         allWords = if (currentTab == Tab.FAVORITES) {
             ArrayList(searchResults.filter { it.is_favorite })
         } else {
@@ -111,7 +107,6 @@ class DictionaryActivity : BaseActivity() {
     private fun switchTab(tab: Tab) {
         currentTab = tab
         
-        // Update tab UI
         when (tab) {
             Tab.ALL -> {
                 tvTabAll.setTextColor(resources.getColor(android.R.color.black, null))
@@ -133,7 +128,6 @@ class DictionaryActivity : BaseActivity() {
             }
         }
         
-        // Clear search and reload
         etSearch.text.clear()
         loadWords()
     }
@@ -159,14 +153,10 @@ class DictionaryActivity : BaseActivity() {
             )
             lvDictionaryWords.adapter = adapter
 
-            // Xử lý khi bấm vào một dòng (item) để mở chi tiết
             lvDictionaryWords.setOnItemClickListener { _, _, position, _ ->
                 val selectedWord = allWords[position]
-
                 val intent = Intent(this, ItemDetailDictionary::class.java)
-
                 intent.putExtra(ItemDetailDictionary.EXTRA_DICTIONARY_WORD, selectedWord)
-
                 startActivity(intent)
             }
         }
@@ -185,7 +175,6 @@ class DictionaryActivity : BaseActivity() {
             }
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
             
-            // Reload nếu đang ở tab Favorites
             if (currentTab == Tab.FAVORITES) {
                 loadWords()
             }
