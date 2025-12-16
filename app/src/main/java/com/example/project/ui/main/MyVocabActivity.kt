@@ -48,7 +48,7 @@ class MyVocabActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_my_vocab)
 
-        setHeaderTitle("My Vocab")
+        setHeaderTitle("My Vocab \nAnh Khoa - Nhóm 2")
         
         setControl()
         setEvent()
@@ -116,7 +116,6 @@ class MyVocabActivity : BaseActivity() {
         filteredWordList.clear()
 
         if (query.isEmpty()) {
-            // Nếu search rỗng, hiển thị tất cả
             filteredWordList.addAll(wordList)
         } else {
             // Lọc theo từ tiếng Anh hoặc nghĩa tiếng Việt

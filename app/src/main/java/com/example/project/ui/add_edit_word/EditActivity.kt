@@ -18,15 +18,14 @@ class EditActivity : BaseActivity() {
     private lateinit var etPartOfSpeech: EditText
 
     private var currentId: Int = 0
-    private var currentUserId: Int = 0 // Biến để lưu ID của từ đang sửa
+    private var currentUserId: Int = 0
     private lateinit var wordDAO: WordDAO
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_layout)
 
-        // Set title cho header
-        setHeaderTitle("Edit Word")
+        setHeaderTitle("Edit Word \nAnh Khoa - Nhóm 2")
 
         wordDAO = WordDAO(this)
 
@@ -45,7 +44,6 @@ class EditActivity : BaseActivity() {
     }
 
     private fun loadData() {
-        // Lấy object Word được truyền sang từ MyVocabActivity
         val word = intent.getParcelableExtra<Word>("word")
 
         word?.let {
@@ -70,7 +68,6 @@ class EditActivity : BaseActivity() {
                 return@setOnClickListener
             }
 
-            // 1. Tạo object với ID cũ để Database biết dòng nào mà sửa
             val updatedWord = Word(
                 id = currentId,
                 user_id = currentUserId,
@@ -80,12 +77,11 @@ class EditActivity : BaseActivity() {
                 part_of_speech = partOfSpeech
             )
 
-            // 2. Gọi DAO Update
             val result = wordDAO.updateWord(updatedWord)
 
             if (result > 0) {
                 Toast.makeText(this, "Cập nhật thành công!", Toast.LENGTH_SHORT).show()
-                setResult(RESULT_OK) // Báo Main reload lại
+                setResult(RESULT_OK)
                 finish()
             } else {
                 Toast.makeText(this, "Lỗi cập nhật!", Toast.LENGTH_SHORT).show()

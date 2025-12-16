@@ -36,7 +36,7 @@ class LoginActivity : AppCompatActivity() {
         
         userDAO = UserDAO(this)
         
-        seedAllData()
+//        seedAllData()
     }
 
     private fun setEvent() {

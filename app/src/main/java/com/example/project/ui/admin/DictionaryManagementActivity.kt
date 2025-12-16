@@ -51,7 +51,7 @@ class DictionaryManagementActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dictionary_management)
 
-        setHeaderTitle("Dictionary Management")
+        setHeaderTitle("Dictionary Management \nAnh Khoa - Nhóm 2")
         
         setControl()
         setEvent()

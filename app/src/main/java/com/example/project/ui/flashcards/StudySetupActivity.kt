@@ -49,17 +49,17 @@ class StudySetupActivity : BaseActivity() {
             return
         }
 
-        initControls()
+        setControl()
 
         wordDAO = WordDAO(this)
         progressDAO = WordProgressDAO(this)
 
         loadDataFromDB()
         setupSearch()
-        setupEventStart()
+        setEvent()
     }
 
-    private fun initControls() {
+    private fun setControl() {
         lvSelection = findViewById(R.id.lvWordSelection)
         btnStart = findViewById(R.id.btnStartFlashcard)
         etSearch = findViewById(R.id.etWordSearch)
@@ -173,7 +173,7 @@ class StudySetupActivity : BaseActivity() {
 
     // ================= START FLASHCARD =================
 
-    private fun setupEventStart() {
+    private fun setEvent() {
         btnStart.setOnClickListener {
 
             val selectedList = allWords.filter { it.isSelected }

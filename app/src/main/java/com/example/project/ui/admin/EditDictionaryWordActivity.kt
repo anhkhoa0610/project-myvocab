@@ -37,7 +37,7 @@ class EditDictionaryWordActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_dictionary_word)
 
-        setHeaderTitle("Edit Dictionary Word")
+        setHeaderTitle("Edit Dictionary Word \nAnh Khoa - Nhóm 2")
 
         dictionaryWordDAO = DictionaryWordDAO(this)
         categoryDAO = CategoryDAO(this)
