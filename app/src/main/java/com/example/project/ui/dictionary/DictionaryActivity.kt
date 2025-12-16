@@ -41,7 +41,7 @@ class DictionaryActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dictionary)
 
-        setHeaderTitle("Dictionary")
+        setHeaderTitle("Dictionary \nAnh Khoa - Nhóm 2")
         
         setControl()
         setEvent()

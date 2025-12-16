@@ -26,7 +26,7 @@ class AddNewActivity : BaseActivity() {
         setContentView(R.layout.activity_addnew_layout)
 
         // Set title cho header
-        setHeaderTitle("Add New Word")
+        setHeaderTitle("Add New Word \nAnh Khoa - Nhóm 2")
 
         // Khởi tạo DAO
         wordDAO = WordDAO(this)
