@@ -49,7 +49,7 @@ class WritingGameActivity : BaseActivity() {
 
         wordProgressDAO = WordProgressDAO(this)
 
-        initViews()
+        setControl()
 
         questionList = intent.getParcelableArrayListExtra("list_word") ?: ArrayList()
 
@@ -61,45 +61,17 @@ class WritingGameActivity : BaseActivity() {
 
         questionList.shuffle()
         setupGame(0)
-        setupEvents()
+        setEvent()
     }
 
-    private fun initViews() {
+    private fun setControl() {
         tvQuestion = findViewById(R.id.tvQuestion)
         edtAnswer = findViewById(R.id.edtAnswer)
         btnCheck = findViewById(R.id.btnCheck)
         btnHint = findViewById(R.id.btnHint)
     }
 
-    private fun setupGame(index: Int) {
-        currentIndex = index
-        currentWord = questionList[currentIndex]
-
-        currentWord?.let {
-            wordProgressDAO.updateProgressOnView(userId, it.id)
-        }
-
-        tvQuestion.text = currentWord?.meaning
-
-        edtAnswer.setText("")
-        edtAnswer.isEnabled = true
-        edtAnswer.setTextColor(Color.BLACK)
-        edtAnswer.hint = "Enter your answer..."
-
-        isCheckingState = true
-        isRetryState = false
-        isUsedHint = false
-
-        btnCheck.text = "Check"
-        btnCheck.backgroundTintList =
-            ColorStateList.valueOf(Color.parseColor("#5C6BC0"))
-
-        btnHint.isEnabled = true
-        btnHint.alpha = 1f
-    }
-
-    private fun setupEvents() {
-
+    private fun setEvent() {
         btnCheck.setOnClickListener {
             when {
                 isRetryState -> resetForRetry()
@@ -128,6 +100,33 @@ class WritingGameActivity : BaseActivity() {
             btnHint.isEnabled = false
             btnHint.alpha = 0.5f
         }
+    }
+
+    private fun setupGame(index: Int) {
+        currentIndex = index
+        currentWord = questionList[currentIndex]
+
+        currentWord?.let {
+            wordProgressDAO.updateProgressOnView(userId, it.id)
+        }
+
+        tvQuestion.text = currentWord?.meaning
+
+        edtAnswer.setText("")
+        edtAnswer.isEnabled = true
+        edtAnswer.setTextColor(Color.BLACK)
+        edtAnswer.hint = "Enter your answer..."
+
+        isCheckingState = true
+        isRetryState = false
+        isUsedHint = false
+
+        btnCheck.text = "Check"
+        btnCheck.backgroundTintList =
+            ColorStateList.valueOf(Color.parseColor("#5C6BC0"))
+
+        btnHint.isEnabled = true
+        btnHint.alpha = 1f
     }
 
     private fun handleCheckAnswer() {
