@@ -38,7 +38,7 @@ class VocabularyActivity : BaseActivity() {
     }
 
     private fun setControl() {
-        setHeaderTitle("Word Status")
+        setHeaderTitle("Word Status \n Minh Nhựt - Nhóm 2")
         rvVocabulary = findViewById(R.id.rvVocabularyStatus)
         tabLayout = findViewById(R.id.tabLayoutStatus)
         etSearch = findViewById(R.id.etSearch)
