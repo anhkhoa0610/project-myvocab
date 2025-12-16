@@ -1,13 +1,15 @@
 package com.example.project.ui.quiz
 
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
-import android.view.Gravity
 import android.view.View
-import android.widget.*
+import android.widget.ProgressBar
+import android.widget.RadioButton
+import android.widget.RadioGroup
+import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.example.project.R
 import com.example.project.data.local.QuizDAO
@@ -22,12 +24,12 @@ class QuizActivity : BaseActivity() {
 
     // Views
     private lateinit var questionTextView: TextView
-    private lateinit var tvDifficulty: TextView // Mới thêm
-    private lateinit var tvProgress: TextView // Mới thêm
-    private lateinit var progressBar: ProgressBar // Mới thêm
+    private lateinit var tvDifficulty: TextView
+    private lateinit var tvProgress: TextView
+    private lateinit var progressBar: ProgressBar
     private lateinit var optionsRadioGroup: RadioGroup
-    private lateinit var submitButton: MaterialButton // Đổi thành MaterialButton cho đẹp
-    private lateinit var btnFinishSubmit: TextView // Đổi thành TextView (dạng link) cho đỡ rối
+    private lateinit var submitButton: MaterialButton
+    private lateinit var btnFinishSubmit: TextView
 
     // Data
     private lateinit var quizDAO: QuizDAO
@@ -42,10 +44,23 @@ class QuizActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_quiz)
 
-        initViews()
+        setControl()
         initDAOs()
         loadQuizData()
+        setEvent()
+    }
 
+    private fun setControl() {
+        questionTextView = findViewById(R.id.questionTextView)
+        tvDifficulty = findViewById(R.id.tvDifficulty)
+        tvProgress = findViewById(R.id.tvProgress)
+        progressBar = findViewById(R.id.quizProgressBar)
+        optionsRadioGroup = findViewById(R.id.optionsRadioGroup)
+        submitButton = findViewById(R.id.submitButton)
+        btnFinishSubmit = findViewById(R.id.btnFinishSubmit)
+    }
+
+    private fun setEvent() {
         submitButton.setOnClickListener {
             handleNextOrSubmit()
         }
@@ -55,16 +70,6 @@ class QuizActivity : BaseActivity() {
             saveCurrentSelection() // Lưu lựa chọn hiện tại trước khi thoát
             calculateAndFinish()
         }
-    }
-
-    private fun initViews() {
-        questionTextView = findViewById(R.id.questionTextView)
-        tvDifficulty = findViewById(R.id.tvDifficulty)
-        tvProgress = findViewById(R.id.tvProgress)
-        progressBar = findViewById(R.id.quizProgressBar)
-        optionsRadioGroup = findViewById(R.id.optionsRadioGroup)
-        submitButton = findViewById(R.id.submitButton)
-        btnFinishSubmit = findViewById(R.id.btnFinishSubmit)
     }
 
     private fun initDAOs() {
@@ -88,9 +93,7 @@ class QuizActivity : BaseActivity() {
             return
         }
 
-        // Cài đặt Max cho ProgressBar
         progressBar.max = questions.size
-
         userAnswers = MutableList(questions.size) { null }
         displayQuestion()
     }
@@ -99,16 +102,13 @@ class QuizActivity : BaseActivity() {
         if (currentQuestionIndex < questions.size) {
             val question = questions[currentQuestionIndex]
 
-            // SỬA LỖI 1: Ép kiểu về String khi gán text
             questionTextView.text = question.question
-            tvDifficulty.text = "${question.difficulty}" // Thêm "" để biến thành String
+            tvDifficulty.text = question.difficulty.toString()
 
             val displayIndex = currentQuestionIndex + 1
-            // SỬA LỖI 1: Dùng String template "$biến"
             tvProgress.text = "$displayIndex/${questions.size}"
             progressBar.progress = displayIndex
 
-            // Tạo RadioButtons
             optionsRadioGroup.removeAllViews()
             optionsRadioGroup.clearCheck()
 
@@ -118,8 +118,6 @@ class QuizActivity : BaseActivity() {
                     id = View.generateViewId()
                     textSize = 16f
                     setTextColor(Color.parseColor("#333333"))
-
-                    // SỬA LỖI 2: Đảm bảo file selector_quiz_option đã được tạo
                     buttonDrawable = null
                     background = ContextCompat.getDrawable(context, R.drawable.selector_quiz_option)
 
@@ -142,7 +140,6 @@ class QuizActivity : BaseActivity() {
             }
 
             submitButton.text = if (currentQuestionIndex == questions.size - 1) "HOÀN THÀNH" else "CÂU TIẾP THEO"
-
         } else {
             calculateAndFinish()
         }

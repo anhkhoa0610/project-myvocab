@@ -1,7 +1,6 @@
 package com.example.project.ui.review
 
 import android.os.Bundle
-import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -42,10 +41,21 @@ class ReviewActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_review)
 
-        initViews()
+        setControl()
         initData()
+        setEvent()
+    }
 
-        // Sự kiện nút bấm
+    private fun setControl() {
+        wordTextView = findViewById(R.id.wordTextView)
+        definitionTextView = findViewById(R.id.definitionTextView)
+        tvProgress = findViewById(R.id.tvProgress)
+        cardContentLayout = findViewById(R.id.cardContentLayout)
+        knownButton = findViewById(R.id.knownButton)
+        unknownButton = findViewById(R.id.unknownButton)
+    }
+
+    private fun setEvent() {
         knownButton.setOnClickListener {
             markCurrentWordAsKnown()
             animateAndShowNext()
@@ -54,15 +64,6 @@ class ReviewActivity : BaseActivity() {
         unknownButton.setOnClickListener {
             animateAndShowNext()
         }
-    }
-
-    private fun initViews() {
-        wordTextView = findViewById(R.id.wordTextView)
-        definitionTextView = findViewById(R.id.definitionTextView)
-        tvProgress = findViewById(R.id.tvProgress)
-        cardContentLayout = findViewById(R.id.cardContentLayout)
-        knownButton = findViewById(R.id.knownButton)
-        unknownButton = findViewById(R.id.unknownButton)
     }
 
     private fun initData() {
@@ -158,6 +159,8 @@ class ReviewActivity : BaseActivity() {
         )
         studySessionDAO.addSession(session)
     }
+
+
 
     private fun showEmptyState() {
         wordTextView.text = "Tuyệt vời!"
