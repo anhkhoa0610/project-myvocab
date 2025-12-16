@@ -27,7 +27,7 @@ class StatisticsActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_statistics)
 
-        setHeaderTitle("Thanh Kiệt - Statistics")
+        setHeaderTitle("Nhóm 2\nThanh Kiệt - Statistics")
         setControl()
         setEvent()
     }
@@ -105,7 +105,7 @@ class StatisticsActivity : BaseActivity() {
 
         val dataSet = BarDataSet(entries, "Số từ học theo ngày").apply {
             color = Color.parseColor("#673AB7")
-            valueTextSize = 10f
+            valueTextSize = 12f
             valueFormatter = DefaultValueFormatter(0)
         }
 
@@ -125,7 +125,12 @@ class StatisticsActivity : BaseActivity() {
             setDrawGridLines(false)
         }
 
-        barChartSessions.axisLeft.axisMinimum = 0f
+        barChartSessions.axisLeft.apply {
+            axisMinimum = 0f
+            granularity = 1f
+            isGranularityEnabled = true
+
+        }
         barChartSessions.axisRight.isEnabled = false
         barChartSessions.description.isEnabled = false
         barChartSessions.animateY(1000)
