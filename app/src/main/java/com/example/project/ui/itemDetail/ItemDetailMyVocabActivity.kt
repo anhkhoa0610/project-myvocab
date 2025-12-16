@@ -23,7 +23,7 @@ class ItemDetailMyVocabActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_item_detail_myvocab)
-
+        setHeaderTitle("My Vocab Details \n Minh Nhựt - Nhóm 2")
         setControl()
         initData()
         setEvent()

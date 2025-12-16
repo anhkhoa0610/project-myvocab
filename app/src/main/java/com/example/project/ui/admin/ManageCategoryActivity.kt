@@ -54,7 +54,7 @@ class ManageCategoryActivity : BaseActivity(), CategoryAdapter.OnCategoryActionL
     }
 
     private fun setControl() {
-        setHeaderTitle("Manage Categories")
+        setHeaderTitle("Manage Categories\n Minh Nhựt - Nhóm 2")
         listView = findViewById(R.id.lvCategories)
         etSearch = findViewById(R.id.etSearchCategory)
         fabAdd = findViewById(R.id.fabAddCategory)

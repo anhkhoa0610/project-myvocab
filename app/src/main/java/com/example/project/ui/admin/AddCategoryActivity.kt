@@ -30,7 +30,7 @@ class AddCategoryActivity : BaseActivity() {
     }
 
     private fun setControl() {
-        setHeaderTitle("Add Category")
+        setHeaderTitle("Add Category\n Minh Nhựt - Nhóm 2")
 
         etName = findViewById(R.id.etCategoryName)
         etDesc = findViewById(R.id.etCategoryDesc)
