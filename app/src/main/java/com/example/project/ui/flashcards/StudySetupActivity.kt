@@ -16,31 +16,26 @@ import com.example.project.utils.WordStatus
 
 class StudySetupActivity : BaseActivity() {
 
-    // UI
     private lateinit var lvSelection: ListView
     private lateinit var btnStart: Button
     private lateinit var etSearch: EditText
 
-    // DAO
     private lateinit var wordDAO: WordDAO
     private lateinit var progressDAO: WordProgressDAO
 
-    // Data
     private var allWords = ArrayList<Word>()
     private var displayWords = ArrayList<Word>()
     private val wordStatusMap = mutableMapOf<Int, String>()
 
-    // Adapter
     private lateinit var adapter: ArrayAdapter<Word>
 
-    // User
     private var userId: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_study_setup)
 
-        setHeaderTitle("Choose Lesson")
+        setHeaderTitle("Setup study \n Anh Huy - Nhóm 2")
 
         userId = UserSession.getUserId(this)
         if (userId <= 0) {
@@ -98,13 +93,11 @@ class StudySetupActivity : BaseActivity() {
 
                 val status = wordStatusMap[word.id] ?: WordStatus.NEW
 
-                // Reset trạng thái view
                 checkBox.visibility = View.GONE
                 btnReset.visibility = View.GONE
                 view.setOnClickListener(null)
 
                 if (status == WordStatus.MASTERED) {
-                    // ===== MASTERED =====
                     btnReset.visibility = View.VISIBLE
                     btnReset.setOnClickListener {
                         progressDAO.resetToLearning(userId, word.id)
@@ -120,7 +113,6 @@ class StudySetupActivity : BaseActivity() {
                     }
 
                 } else {
-                    // ===== NOT MASTERED =====
                     checkBox.visibility = View.VISIBLE
                     checkBox.setOnCheckedChangeListener(null)
                     checkBox.isChecked = word.isSelected
@@ -141,7 +133,6 @@ class StudySetupActivity : BaseActivity() {
         lvSelection.adapter = adapter
     }
 
-    // ================= SEARCH =================
 
     private fun setupSearch() {
         etSearch.addTextChangedListener(object : TextWatcher {
@@ -171,7 +162,6 @@ class StudySetupActivity : BaseActivity() {
         adapter.notifyDataSetChanged()
     }
 
-    // ================= START FLASHCARD =================
 
     private fun setupEventStart() {
         btnStart.setOnClickListener {

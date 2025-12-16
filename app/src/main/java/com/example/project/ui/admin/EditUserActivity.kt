@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.project.R
 import com.example.project.data.local.UserDAO
 import com.example.project.data.model.User
+import com.example.project.data.PasswordHasher
 
 class EditUserActivity : AppCompatActivity() {
 
@@ -26,9 +27,8 @@ class EditUserActivity : AppCompatActivity() {
         setContentView(R.layout.activity_edit_user)
 
         userDAO = UserDAO(this)
-        initViews()
+        setControl()
 
-        // Nhận user từ Intent
         currentUser = intent.getParcelableExtra("user_item") ?: run {
             Toast.makeText(this, "User data missing", Toast.LENGTH_SHORT).show()
             finish()
@@ -36,12 +36,10 @@ class EditUserActivity : AppCompatActivity() {
         }
 
         setupEditMode()
-
-        btnUpdate.setOnClickListener { handleSave() }
-        btnCancel.setOnClickListener { finish() }
+        setEvent()
     }
 
-    private fun initViews() {
+    private fun setControl() {
         edtEmail = findViewById(R.id.etUserEmail)
         edtPassword = findViewById(R.id.etUserPassword)
         edtName = findViewById(R.id.etUserName)
@@ -50,11 +48,15 @@ class EditUserActivity : AppCompatActivity() {
         btnUpdate = findViewById(R.id.btnUpdate)
         btnCancel = findViewById(R.id.btnCancel)
 
-        // Spinner role
         val roles = listOf("user", "admin")
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, roles)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spRole.adapter = adapter
+    }
+
+    private fun setEvent() {
+        btnUpdate.setOnClickListener { handleSave() }
+        btnCancel.setOnClickListener { finish() }
     }
 
     private fun setupEditMode() {
@@ -79,7 +81,6 @@ class EditUserActivity : AppCompatActivity() {
             return
         }
 
-        // Update info (name, email, role)
         val updatedUser = currentUser.copy(
             email = email,
             name = name,
@@ -88,9 +89,8 @@ class EditUserActivity : AppCompatActivity() {
 
         val result = userDAO.updateUserInfo(updatedUser)
 
-        // Nếu có nhập password mới → update password
         if (newPassword.isNotEmpty()) {
-            val hashed = com.example.project.data.PasswordHasher.hashPassword(newPassword)
+            val hashed = PasswordHasher.hashPassword(newPassword)
             userDAO.updatePassword(currentUser.id, hashed)
         }
 
