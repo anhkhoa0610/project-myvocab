@@ -26,10 +26,8 @@ class QuizResultActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_quiz_result)
 
-        tvScoreBig = findViewById(R.id.tvScoreBig)
-        tvCorrectCount = findViewById(R.id.tvCorrectCount)
-        tvWrongCount = findViewById(R.id.tvWrongCount)
-        closeButton = findViewById(R.id.closeButton)
+        setControl()
+        setEvent()
 
         // Set a default title using the existing setHeaderTitle from BaseActivity
         setHeaderTitle("Kết quả Quiz")
@@ -65,7 +63,16 @@ class QuizResultActivity : BaseActivity() {
             // --- Ghi lại phiên học Quiz ---
             saveQuizSession(totalQuestions)
         }
+    }
 
+    private fun setControl() {
+        tvScoreBig = findViewById(R.id.tvScoreBig)
+        tvCorrectCount = findViewById(R.id.tvCorrectCount)
+        tvWrongCount = findViewById(R.id.tvWrongCount)
+        closeButton = findViewById(R.id.closeButton)
+    }
+
+    private fun setEvent() {
         closeButton.setOnClickListener { finish() }
     }
 

@@ -5,10 +5,10 @@ import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.example.project.R
 import com.example.project.data.local.LevelDAO
 import com.example.project.data.local.QuizDAO
+import com.example.project.data.model.Level
 import com.example.project.ui.base.BaseActivity
 
 class LevelSelectionActivity : BaseActivity() {
@@ -16,28 +16,29 @@ class LevelSelectionActivity : BaseActivity() {
     private lateinit var levelsListView: ListView
     private lateinit var levelDAO: LevelDAO
     private lateinit var quizDAO: QuizDAO
+    private var levels: List<Level> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_level_selection)
 
         initDAOs()
-        initViews()
+        setControl()
         loadLevels()
+        setEvent()
     }
 
     private fun initDAOs() {
-        // Khởi tạo các DAO với Context (this)
         levelDAO = LevelDAO(this)
         quizDAO = QuizDAO(this)
     }
 
-    private fun initViews() {
+    private fun setControl() {
         levelsListView = findViewById(R.id.levelsListView)
     }
 
     private fun loadLevels() {
-        val levels = levelDAO.getAllLevels()
+        levels = levelDAO.getAllLevels()
 
         if (levels.isEmpty()) {
             Toast.makeText(this, "Không có cấp độ nào được tìm thấy!", Toast.LENGTH_SHORT).show()
@@ -46,7 +47,9 @@ class LevelSelectionActivity : BaseActivity() {
 
         val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, levels.map { it.name })
         levelsListView.adapter = adapter
+    }
 
+    private fun setEvent() {
         levelsListView.setOnItemClickListener { _, _, position, _ ->
             val selectedLevel = levels[position]
             val quizzes = quizDAO.getQuizzesByLevel(selectedLevel.id)
