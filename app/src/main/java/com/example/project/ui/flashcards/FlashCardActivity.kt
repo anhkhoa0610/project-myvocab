@@ -40,7 +40,6 @@ class FlashCardActivity : BaseActivity() {
     private lateinit var settingsDAO: SettingsDAO
     private var isAutoFlipEnabled = false
 
-    // ===== AUTO FLIP =====
     private val handler = Handler(Looper.getMainLooper())
     private val autoFlipRunnable = object : Runnable {
         override fun run() {
@@ -58,7 +57,7 @@ class FlashCardActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_flash_card)
 
-        setHeaderTitle("Practice")
+        setHeaderTitle(" learn with flashcard \n Anh Huy - Nhóm 2")
 
         settingsDAO = SettingsDAO(this)
         isAutoFlipEnabled = settingsDAO.isFlashcardAutoFlipEnabled()
@@ -127,7 +126,6 @@ class FlashCardActivity : BaseActivity() {
         tvViMeaning.text = word.meaning
         tvCount.text = "${index + 1} / ${studyList.size}"
 
-        // Reset card to front
         if (!isFront) {
             back.visibility = View.GONE
             front.visibility = View.VISIBLE
@@ -135,16 +133,13 @@ class FlashCardActivity : BaseActivity() {
             isFront = true
         }
 
-        // PREV
         btnPrev.isEnabled = index > 0
         btnPrev.alpha = if (index > 0) 1f else 0.5f
 
-        // NEXT / FINISH
         btnNext.text =
             if (index == studyList.size - 1) "Finish" else "Next"
         btnNext.alpha = 1f
 
-        // Auto flip restart
         if (isAutoFlipEnabled) {
             startAutoFlip()
         }

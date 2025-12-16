@@ -29,7 +29,7 @@ class DashboardActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
 
-        setHeaderTitle("Dashboard")
+        setHeaderTitle("Dashboard \nAnh Khoa - Nhóm 2")
 
         setControl()
         setEvent()

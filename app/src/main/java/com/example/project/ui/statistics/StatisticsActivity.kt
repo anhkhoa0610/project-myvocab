@@ -27,6 +27,7 @@ class StatisticsActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_statistics)
 
+        setHeaderTitle("Thanh Kiệt - Statistics")
         setControl()
         setEvent()
     }
