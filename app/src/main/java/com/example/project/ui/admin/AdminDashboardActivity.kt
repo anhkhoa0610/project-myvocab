@@ -39,7 +39,7 @@ class AdminDashboardActivity : BaseActivity() {
             return
         }
 
-        setHeaderTitle("Admin Dashboard")
+        setHeaderTitle("Admin Dashboard \nAnh Khoa - Nhóm 2")
         initViews()
         setupClickListeners()
         setupUserLineChart()

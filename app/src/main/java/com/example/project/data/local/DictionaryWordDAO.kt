@@ -9,12 +9,10 @@ class DictionaryWordDAO(context: Context) {
     private val dbHelper = DatabaseHelper(context)
     private val db: SQLiteDatabase = dbHelper.writableDatabase
 
-    // Function to close the database
     fun close() {
         dbHelper.close()
     }
 
-    // Helper function để map cursor to DictionaryWord
     private fun mapCursorToWord(cursor: android.database.Cursor): DictionaryWord {
         return DictionaryWord(
             id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_DICT_ID)),
@@ -29,7 +27,6 @@ class DictionaryWordDAO(context: Context) {
         )
     }
 
-    // Thêm từ mới
     fun addWord(word: DictionaryWord): Long {
         val values = ContentValues().apply {
             put(DatabaseHelper.COLUMN_DICT_WORD, word.word)
@@ -44,7 +41,6 @@ class DictionaryWordDAO(context: Context) {
         return db.insert(DatabaseHelper.TABLE_DICTIONARY, null, values)
     }
 
-    // Lấy tất cả từ
     fun getAllWords(): ArrayList<DictionaryWord> {
         val wordList = ArrayList<DictionaryWord>()
         val cursor = db.rawQuery("SELECT * FROM ${DatabaseHelper.TABLE_DICTIONARY}", null)
@@ -58,7 +54,6 @@ class DictionaryWordDAO(context: Context) {
         return wordList
     }
 
-    // Lấy từ theo level_id
     fun getWordsByLevelId(levelId: Int): ArrayList<DictionaryWord> {
         val wordList = ArrayList<DictionaryWord>()
         val cursor = db.rawQuery(
@@ -75,7 +70,6 @@ class DictionaryWordDAO(context: Context) {
         return wordList
     }
 
-    // Lấy từ theo category
     fun getWordsByCategory(categoryId: Int): ArrayList<DictionaryWord> {
         val wordList = ArrayList<DictionaryWord>()
         val cursor = db.rawQuery(
@@ -92,7 +86,6 @@ class DictionaryWordDAO(context: Context) {
         return wordList
     }
 
-    // Lấy từ yêu thích
     fun getFavoriteWords(): ArrayList<DictionaryWord> {
         val wordList = ArrayList<DictionaryWord>()
         val cursor = db.rawQuery(
@@ -109,7 +102,6 @@ class DictionaryWordDAO(context: Context) {
         return wordList
     }
 
-    // Toggle favorite
     fun toggleFavorite(wordId: Int): Boolean {
         val cursor = db.rawQuery(
             "SELECT ${DatabaseHelper.COLUMN_DICT_IS_FAVORITE} FROM ${DatabaseHelper.TABLE_DICTIONARY} WHERE ${DatabaseHelper.COLUMN_DICT_ID} = ?",
@@ -135,7 +127,6 @@ class DictionaryWordDAO(context: Context) {
         return result > 0
     }
 
-    // Tìm kiếm từ
     fun searchWords(query: String): ArrayList<DictionaryWord> {
         val wordList = ArrayList<DictionaryWord>()
         val cursor = db.rawQuery(
@@ -152,7 +143,6 @@ class DictionaryWordDAO(context: Context) {
         return wordList
     }
 
-    // Cập nhật từ
     fun updateWord(word: DictionaryWord): Int {
         val values = ContentValues().apply {
             put(DatabaseHelper.COLUMN_DICT_WORD, word.word)
@@ -172,7 +162,6 @@ class DictionaryWordDAO(context: Context) {
         )
     }
 
-    // Xóa từ
     fun deleteWord(wordId: Int): Int {
         return db.delete(
             DatabaseHelper.TABLE_DICTIONARY,
@@ -193,5 +182,4 @@ class DictionaryWordDAO(context: Context) {
         cursor.close()
         return count
     }
-
 }

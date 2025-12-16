@@ -8,6 +8,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.project.R
 import com.example.project.data.local.UserDAO
+import com.example.project.data.local.WordDAO
+import com.example.project.utils.UserSession
 import com.google.android.material.textfield.TextInputEditText
 
 class LoginActivity : AppCompatActivity() {
@@ -34,8 +36,7 @@ class LoginActivity : AppCompatActivity() {
         
         userDAO = UserDAO(this)
         
-        // Seed all data (chạy 1 lần khi app khởi động)
-        seedAllData()
+//        seedAllData()
     }
 
     private fun setEvent() {
@@ -55,7 +56,6 @@ class LoginActivity : AppCompatActivity() {
     }
     
     private fun seedAllData() {
-        // Seed users
         userDAO.seedDefaultAccounts()
     }
 
@@ -91,7 +91,6 @@ class LoginActivity : AppCompatActivity() {
         val user = userDAO.login(email, password)
         
         if (user != null) {
-            // Login thành công
             val message = if (user.isAdmin()) {
                 "Welcome Admin: ${user.name}!"
             } else {
@@ -99,20 +98,16 @@ class LoginActivity : AppCompatActivity() {
             }
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
             
-            // Save user session
-            com.example.project.utils.UserSession.saveUser(this, user.id, user.email, user.name, user.role)
+            UserSession.saveUser(this, user.id, user.email, user.name, user.role)
 
-            // Gọi WordDAO để kiểm tra và tạo dữ liệu mẫu cho user này (nếu cần)
-            val wordDAO = com.example.project.data.local.WordDAO(this)
+            val wordDAO = WordDAO(this)
             wordDAO.seedDefaultWordsForUser(user.id)
             
-            // Navigate to Dashboard
             val intent = Intent(this, DashboardActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
             finish()
         } else {
-            // Login thất bại
             Toast.makeText(this, "Invalid email or password!", Toast.LENGTH_SHORT).show()
             etPassword.error = "Invalid credentials"
             etPassword.requestFocus()

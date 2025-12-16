@@ -23,14 +23,11 @@ class AddUserActivity : AppCompatActivity() {
         setContentView(R.layout.activity_add_user)
 
         userDAO = UserDAO(this)
-        initViews()
-        setupSpinner()
-
-        btnAdd.setOnClickListener { handleAddUser() }
-        btnCancel.setOnClickListener { finish() }
+        setControl()
+        setEvent()
     }
 
-    private fun initViews() {
+    private fun setControl() {
         edtEmail = findViewById(R.id.etUserEmail)
         edtPassword = findViewById(R.id.etUserPassword)
         edtName = findViewById(R.id.etUserName)
@@ -40,9 +37,7 @@ class AddUserActivity : AppCompatActivity() {
         tvTitle = findViewById(R.id.tvTitle)
 
         tvTitle.text = "Add User"
-    }
 
-    private fun setupSpinner() {
         val roles = listOf("user", "admin")
         val adapter = ArrayAdapter(
             this,
@@ -54,13 +49,17 @@ class AddUserActivity : AppCompatActivity() {
         spRole.setSelection(0)
     }
 
+    private fun setEvent() {
+        btnAdd.setOnClickListener { handleAddUser() }
+        btnCancel.setOnClickListener { finish() }
+    }
+
     private fun handleAddUser() {
         val email = edtEmail.text.toString().trim()
         val password = edtPassword.text.toString().trim()
         val name = edtName.text.toString().trim()
         val role = spRole.selectedItem.toString()
 
-        // Validate
         if (email.isEmpty() || password.isEmpty() || name.isEmpty()) {
             Toast.makeText(this, "Please fill all required fields", Toast.LENGTH_SHORT).show()
             return
@@ -76,7 +75,6 @@ class AddUserActivity : AppCompatActivity() {
             return
         }
 
-        // Add user (password sẽ được hash trong UserDAO)
         val result = userDAO.register(
             email = email,
             password = password,

@@ -17,32 +17,35 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class StatisticsActivity : BaseActivity() {
-
     private lateinit var barChartWords: BarChart
     private lateinit var barChartSessions: BarChart
 
     private val dateFormat = SimpleDateFormat("dd/MM", Locale.getDefault())
+    private var userId: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_statistics)
 
+        setHeaderTitle("Thanh Kiệt - Statistics")
+        setControl()
+        setEvent()
+    }
+
+    private fun setControl() {
         barChartWords = findViewById(R.id.barChartWords)
         barChartSessions = findViewById(R.id.barChartSessions)
 
-        setupCharts()
+        userId = UserSession.getUserId(this)
     }
 
-    private fun setupCharts() {
-        val userId = UserSession.getUserId(this)
-
-        setupWordProgressChart(userId)
-        setupStudySessionChart(userId)
+    private fun setEvent() {
+        setupWordProgressChart()
+        setupStudySessionChart()
     }
 
-    // ================= BAR CHART 1 =================
     // Tiến độ học từ (NEW / LEARNING / MASTERED)
-    private fun setupWordProgressChart(userId: Int) {
+    private fun setupWordProgressChart() {
         val dao = WordProgressDAO(this)
         val stats = dao.getWordCountByStatus(userId)
 
@@ -56,15 +59,16 @@ class StatisticsActivity : BaseActivity() {
             BarEntry(2f, masteredCount.toFloat())
         )
 
-        val dataSet = BarDataSet(entries, "Tiến độ học từ")
-        dataSet.colors = listOf(
-            Color.parseColor("#03A9F4"),
-            Color.parseColor("#FFC107"),
-            Color.parseColor("#4CAF50")
-        )
-        dataSet.valueTextSize = 12f
-        dataSet.valueTextColor = Color.BLACK
-        dataSet.valueFormatter = DefaultValueFormatter(0)
+        val dataSet = BarDataSet(entries, "Tiến độ học từ").apply {
+            colors = listOf(
+                Color.parseColor("#03A9F4"),
+                Color.parseColor("#FFC107"),
+                Color.parseColor("#4CAF50")
+            )
+            valueTextSize = 12f
+            valueTextColor = Color.BLACK
+            valueFormatter = DefaultValueFormatter(0)
+        }
 
         barChartWords.data = BarData(dataSet).apply {
             barWidth = 0.6f
@@ -85,9 +89,8 @@ class StatisticsActivity : BaseActivity() {
         barChartWords.invalidate()
     }
 
-    // ================= BAR CHART 2 =================
-    // Thống kê StudySession (số phiên + số từ theo ngày)
-    private fun setupStudySessionChart(userId: Int) {
+    // Thống kê số từ học theo ngày
+    private fun setupStudySessionChart() {
         val dao = StudySessionDAO(this)
         val stats = dao.getDailyStatsAsSessions(userId)
 
@@ -100,10 +103,11 @@ class StatisticsActivity : BaseActivity() {
             BarEntry(index.toFloat(), session.wordsCount.toFloat())
         }
 
-        val dataSet = BarDataSet(entries, "Số từ học theo ngày")
-        dataSet.color = Color.parseColor("#673AB7")
-        dataSet.valueTextSize = 10f
-        dataSet.valueFormatter = DefaultValueFormatter(0)
+        val dataSet = BarDataSet(entries, "Số từ học theo ngày").apply {
+            color = Color.parseColor("#673AB7")
+            valueTextSize = 10f
+            valueFormatter = DefaultValueFormatter(0)
+        }
 
         barChartSessions.data = BarData(dataSet).apply {
             barWidth = 0.6f

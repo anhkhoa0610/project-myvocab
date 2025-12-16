@@ -1,6 +1,5 @@
 package com.example.project.ui.auth
 
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
@@ -53,12 +52,11 @@ class RegisterActivity : AppCompatActivity() {
         }
 
         tvLogin.setOnClickListener {
-            finish() // Quay về LoginActivity
+            finish()
         }
     }
 
     private fun validateInput(name: String, email: String, password: String, confirmPassword: String): Boolean {
-        // Validate name
         if (name.isEmpty()) {
             etName.error = "Name is required"
             etName.requestFocus()
@@ -71,7 +69,6 @@ class RegisterActivity : AppCompatActivity() {
             return false
         }
 
-        // Validate email
         if (email.isEmpty()) {
             etEmail.error = "Email is required"
             etEmail.requestFocus()
@@ -84,7 +81,6 @@ class RegisterActivity : AppCompatActivity() {
             return false
         }
 
-        // Check email exists
         if (userDAO.isEmailExists(email)) {
             etEmail.error = "Email already registered"
             etEmail.requestFocus()
@@ -92,7 +88,6 @@ class RegisterActivity : AppCompatActivity() {
             return false
         }
 
-        // Validate password
         if (password.isEmpty()) {
             etPassword.error = "Password is required"
             etPassword.requestFocus()
@@ -105,7 +100,6 @@ class RegisterActivity : AppCompatActivity() {
             return false
         }
 
-        // Validate confirm password
         if (confirmPassword.isEmpty()) {
             etConfirmPassword.error = "Please confirm your password"
             etConfirmPassword.requestFocus()
@@ -123,21 +117,15 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun register(name: String, email: String, password: String) {
-        // 1. Register user
         val userId = userDAO.register(email, password, name, "user")
         
         if (userId > 0) {
-            // 2. Create user_stats for new user
             val userStatsDAO = UserStatsDAO(this)
             userStatsDAO.createStats(userId.toInt())
             
-            // 3. Success message
             Toast.makeText(this, "Registration successful! Please login.", Toast.LENGTH_SHORT).show()
-            
-            // 4. Quay về LoginActivity
             finish()
         } else {
-            // Register thất bại
             Toast.makeText(this, "Registration failed! Please try again.", Toast.LENGTH_SHORT).show()
         }
     }

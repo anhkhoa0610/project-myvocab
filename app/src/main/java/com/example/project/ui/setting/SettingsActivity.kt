@@ -1,5 +1,3 @@
-// File: com.example.project.ui.settings.SettingsActivity.kt
-
 package com.example.project.ui.setting
 
 import android.app.AlertDialog
@@ -10,50 +8,42 @@ import android.widget.Button
 import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
 import com.example.project.R
 import com.example.project.data.local.DatabaseHelper
 import com.example.project.data.local.SettingsDAO
 import com.example.project.ui.auth.ChangePasswordActivity
-import com.example.project.ui.auth.LoginActivity // Giả sử LoginActivity là nơi quay về sau reset
+import com.example.project.ui.auth.LoginActivity
 import com.example.project.ui.base.BaseActivity
 import com.example.project.ui.rename.RenameActivity
 
 class SettingsActivity : BaseActivity() {
 
+    // ================= DAO =================
     private lateinit var settingsDAO: SettingsDAO
 
-    // Khai báo Views
-    private lateinit var rlChangePassword: RelativeLayout // 1. Thay đổi Mật khẩu
-    private lateinit var rlTheme: RelativeLayout          // 2. Chỉnh Theme
+    // ================= CONTROL =================
+    private lateinit var rlChangePassword: RelativeLayout
+    private lateinit var rlTheme: RelativeLayout
     private lateinit var tvThemeSummary: TextView
-    private lateinit var switchAutoFlip: SwitchCompat     // 5. Flashcard Auto-flip
-    private lateinit var btnResetApp: Button              // 6. Reset App
-    private lateinit var btnRename : RelativeLayout
-
+    private lateinit var switchAutoFlip: SwitchCompat
+    private lateinit var btnResetApp: Button
+    private lateinit var rlRename: RelativeLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
-        setHeaderTitle("Setting")
+
+        setHeaderTitle("Thanh Kiệt - Setting")
         supportActionBar?.title = "Cài đặt Ứng dụng"
-        supportActionBar?.setDisplayHomeAsUpEnabled(true) // Bật nút Back
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        settingsDAO = SettingsDAO(this)
-
-        // 1. Ánh xạ Views
-        bindViews()
-
-        // 2. Khởi tạo trạng thái ban đầu của Views
-        loadInitialSettings()
-
-        // 3. Thiết lập Listeners
-        setupListeners()
+        setControl()
+        setEvent()
     }
 
+    // ================= ACTION BAR BACK =================
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Xử lý nút Back trên ActionBar
         return if (item.itemId == android.R.id.home) {
             onBackPressedDispatcher.onBackPressed()
             true
@@ -62,52 +52,65 @@ class SettingsActivity : BaseActivity() {
         }
     }
 
-    private fun bindViews() {
+    // ================= SET CONTROL =================
+    private fun setControl() {
+        settingsDAO = SettingsDAO(this)
+
         rlChangePassword = findViewById(R.id.setting_change_password)
         rlTheme = findViewById(R.id.setting_theme)
         tvThemeSummary = findViewById(R.id.tv_theme_summary)
         switchAutoFlip = findViewById(R.id.switch_flashcard_auto_flip)
         btnResetApp = findViewById(R.id.btn_reset_app)
-        btnRename = findViewById(R.id.rename)
+        rlRename = findViewById(R.id.rename)
 
+        loadInitialSettings()
     }
 
-    private fun loadInitialSettings() {
-        // Load và cập nhật trạng thái các Views từ SettingsDAO
-        updateThemeSummary(settingsDAO.getThemeMode())
-        switchAutoFlip.isChecked = settingsDAO.isFlashcardAutoFlipEnabled()
+    // ================= SET EVENT =================
+    private fun setEvent() {
 
-    }
-
-    private fun setupListeners() {
-        // 1. Thay đổi Mật khẩu Admin
+        // 1. Đổi mật khẩu
         rlChangePassword.setOnClickListener {
-            val intent = Intent(this, ChangePasswordActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, ChangePasswordActivity::class.java))
         }
 
-        // 2. Chỉnh Theme
-        rlTheme.setOnClickListener { showThemeDialog() }
+        // 2. Chọn Theme
+        rlTheme.setOnClickListener {
+            showThemeDialog()
+        }
 
-        // 4. Bật/tắt Flashcard Auto-flip
+        // 3. Flashcard Auto-flip
         switchAutoFlip.setOnCheckedChangeListener { _, isChecked ->
             settingsDAO.saveFlashcardAutoFlip(isChecked)
-            Toast.makeText(this, if (isChecked) "Tự động lật: Bật" else "Tự động lật: Tắt", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this,
+                if (isChecked) "Tự động lật: Bật" else "Tự động lật: Tắt",
+                Toast.LENGTH_SHORT
+            ).show()
         }
 
-        // 6. Reset toàn bộ App
-        btnResetApp.setOnClickListener { showResetConfirmationDialog() }
+        // 4. Reset App
+        btnResetApp.setOnClickListener {
+            showResetConfirmationDialog()
+        }
 
-        btnRename.setOnClickListener {
-            val intent = Intent(this, RenameActivity::class.java)
-            startActivity(intent)
+        // 5. Đổi tên
+        rlRename.setOnClickListener {
+            startActivity(Intent(this, RenameActivity::class.java))
         }
     }
 
-    // Hàm hiển thị Dialog chọn Theme
+    // ================= LOAD DATA =================
+    private fun loadInitialSettings() {
+        updateThemeSummary(settingsDAO.getThemeMode())
+        switchAutoFlip.isChecked = settingsDAO.isFlashcardAutoFlipEnabled()
+    }
+
+    // ================= THEME =================
     private fun showThemeDialog() {
-        val themes = arrayOf("Sáng", "Tối", "Theo Hệ thống")
+        val themes = arrayOf("Sáng", "Tối", "Theo hệ thống")
         val themeValues = arrayOf("light", "dark", "system_default")
+
         val currentMode = settingsDAO.getThemeMode()
         val checkedItem = themeValues.indexOf(currentMode)
 
@@ -115,7 +118,7 @@ class SettingsActivity : BaseActivity() {
             .setTitle("Chọn Giao Diện")
             .setSingleChoiceItems(themes, checkedItem) { dialog, which ->
                 val selectedMode = themeValues[which]
-                settingsDAO.saveThemeMode(selectedMode) // Hàm này cũng gọi applyTheme
+                settingsDAO.saveThemeMode(selectedMode)
                 updateThemeSummary(selectedMode)
                 dialog.dismiss()
             }
@@ -123,22 +126,22 @@ class SettingsActivity : BaseActivity() {
             .show()
     }
 
-    // Cập nhật text tóm tắt Theme
     private fun updateThemeSummary(mode: String) {
-        val summaryText = when (mode) {
+        tvThemeSummary.text = when (mode) {
             "light" -> "Sáng"
             "dark" -> "Tối"
             else -> "Theo hệ thống"
         }
-        tvThemeSummary.text = summaryText
     }
 
-
-    // Hàm hiển thị Dialog xác nhận Reset
+    // ================= RESET APP =================
     private fun showResetConfirmationDialog() {
         AlertDialog.Builder(this)
             .setTitle("Đặt Lại Ứng Dụng")
-            .setMessage("Bạn có chắc chắn muốn đặt lại tất cả cài đặt và dữ liệu học tập (Word, Category, DictionaryWord) về mặc định? Hành động này không thể hoàn tác.")
+            .setMessage(
+                "Bạn có chắc chắn muốn đặt lại tất cả cài đặt và dữ liệu học tập? " +
+                        "Hành động này không thể hoàn tác."
+            )
             .setPositiveButton("Đặt Lại") { _, _ ->
                 performAppReset()
             }
@@ -146,24 +149,25 @@ class SettingsActivity : BaseActivity() {
             .show()
     }
 
-    // Hàm thực hiện Reset App
     private fun performAppReset() {
-        // 1. Reset Settings về mặc định
+        // 1. Reset settings
         settingsDAO.resetToDefaults()
 
-        // 2. Xóa Dữ liệu Ứng dụng (LƯU Ý: UserDAO cần được giữ lại)
-        // Đây là chỗ bạn cần gọi các DAO khác để xóa dữ liệu (trừ UserDAO)
-        val databaseHelper = DatabaseHelper(this) // Giả sử DatabaseHelper cần Context
+        // 2. Xóa dữ liệu học tập
+        val databaseHelper = DatabaseHelper(this)
+        // TODO: databaseHelper.clearAllWordData()
+        // TODO: databaseHelper.clearAllCategoryData()
 
-        // TODO: THỰC HIỆN XÓA TẤT CẢ DỮ LIỆU CẦN RESET (trừ tài khoản)
-        // databaseHelper.clearAllWordData()
-        // databaseHelper.clearAllCategoryData()
-
-        // 3. Quay lại màn hình Login và xóa stack
+        // 3. Quay về Login
         val intent = Intent(this, LoginActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
         startActivity(intent)
-        Toast.makeText(this, "Ứng dụng đã được đặt lại về mặc định.", Toast.LENGTH_LONG).show()
+
+        Toast.makeText(
+            this,
+            "Ứng dụng đã được đặt lại về mặc định.",
+            Toast.LENGTH_LONG
+        ).show()
     }
 }

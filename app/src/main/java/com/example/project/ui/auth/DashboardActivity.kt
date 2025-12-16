@@ -29,19 +29,18 @@ class DashboardActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
 
-        setHeaderTitle("Dashboard")
+        setHeaderTitle("Dashboard \nAnh Khoa - Nhóm 2")
 
-        initViews()
-        setupWelcomeMessage()
-        setupListeners()
+        setControl()
+        setEvent()
     }
 
     override fun onResume() {
         super.onResume()
-        setupWelcomeMessage()
+        updateWelcomeMessage()
     }
 
-    private fun initViews() {
+    private fun setControl() {
         tvWelcome = findViewById(R.id.tvWelcome)
         tvRole = findViewById(R.id.tvRole)
         cardMyVocab = findViewById(R.id.cardMyVocab)
@@ -50,17 +49,11 @@ class DashboardActivity : BaseActivity() {
         cardStatistic = findViewById(R.id.cardStatistic)
         cardStudyByLevel = findViewById(R.id.cardStudyByLevel)
         cardReviewWords = findViewById(R.id.cardReviewWords)
+        
+        updateWelcomeMessage()
     }
 
-    private fun setupWelcomeMessage() {
-        val userName = UserSession.getUserName(this) ?: "User"
-        val userRole = UserSession.getUserRole(this) ?: "user"
-
-        tvWelcome.text = "Welcome, $userName!"
-        tvRole.text = if (userRole == "admin") "👑 Admin" else "👤 User"
-    }
-
-    private fun setupListeners() {
+    private fun setEvent() {
         cardMyVocab.setOnClickListener {
             startActivity(Intent(this, MyVocabActivity::class.java))
         }
@@ -84,5 +77,13 @@ class DashboardActivity : BaseActivity() {
         cardReviewWords.setOnClickListener {
             startActivity(Intent(this, ReviewActivity::class.java))
         }
+    }
+
+    private fun updateWelcomeMessage() {
+        val userName = UserSession.getUserName(this) ?: "User"
+        val userRole = UserSession.getUserRole(this) ?: "user"
+
+        tvWelcome.text = "Welcome, $userName!"
+        tvRole.text = if (userRole == "admin") "👑 Admin" else "👤 User"
     }
 }
