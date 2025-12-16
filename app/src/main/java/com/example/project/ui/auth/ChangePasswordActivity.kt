@@ -27,9 +27,8 @@ class ChangePasswordActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_change_password)
 
-        supportActionBar?.title = "Thay đổi Mật khẩu"
+        setHeaderTitle("Thanh Kiệt - Change Password")
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
         userDAO = UserDAO(this)
         setControl()
         setEvent()
