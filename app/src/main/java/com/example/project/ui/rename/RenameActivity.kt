@@ -20,7 +20,7 @@ class RenameActivity : BaseActivity() {
         setContentView(R.layout.activity_rename)
 
         // ActionBar
-        setHeaderTitle("Thanh Kiệt -  Rename")
+        setHeaderTitle("Nhóm 2\nThanh Kiệt -  Rename")
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         setControl()

@@ -34,7 +34,7 @@ class SettingsActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        setHeaderTitle("Thanh Kiệt - Setting")
+        setHeaderTitle("Nhóm 2\nThanh Kiệt - Setting")
         supportActionBar?.title = "Cài đặt Ứng dụng"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 

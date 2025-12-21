@@ -34,7 +34,7 @@ class ItemDetailDictionary : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_item_detail_dictionary)
-        setHeaderTitle("Vocab Details")
+        setHeaderTitle("Vocab Details \n Minh Nhựt - Nhóm 2")
 
         setControl()
         initData()
