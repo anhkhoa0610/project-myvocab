@@ -34,8 +34,7 @@ class QuizDAO(context: Context) {
         return quizzes
     }
 
-    // Trong hàm getQuestionsForQuiz
-    fun getQuestionsForQuiz(quizId: Int): List<QuizQuestion> {
+     fun getQuestionsForQuiz(quizId: Int): List<QuizQuestion> {
         val db = dbHelper.readableDatabase
         val questions = mutableListOf<QuizQuestion>()
 
@@ -55,18 +54,16 @@ class QuizDAO(context: Context) {
             val answer = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_QQ_ANSWER))
             val difficulty = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_QQ_DIFFICULTY))
 
-            // Cập nhật lời gọi hàm tại đây
-            val wrongAnswers = getWrongAnswers(db, answer, 3)
+             val wrongAnswers = getWrongAnswers(db, answer, 3)
             val options = (wrongAnswers + answer).shuffled()
 
             questions.add(QuizQuestion(id, quizId, question, answer, options, difficulty))
         }
         cursor.close()
-        db.close() // Bây giờ việc đóng db ở đây là an toàn và đúng đắn
+        db.close()
         return questions
     }
-    // Sửa hàm này
-    private fun getWrongAnswers(db: SQLiteDatabase, correctAnswer: String, count: Int): List<String> {
+     private fun getWrongAnswers(db: SQLiteDatabase, correctAnswer: String, count: Int): List<String> {
         val wrongAnswers = mutableListOf<String>()
         val cursor = db.query(
             DatabaseHelper.TABLE_DICTIONARY,
@@ -83,8 +80,7 @@ class QuizDAO(context: Context) {
             wrongAnswers.add(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_DICT_MEANING)))
         }
         cursor.close()
-        // Không đóng db ở đây, vì nó được truyền từ bên ngoài
-        return wrongAnswers
+         return wrongAnswers
     }
 
     fun saveQuizResult(quizId: Int, userId: Int, score: Int): Long {

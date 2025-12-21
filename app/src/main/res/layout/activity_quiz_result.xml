@@ -32,9 +32,9 @@
             <ImageView
                 android:layout_width="80dp"
                 android:layout_height="80dp"
+                android:layout_marginBottom="16dp"
                 android:src="@android:drawable/btn_star_big_on"
-                app:tint="#FFD700"
-                android:layout_marginBottom="16dp"/>
+                app:tint="#FFD700" />
 
             <TextView
                 android:id="@+id/tvTitle"
@@ -48,30 +48,30 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:text="Tổng điểm của bạn"
                 android:textColor="#757575"
-                android:textSize="14sp"
-                android:layout_marginTop="8dp"/>
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/tvScoreBig"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginVertical="12dp"
                 android:text="8/10"
                 android:textColor="#2352FF"
                 android:textSize="48sp"
-                android:textStyle="bold"
-                android:layout_marginVertical="12dp"/>
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:background="#F5F5F5"
-                android:padding="12dp"
                 android:layout_marginVertical="16dp"
-                android:weightSum="2"
-                android:baselineAligned="false">
+                android:background="#F5F5F5"
+                android:baselineAligned="false"
+                android:orientation="horizontal"
+                android:padding="12dp"
+                android:weightSum="2">
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -79,26 +79,28 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:orientation="vertical">
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Đúng"
                         android:textColor="#4CAF50"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold" />
+
                     <TextView
                         android:id="@+id/tvCorrectCount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="8"
+                        android:textColor="#333333"
                         android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:textColor="#333333"/>
+                        android:textStyle="bold" />
                 </LinearLayout>
 
                 <View
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
-                    android:background="#DDDDDD"/>
+                    android:background="#DDDDDD" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -106,20 +108,22 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:orientation="vertical">
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Sai"
                         android:textColor="#F44336"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold" />
+
                     <TextView
                         android:id="@+id/tvWrongCount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="2"
+                        android:textColor="#333333"
                         android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:textColor="#333333"/>
+                        android:textStyle="bold" />
                 </LinearLayout>
             </LinearLayout>
 
