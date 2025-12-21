@@ -48,6 +48,8 @@
         <activity
             android:name=".ui.flashcards.FlashCardActivity"
             android:exported="false" />
+        <activity android:name=".ui.quiz.QuizSetupActivity"
+            android:exported="false" />
 
         <!-- Quizz Activities -->
 

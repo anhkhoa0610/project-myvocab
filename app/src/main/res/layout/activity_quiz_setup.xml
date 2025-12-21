@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_gradient"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/tvHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cấu Hình Bài Thi"
+        android:textColor="#FFFFFF"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/setupCard"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.7" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Chọn nguồn từ vựng để bắt đầu"
+        android:textColor="#E0E0E0"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvHeader" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/setupCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="#FFFFFF"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.55">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nguồn từ vựng"
+                android:textColor="#757575"
+                android:textStyle="bold"
+                android:layout_marginBottom="12dp"/>
+
+            <RadioGroup
+                android:id="@+id/rgSource"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RadioButton
+                    android:id="@+id/rbAllWords"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Tất cả từ trong từ điển"
+                    android:button="@null"
+                    android:background="@drawable/selector_option_card"
+                    android:padding="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:textColor="#333333"
+                    android:textSize="16sp"
+                    android:drawableStart="@android:drawable/ic_menu_search"
+                    android:drawablePadding="12dp"
+                    android:drawableTint="#0047ED"/>
+
+                <RadioButton
+                    android:id="@+id/rbFavorites"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Từ vựng yêu thích"
+                    android:button="@null"
+                    android:background="@drawable/selector_option_card"
+                    android:padding="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:textColor="#333333"
+                    android:textSize="16sp"
+                    android:drawableStart="@android:drawable/star_off"
+                    android:drawablePadding="12dp"
+                    android:drawableTint="#FFD700"/>
+
+                <RadioButton
+                    android:id="@+id/rbByLevel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Chọn theo cấp độ (Level)"
+                    android:button="@null"
+                    android:background="@drawable/selector_option_card"
+                    android:padding="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:textColor="#333333"
+                    android:textSize="16sp"
+                    android:drawableStart="@android:drawable/ic_menu_sort_by_size"
+                    android:drawablePadding="12dp"
+                    android:drawableTint="#0047ED"/>
+            </RadioGroup>
+
+            <LinearLayout
+                android:id="@+id/layoutLevelSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="24dp"
+                android:alpha="0.5"> <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chọn Level:"
+                android:textSize="12sp"
+                android:layout_marginBottom="4dp"
+                android:textColor="#757575"/>
+
+                <Spinner
+                    android:id="@+id/spinnerLevels"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/bg_spinner_border"
+                    android:paddingHorizontal="8dp"
+                    android:spinnerMode="dropdown"/>
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnStartQuiz"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="Bắt đầu ngay"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:cornerRadius="12dp"
+                app:backgroundTint="#0047ED"
+                app:elevation="4dp"/>
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

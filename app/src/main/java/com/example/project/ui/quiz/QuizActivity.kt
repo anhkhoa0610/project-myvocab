@@ -12,11 +12,14 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.example.project.R
+import com.example.project.data.local.DictionaryWordDAO
 import com.example.project.data.local.QuizDAO
 import com.example.project.data.model.QuizQuestion
 import com.example.project.ui.base.BaseActivity
+import com.example.project.utils.QuizGenerator
 import com.example.project.utils.UserSession
 import com.google.android.material.button.MaterialButton
+import com.example.project.data.model.DictionaryWord
 
 class QuizActivity : BaseActivity() {
 
@@ -39,11 +42,16 @@ class QuizActivity : BaseActivity() {
     private var quizId: Int = -1
     private var userId: Int = -1
     private var userAnswers: MutableList<String?> = mutableListOf()
+    
+    private lateinit var dictionaryDAO: DictionaryWordDAO
+    private lateinit var quizGenerator: QuizGenerator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_quiz)
-
+        setHeaderTitle("Quiz Test \nTuan Kiet - Nhóm 2")
+        dictionaryDAO = DictionaryWordDAO(this)
+        quizGenerator = QuizGenerator(this)
         setControl()
         initDAOs()
         loadQuizData()
@@ -77,22 +85,48 @@ class QuizActivity : BaseActivity() {
     }
 
     private fun loadQuizData() {
-        quizId = intent.getIntExtra("QUIZ_ID", -1)
         userId = UserSession.getUserId(this)
+        val mode = intent.getStringExtra("MODE")
 
-        if (quizId == -1) {
-            Toast.makeText(this, "Lỗi: Không tìm thấy ID bài kiểm tra!", Toast.LENGTH_SHORT).show()
+        var rawWords: List<DictionaryWord> = ArrayList()
+
+        if (mode == "ALL") {
+            rawWords = dictionaryDAO.getAllWords()
+        } else if (mode == "FAVORITE") {
+            rawWords = dictionaryDAO.getFavoriteWords()
+        } else if (mode == "LEVEL") {
+            val levelId = intent.getIntExtra("LEVEL_ID", 1)
+            rawWords = dictionaryDAO.getWordsByLevel(levelId)
+        } else {
+             // Fallback: hỗ trợ code cũ (lấy theo Quiz ID tĩnh nếu cần)
+            val oldQuizId = intent.getIntExtra("QUIZ_ID", -1)
+            if (oldQuizId != -1) {
+                quizId = oldQuizId // Cập nhật quizId để lưu kết quả đúng cách
+                questions = quizDAO.getQuestionsForQuiz(oldQuizId)
+                setupQuizUI()
+                return
+            }
+        }
+
+        if (rawWords.isEmpty()) {
+            Toast.makeText(this, "Không tìm thấy từ vựng nào để tạo câu hỏi!", Toast.LENGTH_LONG).show()
             finish()
             return
         }
 
-        questions = quizDAO.getQuestionsForQuiz(quizId)
+        // TẠO CÂU HỎI ĐỘNG TẠI ĐÂY
+        questions = quizGenerator.generateQuizFromWords(rawWords, 10)
+        
         if (questions.isEmpty()) {
-            Toast.makeText(this, "Không có câu hỏi nào!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Không đủ dữ liệu để tạo câu hỏi (cần ít nhất 4 từ)!", Toast.LENGTH_LONG).show()
             finish()
             return
         }
 
+        setupQuizUI()
+    }
+
+    private fun setupQuizUI() {
         progressBar.max = questions.size
         userAnswers = MutableList(questions.size) { null }
         displayQuestion()
@@ -103,7 +137,13 @@ class QuizActivity : BaseActivity() {
             val question = questions[currentQuestionIndex]
 
             questionTextView.text = question.question
-            tvDifficulty.text = question.difficulty.toString()
+            // Chỉnh sửa hiển thị Difficulty: 1=Easy, 2=Medium, 3=Hard
+            tvDifficulty.text = when (question.difficulty) {
+                1 -> "Easy"
+                2 -> "Medium"
+                3 -> "Hard"
+                else -> "Easy"
+            }
 
             val displayIndex = currentQuestionIndex + 1
             tvProgress.text = "$displayIndex/${questions.size}"
@@ -180,7 +220,8 @@ class QuizActivity : BaseActivity() {
             }
         }
 
-        if (userId != -1) {
+        // Chỉ lưu kết quả nếu đây là Quiz tĩnh (có quizId)
+        if (userId != -1 && quizId != -1) {
             quizDAO.saveQuizResult(quizId, userId, score)
         }
 

@@ -25,7 +25,7 @@ class QuizResultActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_quiz_result)
-
+        setHeaderTitle("Quiz Result\nTuan Kiet - Nhóm 2")
         setControl()
         setEvent()
 

@@ -9,7 +9,7 @@ import com.example.project.ui.base.BaseActivity
 import com.example.project.ui.dictionary.DictionaryActivity
 import com.example.project.ui.flashcards.StudySetupActivity
 import com.example.project.ui.main.MyVocabActivity
-import com.example.project.ui.quiz.LevelSelectionActivity
+import com.example.project.ui.quiz.QuizSetupActivity
 import com.example.project.ui.review.ReviewActivity
 import com.example.project.ui.statistics.StatisticsActivity
 import com.example.project.utils.UserSession
@@ -71,7 +71,7 @@ class DashboardActivity : BaseActivity() {
         }
 
         cardStudyByLevel.setOnClickListener {
-            startActivity(Intent(this, LevelSelectionActivity::class.java))
+            startActivity(Intent(this, QuizSetupActivity::class.java))
         }
 
         cardReviewWords.setOnClickListener {
