@@ -55,8 +55,7 @@
             android:src="@android:drawable/star_big_off"
             app:layout_constraintBottom_toBottomOf="@id/tvWord"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tvWord"
-            app:tint="#FFC107" />
+            app:layout_constraintTop_toTopOf="@id/tvWord"/>
 
         <TextView
             android:id="@+id/tvPronunciation"

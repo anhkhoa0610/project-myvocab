@@ -97,75 +97,75 @@ class WordDAO(context: Context) {
         return result
     }
 
-    fun seedDefaultWordsForUser(userId: Int) {
-        val db = dbHelper.writableDatabase
-
-        val cursor = db.rawQuery(
-            "SELECT count(*) FROM ${DatabaseHelper.TABLE_WORDS} WHERE ${DatabaseHelper.COLUMN_WORD_USER_ID} = ?",
-            arrayOf(userId.toString())
-        )
-        cursor.moveToFirst()
-        val count = cursor.getInt(0)
-        cursor.close()
-
-        if (count > 0) {
-            db.close()
-            return
-        }
-
-        val sampleWords = listOf(
-            Word(0, userId, "Hello", "Xin chào", "/həˈləʊ/", "noun", false),
-            Word(0, userId, "Thank you", "Cảm ơn", "/θæŋk juː/", "phrase", false),
-            Word(0, userId, "Success", "Thành công", "/səkˈses/", "noun", false),
-            Word(0, userId, "Dream", "Giấc mơ", "/driːm/", "noun", false),
-            Word(0, userId, "Knowledge", "Kiến thức", "/ˈnɒlɪdʒ/", "noun", false),
-            Word(0, userId, "Developer", "Lập trình viên", "/dɪˈveləpə(r)/", "noun", false),
-            Word(0, userId, "Computer", "Máy tính", "/kəmˈpjuːtə(r)/", "noun", false),
-            Word(0, userId, "Algorithm", "Thuật toán", "/ˈælɡərɪðəm/", "noun", false),
-            Word(0, userId, "Database", "Cơ sở dữ liệu", "/ˈdeɪtəbeɪs/", "noun", false),
-            Word(0, userId, "Internet", "Mạng Internet", "/ˈɪntənet/", "noun", false),
-            Word(0, userId, "Software", "Phần mềm", "/ˈsɒftweə(r)/", "noun", false),
-            Word(0, userId, "Hardware", "Phần cứng", "/ˈhɑːdweə(r)/", "noun", false),
-            Word(0, userId, "Keyboard", "Bàn phím", "/ˈkiːbɔːd/", "noun", false),
-            Word(0, userId, "Screen", "Màn hình", "/skriːn/", "noun", false),
-            Word(0, userId, "Project", "Dự án", "/ˈprɒdʒekt/", "noun", false),
-            Word(0, userId, "Deadline", "Hạn chót", "/ˈdedlaɪn/", "noun", false),
-            Word(0, userId, "Meeting", "Cuộc họp", "/ˈmiːtɪŋ/", "noun", false),
-            Word(0, userId, "Team", "Đội nhóm", "/tiːm/", "noun", false),
-            Word(0, userId, "Solution", "Giải pháp", "/səˈluːʃn/", "noun", false),
-            Word(0, userId, "Goal", "Mục tiêu", "/ɡəʊl/", "noun", false)
-        )
-
-        db.beginTransaction()
-        try {
-            for (word in sampleWords) {
-                val values = ContentValues().apply {
-                    put(DatabaseHelper.COLUMN_WORD_USER_ID, word.user_id)
-                    put(DatabaseHelper.COLUMN_WORD_WORD, word.word)
-                    put(DatabaseHelper.COLUMN_WORD_MEANING, word.meaning)
-                    put(DatabaseHelper.COLUMN_WORD_PRONUNCIATION, word.pronunciation)
-                    put(DatabaseHelper.COLUMN_WORD_PART_OF_SPEECH, word.part_of_speech)
-                }
-                val newWordId = db.insert(DatabaseHelper.TABLE_WORDS, null, values)
-
-                if (newWordId > -1) {
-                    val progressValues = ContentValues().apply {
-                        put(DatabaseHelper.COLUMN_WP_USER_ID, word.user_id)
-                        put(DatabaseHelper.COLUMN_WP_WORD_ID, newWordId)
-                        put(DatabaseHelper.COLUMN_WP_STATUS, "new")
-                        put(DatabaseHelper.COLUMN_WP_REVIEW_COUNT, 0)
-                    }
-                    db.insert(DatabaseHelper.TABLE_WORD_PROGRESS, null, progressValues)
-                }
-            }
-            db.setTransactionSuccessful()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            db.endTransaction()
-            db.close()
-        }
-    }
+//    fun seedDefaultWordsForUser(userId: Int) {
+//        val db = dbHelper.writableDatabase
+//
+//        val cursor = db.rawQuery(
+//            "SELECT count(*) FROM ${DatabaseHelper.TABLE_WORDS} WHERE ${DatabaseHelper.COLUMN_WORD_USER_ID} = ?",
+//            arrayOf(userId.toString())
+//        )
+//        cursor.moveToFirst()
+//        val count = cursor.getInt(0)
+//        cursor.close()
+//
+//        if (count > 0) {
+//            db.close()
+//            return
+//        }
+//
+//        val sampleWords = listOf(
+//            Word(0, userId, "Hello", "Xin chào", "/həˈləʊ/", "noun", false),
+//            Word(0, userId, "Thank you", "Cảm ơn", "/θæŋk juː/", "phrase", false),
+//            Word(0, userId, "Success", "Thành công", "/səkˈses/", "noun", false),
+//            Word(0, userId, "Dream", "Giấc mơ", "/driːm/", "noun", false),
+//            Word(0, userId, "Knowledge", "Kiến thức", "/ˈnɒlɪdʒ/", "noun", false),
+//            Word(0, userId, "Developer", "Lập trình viên", "/dɪˈveləpə(r)/", "noun", false),
+//            Word(0, userId, "Computer", "Máy tính", "/kəmˈpjuːtə(r)/", "noun", false),
+//            Word(0, userId, "Algorithm", "Thuật toán", "/ˈælɡərɪðəm/", "noun", false),
+//            Word(0, userId, "Database", "Cơ sở dữ liệu", "/ˈdeɪtəbeɪs/", "noun", false),
+//            Word(0, userId, "Internet", "Mạng Internet", "/ˈɪntənet/", "noun", false),
+//            Word(0, userId, "Software", "Phần mềm", "/ˈsɒftweə(r)/", "noun", false),
+//            Word(0, userId, "Hardware", "Phần cứng", "/ˈhɑːdweə(r)/", "noun", false),
+//            Word(0, userId, "Keyboard", "Bàn phím", "/ˈkiːbɔːd/", "noun", false),
+//            Word(0, userId, "Screen", "Màn hình", "/skriːn/", "noun", false),
+//            Word(0, userId, "Project", "Dự án", "/ˈprɒdʒekt/", "noun", false),
+//            Word(0, userId, "Deadline", "Hạn chót", "/ˈdedlaɪn/", "noun", false),
+//            Word(0, userId, "Meeting", "Cuộc họp", "/ˈmiːtɪŋ/", "noun", false),
+//            Word(0, userId, "Team", "Đội nhóm", "/tiːm/", "noun", false),
+//            Word(0, userId, "Solution", "Giải pháp", "/səˈluːʃn/", "noun", false),
+//            Word(0, userId, "Goal", "Mục tiêu", "/ɡəʊl/", "noun", false)
+//        )
+//
+//        db.beginTransaction()
+//        try {
+//            for (word in sampleWords) {
+//                val values = ContentValues().apply {
+//                    put(DatabaseHelper.COLUMN_WORD_USER_ID, word.user_id)
+//                    put(DatabaseHelper.COLUMN_WORD_WORD, word.word)
+//                    put(DatabaseHelper.COLUMN_WORD_MEANING, word.meaning)
+//                    put(DatabaseHelper.COLUMN_WORD_PRONUNCIATION, word.pronunciation)
+//                    put(DatabaseHelper.COLUMN_WORD_PART_OF_SPEECH, word.part_of_speech)
+//                }
+//                val newWordId = db.insert(DatabaseHelper.TABLE_WORDS, null, values)
+//
+//                if (newWordId > -1) {
+//                    val progressValues = ContentValues().apply {
+//                        put(DatabaseHelper.COLUMN_WP_USER_ID, word.user_id)
+//                        put(DatabaseHelper.COLUMN_WP_WORD_ID, newWordId)
+//                        put(DatabaseHelper.COLUMN_WP_STATUS, "new")
+//                        put(DatabaseHelper.COLUMN_WP_REVIEW_COUNT, 0)
+//                    }
+//                    db.insert(DatabaseHelper.TABLE_WORD_PROGRESS, null, progressValues)
+//                }
+//            }
+//            db.setTransactionSuccessful()
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        } finally {
+//            db.endTransaction()
+//            db.close()
+//        }
+//    }
 
     fun getAllWords(): ArrayList<Word> {
         val listWords = ArrayList<Word>()
