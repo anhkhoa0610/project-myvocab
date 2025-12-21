@@ -327,38 +327,46 @@ class DatabaseHelper(context: Context) :
         db.execSQL("INSERT INTO $TABLE_QUIZZES ($COLUMN_QUIZ_TITLE, $COLUMN_QUIZ_LEVEL_ID, $COLUMN_QUIZ_CATEGORY_ID) VALUES ('Intermediate Quiz B1', 3, 1)")
         db.execSQL("INSERT INTO $TABLE_QUIZZES ($COLUMN_QUIZ_TITLE, $COLUMN_QUIZ_LEVEL_ID, $COLUMN_QUIZ_CATEGORY_ID) VALUES ('Advanced Quiz B2', 4, 1)")
 
-        // Questions for quiz 1 (A1) - 6 câu
+
+        // Questions for quiz 1 (A1) - Beginner
+        // Logic: Từ vựng cơ bản, vật dụng hàng ngày, chào hỏi
         db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (1, 'What is Hello in Vietnamese?', 'Xin chào', 1)")
-        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (1, 'What is Goodbye in Vietnamese?', 'Tạm biệt', 1)")
-        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (1, 'What is Thank you in Vietnamese?', 'Cảm ơn', 2)")
-        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (1, 'What is Sorry in Vietnamese?', 'Xin lỗi', 2)")
-        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (1, 'What is Cat in Vietnamese?', 'Con mèo', 3)")
-        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (1, 'What is Dog in Vietnamese?', 'Con chó', 3)")
+        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (1, 'What is Family in Vietnamese?', 'Gia đình', 1)")
+        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (1, 'What is Sun in Vietnamese?', 'Mặt trời', 1)")
+        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (1, 'What does the word Happy mean?', 'Vui vẻ', 2)")
+        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (1, 'What is Water in Vietnamese?', 'Nước', 2)")
+        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (1, 'Meaning of the word Teacher?', 'Giáo viên', 3)")
 
-        // Questions for quiz 2 (A2) - Thêm 3 câu khó
-        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (2, 'What is House in Vietnamese?', 'Ngôi nhà', 1)")
-        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (2, 'What is School in Vietnamese?', 'Trường học', 1)")
-        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (2, 'What is Water in Vietnamese?', 'Nước', 2)")
-        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (2, 'What is Fire in Vietnamese?', 'Lửa', 2)")
-        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (2, 'What is Love in Vietnamese?', 'Tình yêu', 3)")
-        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (2, 'What is the opposite of a professional?', 'Amateur', 3)")
-        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (2, 'What does ''ephemeral'' mean?', 'Lasting for a very short time', 3)")
-        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (2, 'A feeling of deep anxiety or dread', 'Angst', 3)")
+        // Questions for quiz 2 (A2) - Elementary
+        // Logic: Du lịch, tính từ mô tả, so sánh đơn giản, nơi chốn
+        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (2, 'What is Airport in Vietnamese?', 'Sân bay', 1)")
+        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (2, 'What does Expensive mean?', 'Đắt tiền', 1)")
+        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (2, 'Translate: The weather is beautiful.', 'Thời tiết đẹp', 2)")
+        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (2, 'What is Dangerous in Vietnamese?', 'Nguy hiểm', 2)")
+        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (2, 'Opposite of Boring?', 'Thú vị', 3)")
+        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (2, 'What does Vacation mean?', 'Kỳ nghỉ', 3)")
+        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (2, 'What is Medicine in Vietnamese?', 'Thuốc', 3)")
+        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (2, 'Meaning of Library?', 'Thư viện', 3)")
 
-        // Questions for quiz 3 (B1) - Thêm 3 câu khó
-        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (3, 'Which word means to make something better?', 'Ameliorate', 3)")
-        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (3, 'A person who is excessively fond of themselves', 'Narcissist', 3)")
-        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (3, 'What is a feeling of great happiness?', 'Euphoria', 3)")
-        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (3, 'Someone who is stubbornly persistent', 'Obstinate', 3)")
-        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (3, 'To formally renounce a belief or claim', 'Abjure', 3)")
+        // Questions for quiz 3 (B1) - Intermediate
+        // Logic: Công việc, cảm xúc phức tạp, môi trường, trừu tượng hóa nhẹ
+        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (3, 'What does Environment mean?', 'Môi trường', 1)")
+        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (3, 'Translate: To develop', 'Phát triển', 1)")
+        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (3, 'Meaning of Disappointed?', 'Thất vọng', 2)")
+        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (3, 'A person who travels for pleasure is a...?', 'Khách du lịch', 2)")
+        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (3, 'What is Experience in Vietnamese?', 'Kinh nghiệm', 3)")
+        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (3, 'Translate: Opportunity', 'Cơ hội', 3)")
+        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (3, 'Meaning of Behavior?', 'Hành vi', 3)")
 
-        // Questions for quiz 4 (B2) - 5 câu rất khó
-        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (4, 'A statement that appears self-contradictory but contains a latent truth', 'Paradox', 3)")
-        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (4, 'Characterized by severe self-discipline and abstention from all forms of indulgence', 'Ascetic', 3)")
-        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (4, 'The quality of being open and honest in expression', 'Candor', 3)")
-        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (4, 'Excessively talkative, especially on trivial matters', 'Garrulous', 3)")
-        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (4, 'A remedy for all ills or difficulties', 'Panacea', 3)")
-
+        // Questions for quiz 4 (B2) - Upper Intermediate
+        // Logic: Từ vựng học thuật, chính trị/xã hội, trạng từ quan trọng, tính từ nâng cao
+        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (4, 'What does Controversial mean?', 'Gây tranh cãi', 1)")
+        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (4, 'Translate: I am exhausted.', 'Tôi kiệt sức', 2)")
+        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (4, 'What is Inevitable in Vietnamese?', 'Không thể tránh khỏi', 3)")
+        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (4, 'Translate: Priority', 'Sự ưu tiên', 3)")
+        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (4, 'Meaning of Procrastinate?', 'Trì hoãn', 3)")
+        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (4, 'Translate: Sophisticated', 'Tinh vi / Phức tạp', 3)")
+        db.execSQL("INSERT INTO $TABLE_QUIZ_QUESTIONS ($COLUMN_QQ_QUIZ_ID, $COLUMN_QQ_QUESTION, $COLUMN_QQ_ANSWER, $COLUMN_QQ_DIFFICULTY) VALUES (4, 'What is Reputation in Vietnamese?', 'Danh tiếng', 3)")
         // Seed Dictionary Words
         val values = ContentValues()
         values.put(COLUMN_DICT_WORD, "Hello")

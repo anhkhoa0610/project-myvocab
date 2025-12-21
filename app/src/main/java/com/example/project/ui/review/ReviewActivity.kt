@@ -40,7 +40,7 @@ class ReviewActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_review)
-
+        setHeaderTitle("Review \nLuong Tuan Kiet - Nhóm 2")
         setControl()
         initData()
         setEvent()

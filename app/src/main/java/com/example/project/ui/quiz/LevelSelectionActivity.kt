@@ -21,7 +21,7 @@ class LevelSelectionActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_level_selection)
-
+        setHeaderTitle("Level Selection \nLuong Tuan Kiet - Nhóm 2")
         initDAOs()
         setControl()
         loadLevels()

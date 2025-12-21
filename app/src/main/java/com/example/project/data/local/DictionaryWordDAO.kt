@@ -170,6 +170,27 @@ class DictionaryWordDAO(context: Context) {
         )
     }
 
+    fun getRandomWords(limit: Int, excludeId: Int): List<DictionaryWord> {
+        val list = ArrayList<DictionaryWord>()
+        // Lấy ngẫu nhiên 'limit' từ, TRỪ từ đang hỏi (excludeId)
+        val cursor = db.rawQuery(
+            "SELECT * FROM ${DatabaseHelper.TABLE_DICTIONARY} WHERE ${DatabaseHelper.COLUMN_DICT_ID} != ? ORDER BY RANDOM() LIMIT ?",
+            arrayOf(excludeId.toString(), limit.toString())
+        )
+
+        if (cursor.moveToFirst()) {
+            do {
+                list.add(mapCursorToWord(cursor))
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return list
+    }
+
+    fun getWordsByLevel(levelId: Int): List<DictionaryWord> {
+        return getWordsByLevelId(levelId)
+    }
+
     fun getTotalWordCount(): Int {
         val cursor = db.rawQuery(
             "SELECT COUNT(*) FROM ${DatabaseHelper.TABLE_DICTIONARY}",
