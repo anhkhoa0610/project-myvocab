@@ -33,12 +33,12 @@ class QuizSetupActivity : BaseActivity() {
 
         levelDAO = LevelDAO(this)
 
-        initViews()
+        setControl()
         loadLevels()
-        setupEvents()
+        setEvent()
     }
 
-    private fun initViews() {
+    private fun setControl() {
         rgSource = findViewById(R.id.rgSource)
         spinnerLevels = findViewById(R.id.spinnerLevels)
         layoutLevelSpinner = findViewById(R.id.layoutLevelSpinner)
@@ -57,7 +57,7 @@ class QuizSetupActivity : BaseActivity() {
         }
     }
 
-    private fun setupEvents() {
+    private fun setEvent() {
          enableSpinner(false)
 
         rgSource.setOnCheckedChangeListener { _, checkedId ->
