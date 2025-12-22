@@ -196,4 +196,14 @@ class StudySetupActivity : BaseActivity() {
             startActivity(intent)
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        loadDataFromDB()
+
+        val currentSearch = etSearch.text.toString()
+        if (currentSearch.isNotEmpty()) {
+            filterWords(currentSearch)
+        }
+    }
 }

@@ -3,48 +3,58 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
+        android:background="#F5F7FA"
         android:orientation="vertical">
 
-        <LinearLayout
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="16dp"
-            android:layout_marginTop="35dp">
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="#FFFFFF"
+            app:cardCornerRadius="0dp">
 
-            <ImageView
-                android:id="@+id/btnMenuBase"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:padding="10dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_menu"
-                app:tint="@color/black" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp">
 
-            <TextView
-                android:id="@+id/tvTitleBase"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="My Vocab"
-                android:textSize="22sp"
-                android:textStyle="bold" />
+                <ImageView
+                    android:id="@+id/btnMenuBase"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:padding="8dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_menu"
+                    app:tint="#333333" />
 
-            <FrameLayout
-                android:id="@+id/frameRightAction"
-                android:layout_width="48dp"
-                android:layout_height="48dp">
-            </FrameLayout>
+                <TextView
+                    android:id="@+id/tvTitleBase"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="16dp"
+                    android:text="My Vocab"
+                    android:textColor="#212121"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
 
-        </LinearLayout>
+                <FrameLayout
+                    android:id="@+id/frameRightAction"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center_vertical">
+                </FrameLayout>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <FrameLayout
             android:id="@+id/container_view"
@@ -56,12 +66,13 @@
             android:id="@+id/bottom_nav_base"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
+            android:background="#FFFFFF"
+            android:elevation="8dp"
+            app:elevation="8dp"
             app:itemIconTint="@color/black"
             app:itemTextColor="@color/black"
             app:labelVisibilityMode="labeled"
             app:menu="@menu/bottom_nav_menu" />
-
 
     </LinearLayout>
 
@@ -75,12 +86,12 @@
         app:itemTextAppearance="@style/NavMenuTextAppearance"
         app:itemVerticalPadding="12dp"
         app:itemBackground="@drawable/nav_item_background"
-        app:itemRippleColor="#E0E0E0"
+        app:itemRippleColor="#E3F2FD"
+        app:itemIconTint="#2196F3"
+        app:itemTextColor="#333333"
         app:itemShapeFillColor="@android:color/transparent"
-        app:itemShapeInsetStart="8dp"
-        app:itemShapeInsetEnd="8dp"
-        app:dividerInsetStart="16dp"
-        app:dividerInsetEnd="16dp"
+        app:itemShapeInsetStart="16dp"
+        app:itemShapeInsetEnd="16dp"
         app:menu="@menu/nav_menu" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

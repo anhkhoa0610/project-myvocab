@@ -18,7 +18,7 @@ class QuizSetupActivity : BaseActivity() {
 
     private lateinit var rgSource: RadioGroup
     private lateinit var spinnerLevels: Spinner
-    private lateinit var layoutLevelSpinner: LinearLayout // Layout chứa spinner để chỉnh độ mờ
+    private lateinit var layoutLevelSpinner: LinearLayout
     private lateinit var btnStartQuiz: MaterialButton
 
     private lateinit var levelDAO: LevelDAO
@@ -29,8 +29,7 @@ class QuizSetupActivity : BaseActivity() {
         setContentView(R.layout.activity_quiz_setup)
         setHeaderTitle("Level Selection \nTuan Kiet - Nhóm 2")
 
-        // Ẩn Action Bar mặc định nếu bạn muốn dùng header trong layout
-        supportActionBar?.hide()
+         supportActionBar?.hide()
 
         levelDAO = LevelDAO(this)
 
@@ -59,8 +58,7 @@ class QuizSetupActivity : BaseActivity() {
     }
 
     private fun setupEvents() {
-        // Mặc định disable spinner
-        enableSpinner(false)
+         enableSpinner(false)
 
         rgSource.setOnCheckedChangeListener { _, checkedId ->
             if (checkedId == R.id.rbByLevel) {
@@ -75,8 +73,7 @@ class QuizSetupActivity : BaseActivity() {
         }
     }
 
-    // Hàm phụ trợ để làm đẹp hiệu ứng Enable/Disable
-    private fun enableSpinner(enable: Boolean) {
+     private fun enableSpinner(enable: Boolean) {
         spinnerLevels.isEnabled = enable
         layoutLevelSpinner.animate().alpha(if (enable) 1.0f else 0.4f).setDuration(200).start()
     }
@@ -110,8 +107,6 @@ class QuizSetupActivity : BaseActivity() {
 
         if (isValid) {
             startActivity(intent)
-            // Không finish() ở đây nếu bạn muốn user quay lại màn hình setup sau khi làm bài xong
-            // finish()
-        }
+          }
     }
 }

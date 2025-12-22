@@ -18,29 +18,26 @@ import java.util.Date
 
 class ReviewActivity : BaseActivity() {
 
-    // Data
-    private lateinit var wordsToReview: List<DictionaryWord>
+     private lateinit var wordsToReview: List<DictionaryWord>
     private var currentWordIndex = 0
     private var reviewedWordsCount = 0
     private var userId: Int = -1
 
-    // DAOs
-    private lateinit var dictionaryWordDAO: DictionaryWordDAO
+     private lateinit var dictionaryWordDAO: DictionaryWordDAO
     private lateinit var userWordStatusDAO: UserWordStatusDAO
     private lateinit var studySessionDAO: StudySessionDAO
 
-    // Views
-    private lateinit var wordTextView: TextView
+     private lateinit var wordTextView: TextView
     private lateinit var definitionTextView: TextView
     private lateinit var tvProgress: TextView
-    private lateinit var cardContentLayout: LinearLayout // Dùng để làm animation
+    private lateinit var cardContentLayout: LinearLayout
     private lateinit var knownButton: MaterialButton
     private lateinit var unknownButton: MaterialButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_review)
-        setHeaderTitle("Review \nLuong Tuan Kiet - Nhóm 2")
+        setHeaderTitle("Review \nTuan Kiet - Nhóm 2")
         setControl()
         initData()
         setEvent()
@@ -92,8 +89,7 @@ class ReviewActivity : BaseActivity() {
         val allWords = dictionaryWordDAO.getAllWords()
         val knownWordIds = userWordStatusDAO.getKnownWordIds(userId).toSet()
 
-        // Lọc từ chưa biết và xáo trộn
-        wordsToReview = allWords.filter { it.id !in knownWordIds }.shuffled()
+         wordsToReview = allWords.filter { it.id !in knownWordIds }.shuffled()
         currentWordIndex = 0
         reviewedWordsCount = 0
 
@@ -111,18 +107,14 @@ class ReviewActivity : BaseActivity() {
             wordTextView.text = word.word
             definitionTextView.text = word.meaning
 
-            // Cập nhật tiến độ: Ví dụ "Word 1 of 5"
-            tvProgress.text = "Word ${index + 1} of ${wordsToReview.size}"
+             tvProgress.text = "Word ${index + 1} of ${wordsToReview.size}"
         }
     }
 
-    // Hàm tạo hiệu ứng chuyển cảnh mượt mà
-    private fun animateAndShowNext() {
-        // Fade out (mờ đi)
-        cardContentLayout.animate().alpha(0f).setDuration(150).withEndAction {
+     private fun animateAndShowNext() {
+         cardContentLayout.animate().alpha(0f).setDuration(150).withEndAction {
             showNextWordLogic()
-            // Fade in (hiện lại)
-            cardContentLayout.animate().alpha(1f).setDuration(150).start()
+             cardContentLayout.animate().alpha(1f).setDuration(150).start()
         }.start()
     }
 
@@ -172,8 +164,7 @@ class ReviewActivity : BaseActivity() {
     private fun enableButtons(enable: Boolean) {
         knownButton.isEnabled = enable
         unknownButton.isEnabled = enable
-        // Đổi màu nút khi disable để user dễ nhận biết (tuỳ chọn)
-        knownButton.alpha = if (enable) 1.0f else 0.5f
+         knownButton.alpha = if (enable) 1.0f else 0.5f
         unknownButton.alpha = if (enable) 1.0f else 0.5f
     }
 }

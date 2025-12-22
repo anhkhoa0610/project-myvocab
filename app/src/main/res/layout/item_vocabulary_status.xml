@@ -1,62 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:paddingVertical="12dp"
-    android:paddingHorizontal="16dp"
-    android:gravity="center_vertical">
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="6dp"
+    app:cardBackgroundColor="#FFFFFF"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    app:strokeColor="#EEF0F2"
+    app:strokeWidth="1dp">
 
-    <TextView
-        android:id="@+id/tvFirstLetter"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:gravity="center"
-        android:text="A"
-        android:textColor="@color/white"
-        android:textStyle="bold"
-        android:textSize="18sp"
-        android:backgroundTint="@color/light_purple"
-        android:background="@drawable/circle_background" />
-
-    <LinearLayout
-        android:layout_width="100dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginStart="12dp">
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tvFirstLetter"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/circle_background"
+            android:backgroundTint="#FFCA28"
+            android:gravity="center"
+            android:text="A"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tvWord"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:text="Apple"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textColor="#212121"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/tvFirstLetter"
+            app:layout_constraintTop_toTopOf="@id/tvFirstLetter"
+            app:layout_constraintBottom_toTopOf="@id/tvMeaning"
+            app:layout_constraintVertical_chainStyle="packed"/>
+
+        <TextView
+            android:id="@+id/tvPronun"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="/ˈap(ə)l/"
+            android:textColor="#757575"
+            android:textSize="14sp"
+            android:textStyle="italic"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvWord"
+            app:layout_constraintStart_toEndOf="@id/tvWord"
+            app:layout_constraintEnd_toStartOf="@id/spinnerStatus"
+            app:layout_constraintHorizontal_bias="0.0"/>
 
         <TextView
             android:id="@+id/tvMeaning"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:text="Quả táo"
-            android:textColor="@color/gray"
-            android:textSize="14sp" />
-    </LinearLayout>
+            android:textColor="#616161"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@id/tvWord"
+            app:layout_constraintTop_toBottomOf="@id/tvWord"
+            app:layout_constraintBottom_toBottomOf="@id/tvFirstLetter"
+            app:layout_constraintEnd_toStartOf="@id/spinnerStatus"/>
 
-    <TextView
-        android:id="@+id/tvPronun"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="/ˈap(ə)l/"
-        android:layout_weight="1"
-        android:layout_gravity="top" />
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/spinnerStatus"
+            android:layout_width="130dp"
+            android:layout_height="40dp"
+            android:background="@drawable/circle_background"
+            android:backgroundTint="#F5F5F5"
+            android:paddingStart="8dp"
+            android:paddingEnd="24dp"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:listitem="@android:layout/simple_spinner_dropdown_item" />
 
-    <androidx.appcompat.widget.AppCompatSpinner
-        android:id="@+id/spinnerStatus"
-        android:layout_width="110dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:spinnerMode="dropdown"
-        android:gravity="end"
-        tools:listitem="@android:layout/simple_spinner_item" />
-</LinearLayout>
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginEnd="8dp"
+            android:src="@android:drawable/arrow_down_float"
+            app:tint="#757575"
+            app:layout_constraintBottom_toBottomOf="@id/spinnerStatus"
+            app:layout_constraintEnd_toEndOf="@id/spinnerStatus"
+            app:layout_constraintTop_toTopOf="@id/spinnerStatus"
+            android:importantForAccessibility="no"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

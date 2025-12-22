@@ -36,7 +36,7 @@ class LoginActivity : AppCompatActivity() {
         
         userDAO = UserDAO(this)
         
-//        seedAllData()
+        seedAllData()
     }
 
     private fun setEvent() {
@@ -100,9 +100,6 @@ class LoginActivity : AppCompatActivity() {
             
             UserSession.saveUser(this, user.id, user.email, user.name, user.role)
 
-            val wordDAO = WordDAO(this)
-            wordDAO.seedDefaultWordsForUser(user.id)
-            
             val intent = Intent(this, DashboardActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)

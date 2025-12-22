@@ -15,6 +15,7 @@ class QuizResultActivity : BaseActivity() {
 
     private val TAG = "QuizResult_DEBUG"
 
+    private lateinit var tvResultTitle: TextView
     private lateinit var tvScoreBig: TextView
     private lateinit var tvCorrectCount: TextView
     private lateinit var tvWrongCount: TextView
@@ -29,8 +30,7 @@ class QuizResultActivity : BaseActivity() {
         setControl()
         setEvent()
 
-        // Set a default title using the existing setHeaderTitle from BaseActivity
-        setHeaderTitle("Kết quả Quiz")
+//         setHeaderTitle("Kết quả Quiz")
 
         studySessionDAO = StudySessionDAO(this)
 
@@ -53,19 +53,19 @@ class QuizResultActivity : BaseActivity() {
 
             val percentage = if (totalQuestions > 0) (score.toFloat() / totalQuestions.toFloat()) * 100 else 0f
             if (percentage >= 80) {
-                setHeaderTitle("Tuyệt vời! \uD83C\uDF89")
+                tvResultTitle.text = "Tuyệt vời! \uD83C\uDF89"
             } else if (percentage >= 50) {
-                setHeaderTitle("Làm tốt lắm!")
+                tvResultTitle.text = "Làm tốt lắm!"
             } else {
-                setHeaderTitle("Cố gắng hơn nhé!")
+                tvResultTitle.text = "Cố gắng hơn nhé!"
             }
 
-            // --- Ghi lại phiên học Quiz ---
-            saveQuizSession(totalQuestions)
+             saveQuizSession(totalQuestions)
         }
     }
 
     private fun setControl() {
+        tvResultTitle = findViewById(R.id.tvTitle)
         tvScoreBig = findViewById(R.id.tvScoreBig)
         tvCorrectCount = findViewById(R.id.tvCorrectCount)
         tvWrongCount = findViewById(R.id.tvWrongCount)
@@ -81,7 +81,7 @@ class QuizResultActivity : BaseActivity() {
         if (userId != -1 && questionCount > 0) {
             val session = StudySession(
                 userId = userId,
-                wordsCount = questionCount, // Coi mỗi câu hỏi là một "từ" đã học
+                wordsCount = questionCount,
                 date = Date()
             )
             studySessionDAO.addSession(session)

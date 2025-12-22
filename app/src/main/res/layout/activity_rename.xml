@@ -1,61 +1,134 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="24dp"
-    android:background="@color/white">
+    android:background="#F5F7FA"
+    android:fillViewport="true">
 
-    <!-- Tiêu đề -->
-    <TextView
-        android:id="@+id/tvTitleRename"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Đổi tên người dùng"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:textColor="@color/black" />
-
-    <!-- Mô tả -->
-    <TextView
-        android:id="@+id/tvDescRename"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Tên này sẽ được hiển thị trong menu và trên toàn bộ ứng dụng."
-        android:layout_marginTop="8dp"
-        android:textSize="14sp"
-        android:textColor="@color/gray" />
-
-    <!-- Input tên -->
-    <com.google.android.material.textfield.TextInputLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        app:boxBackgroundMode="outline"
-        app:boxCornerRadiusTopStart="12dp"
-        app:boxCornerRadiusTopEnd="12dp"
-        app:boxCornerRadiusBottomStart="12dp"
-        app:boxCornerRadiusBottomEnd="12dp">
+        android:layout_height="wrap_content">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edtUsername"
+        <View
+            android:id="@+id/viewHeader"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:background="#1976D2"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:background="@drawable/circle_background"
+            android:backgroundTint="#FFFFFF"
+            android:alpha="0.1"
+            android:translationX="50dp"
+            android:translationY="-50dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <TextView
+            android:id="@+id/tvTitleRename"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rename Profile"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="40dp"
+            android:layout_marginStart="24dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Update your identity"
+            android:textSize="14sp"
+            android:textColor="#BBDEFB"
+            android:layout_marginTop="4dp"
+            app:layout_constraintStart_toStartOf="@id/tvTitleRename"
+            app:layout_constraintTop_toBottomOf="@id/tvTitleRename"/>
+
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Nhập tên mới"
-            android:maxLines="1"
-            android:inputType="textPersonName" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="32dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="8dp"
+            app:cardBackgroundColor="#FFFFFF"
+            app:layout_constraintTop_toBottomOf="@id/tvTitleRename"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
-    <!-- Nút Lưu -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnSaveUsername"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Lưu"
-        android:layout_marginTop="32dp"
-        app:cornerRadius="12dp"
-        app:backgroundTint="@color/gray"
-        android:textColor="@color/white" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
 
-</LinearLayout>
+                <ImageView
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:src="@android:drawable/ic_menu_my_calendar"
+                    app:tint="#1976D2"
+                    android:background="@drawable/circle_background"
+                    android:backgroundTint="#E3F2FD"
+                    android:padding="12dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="16dp"/>
+
+                <TextView
+                    android:id="@+id/tvDescRename"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tên này sẽ được hiển thị trong menu và trên toàn bộ ứng dụng."
+                    android:textSize="14sp"
+                    android:textColor="#757575"
+                    android:gravity="center"
+                    android:layout_marginBottom="24dp" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="New Username"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:boxStrokeColor="#1976D2"
+                    app:startIconDrawable="@android:drawable/ic_menu_edit"
+                    app:startIconTint="#1976D2"
+                    app:endIconMode="clear_text">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edtUsername"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:maxLines="1"
+                        android:inputType="textPersonName"
+                        android:textColor="#333333"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSaveUsername"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="Save Changes"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="32dp"
+                    app:cornerRadius="28dp"
+                    android:backgroundTint="#1976D2"
+                    android:textColor="@color/white"
+                    app:elevation="4dp"/>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

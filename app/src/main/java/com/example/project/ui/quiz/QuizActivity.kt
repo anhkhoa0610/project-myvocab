@@ -25,8 +25,7 @@ class QuizActivity : BaseActivity() {
 
     private val TAG = "QuizActivity_DEBUG"
 
-    // Views
-    private lateinit var questionTextView: TextView
+     private lateinit var questionTextView: TextView
     private lateinit var tvDifficulty: TextView
     private lateinit var tvProgress: TextView
     private lateinit var progressBar: ProgressBar
@@ -34,8 +33,7 @@ class QuizActivity : BaseActivity() {
     private lateinit var submitButton: MaterialButton
     private lateinit var btnFinishSubmit: TextView
 
-    // Data
-    private lateinit var quizDAO: QuizDAO
+     private lateinit var quizDAO: QuizDAO
     private var currentQuestionIndex = 0
     private var score = 0
     private var questions: List<QuizQuestion> = emptyList()
@@ -75,7 +73,7 @@ class QuizActivity : BaseActivity() {
 
         btnFinishSubmit.setOnClickListener {
             Log.d(TAG, "'Finish Anytime' clicked.")
-            saveCurrentSelection() // Lưu lựa chọn hiện tại trước khi thoát
+            saveCurrentSelection()
             calculateAndFinish()
         }
     }
@@ -98,10 +96,9 @@ class QuizActivity : BaseActivity() {
             val levelId = intent.getIntExtra("LEVEL_ID", 1)
             rawWords = dictionaryDAO.getWordsByLevel(levelId)
         } else {
-             // Fallback: hỗ trợ code cũ (lấy theo Quiz ID tĩnh nếu cần)
-            val oldQuizId = intent.getIntExtra("QUIZ_ID", -1)
+             val oldQuizId = intent.getIntExtra("QUIZ_ID", -1)
             if (oldQuizId != -1) {
-                quizId = oldQuizId // Cập nhật quizId để lưu kết quả đúng cách
+                quizId = oldQuizId
                 questions = quizDAO.getQuestionsForQuiz(oldQuizId)
                 setupQuizUI()
                 return
@@ -114,8 +111,7 @@ class QuizActivity : BaseActivity() {
             return
         }
 
-        // TẠO CÂU HỎI ĐỘNG TẠI ĐÂY
-        questions = quizGenerator.generateQuizFromWords(rawWords, 10)
+         questions = quizGenerator.generateQuizFromWords(rawWords, 10)
         
         if (questions.isEmpty()) {
             Toast.makeText(this, "Không đủ dữ liệu để tạo câu hỏi (cần ít nhất 4 từ)!", Toast.LENGTH_LONG).show()
@@ -137,8 +133,7 @@ class QuizActivity : BaseActivity() {
             val question = questions[currentQuestionIndex]
 
             questionTextView.text = question.question
-            // Chỉnh sửa hiển thị Difficulty: 1=Easy, 2=Medium, 3=Hard
-            tvDifficulty.text = when (question.difficulty) {
+             tvDifficulty.text = when (question.difficulty) {
                 1 -> "Easy"
                 2 -> "Medium"
                 3 -> "Hard"
@@ -220,8 +215,7 @@ class QuizActivity : BaseActivity() {
             }
         }
 
-        // Chỉ lưu kết quả nếu đây là Quiz tĩnh (có quizId)
-        if (userId != -1 && quizId != -1) {
+         if (userId != -1 && quizId != -1) {
             quizDAO.saveQuizResult(quizId, userId, score)
         }
 
