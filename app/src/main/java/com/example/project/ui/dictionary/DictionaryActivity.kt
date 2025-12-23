@@ -106,28 +106,6 @@ class DictionaryActivity : BaseActivity() {
 
     private fun switchTab(tab: Tab) {
         currentTab = tab
-        
-        when (tab) {
-            Tab.ALL -> {
-                tvTabAll.setTextColor(resources.getColor(android.R.color.black, null))
-                tvTabAll.textSize = 16f
-                tvTabAll.setTypeface(null, android.graphics.Typeface.BOLD)
-                
-                tvTabFavorites.setTextColor(resources.getColor(android.R.color.darker_gray, null))
-                tvTabFavorites.textSize = 16f
-                tvTabFavorites.setTypeface(null, android.graphics.Typeface.NORMAL)
-            }
-            Tab.FAVORITES -> {
-                tvTabFavorites.setTextColor(resources.getColor(android.R.color.black, null))
-                tvTabFavorites.textSize = 16f
-                tvTabFavorites.setTypeface(null, android.graphics.Typeface.BOLD)
-                
-                tvTabAll.setTextColor(resources.getColor(android.R.color.darker_gray, null))
-                tvTabAll.textSize = 16f
-                tvTabAll.setTypeface(null, android.graphics.Typeface.NORMAL)
-            }
-        }
-        
         etSearch.text.clear()
         loadWords()
     }

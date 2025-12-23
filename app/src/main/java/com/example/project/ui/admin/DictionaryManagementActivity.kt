@@ -66,7 +66,6 @@ class DictionaryManagementActivity : BaseActivity() {
         dictionaryWordDAO = DictionaryWordDAO(this)
         categoryDAO = CategoryDAO(this)
         
-        // Setup Add Button
         btnAdd = ImageView(this)
         btnAdd.setImageResource(R.drawable.ic_add)
         btnAdd.setPadding(15, 15, 15, 15)
@@ -86,7 +85,6 @@ class DictionaryManagementActivity : BaseActivity() {
     private fun setEvent() {
         setupSearchListener()
         
-        // Add Button Click Event
         btnAdd.setOnClickListener {
             val intent = Intent(this, AddDictionaryWordActivity::class.java)
             addWordLauncher.launch(intent)
@@ -94,16 +92,13 @@ class DictionaryManagementActivity : BaseActivity() {
     }
 
     private fun setupCategorySpinner() {
-        // Load categories
         categoryList = categoryDAO.getAllCategories()
         
-        // Add "All Categories" option at the beginning
         val allCategory = Category(0, "All Categories", "", "", "")
         val spinnerItems = ArrayList<Category>()
         spinnerItems.add(allCategory)
         spinnerItems.addAll(categoryList)
 
-        // Create adapter for spinner
         val spinnerAdapter = object : ArrayAdapter<Category>(
             this,
             android.R.layout.simple_spinner_item,
@@ -124,7 +119,6 @@ class DictionaryManagementActivity : BaseActivity() {
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerCategory.adapter = spinnerAdapter
 
-        // Set listener
         spinnerCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 selectedCategoryId = spinnerItems[position].id
@@ -132,7 +126,6 @@ class DictionaryManagementActivity : BaseActivity() {
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                // Do nothing
             }
         }
     }

@@ -42,6 +42,7 @@
                     android:layout_weight="1"
                     android:layout_marginStart="16dp"
                     android:text="My Vocab"
+                    android:gravity="center"
                     android:textColor="#212121"
                     android:textSize="20sp"
                     android:textStyle="bold" />

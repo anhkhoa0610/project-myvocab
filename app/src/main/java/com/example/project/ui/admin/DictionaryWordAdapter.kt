@@ -36,32 +36,26 @@ class DictionaryWordAdapter(
         val btnEdit = view.findViewById<ImageButton>(R.id.btnEdit)
         val btnDelete = view.findViewById<ImageButton>(R.id.btnDelete)
 
-        // Display data
         tvFirstLetter.text = word.word.firstOrNull()?.uppercase() ?: "?"
         tvWord.text = word.word
         tvMeaning.text = word.meaning
         tvPronun.text = word.pronunciation
         tvLevel.text = word.getLevelName()
         
-        // Get category and apply its color
         val category = categories.find { it.id == word.category_id }
         tvCategory.text = category?.name ?: "Unknown"
         
-        // Apply category color from database
         category?.color?.let { colorString ->
             try {
                 val color = android.graphics.Color.parseColor(colorString)
                 tvCategory.setBackgroundColor(color)
             } catch (e: IllegalArgumentException) {
-                // If color parsing fails, use default color
                 tvCategory.setBackgroundColor(android.graphics.Color.parseColor("#2196F3"))
             }
         } ?: run {
-            // Default color if category not found
             tvCategory.setBackgroundColor(android.graphics.Color.parseColor("#2196F3"))
         }
 
-        // Handle Edit button click
         btnEdit.setOnClickListener {
             val intent = Intent(context, EditDictionaryWordActivity::class.java)
             intent.putExtra("word", word)
@@ -72,7 +66,6 @@ class DictionaryWordAdapter(
             }
         }
 
-        // Handle Delete button click
         btnDelete.setOnClickListener {
             AlertDialog.Builder(activity)
                 .setTitle("Delete Word")

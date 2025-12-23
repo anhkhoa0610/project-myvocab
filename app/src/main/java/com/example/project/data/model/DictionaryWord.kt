@@ -15,7 +15,6 @@ data class DictionaryWord(
     val example_sentence: String = "",
     var is_favorite: Boolean = false
 ) : Parcelable {
-    // Helper method để lấy level name
     fun getLevelName(): String {
         return when(level_id) {
             1 -> "A1"
